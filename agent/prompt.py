@@ -89,9 +89,13 @@ _EXPLAIN = {
 }
 
 def verdict_line(result: dict) -> str:
+    # Only the bare verdict. The judge's string can carry a parenthetical from a
+    # checker, the interactor or the sandbox -- "WA (final answer 684 828 793 !=
+    # 684 827 793)" hands over a secret test's answer -- and a real judge says
+    # none of it. The submission record keeps the full string for the analysis.
     v = result["verdict"] or "VE"
     short = v.split()[0].split("(")[0]
-    return f"{v} -- {_EXPLAIN.get(short, '')}".strip()
+    return f"{short} -- {_EXPLAIN.get(short, '')}".strip()
 
 def render_feedback(result, submission_num, elapsed_s, budget_s,
                     solved: bool, compile_error=None) -> str:

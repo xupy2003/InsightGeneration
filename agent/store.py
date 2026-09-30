@@ -38,6 +38,17 @@ def _clip(text: str, limit: int = MAX_TOOL_CHARS) -> str:
     return text[:limit] + f"\n... (truncated, {len(text) - limit} more characters)"
 
 
+def _only_verdict(verdict) -> str:
+    """The verdict as a tool result may show it: AC, WA, TLE, RTE, CE or VE.
+
+    The judge's string can carry a parenthetical from a checker, the
+    interactor or the sandbox -- "WA (the tower is 9006 cm tall, not 1001 cm)"
+    gives away a secret test's input -- and it is stored that way, because the
+    analysis wants it. Every render method goes through this instead.
+    """
+    return (verdict or "?").split()[0].split("(")[0]
+
+
 class SubmissionStore:
     """The submissions of one run, in memory and appended to one JSONL file."""
 
@@ -100,7 +111,7 @@ class SubmissionStore:
                  "  id  verdict      at  lines  sha      approach"]
         for r in self.records:
             lines.append("  {:>2}  {:<7}  {:>5.1f}m  {:>5}  {}  {}".format(
-                r["id"], r["verdict"] or "?", r["elapsed_s"] / 60.0, r["code_lines"],
+                r["id"], _only_verdict(r["verdict"]), r["elapsed_s"] / 60.0, r["code_lines"],
                 r["code_sha256"][:7], r["approach"].replace("\n", " ")[:90]))
         lines += ["",
                   "Rows with the same sha are the same program byte for byte -- resubmitting "
@@ -134,7 +145,7 @@ class SubmissionStore:
                 "  id  verdict      at  lines  sha      approach"]
         for r in shown:
             head.append("  {:>2}  {:<7}  {:>5.1f}m  {:>5}  {}  {}".format(
-                r["id"], r["verdict"] or "?", r["elapsed_s"] / 60.0, r["code_lines"],
+                r["id"], _only_verdict(r["verdict"]), r["elapsed_s"] / 60.0, r["code_lines"],
                 r["code_sha256"][:7], r["approach"].replace("\n", " ")[:90]))
         head.append("")
         head.append("get_submission(id=N) returns the full source of any of them.")
@@ -150,7 +161,7 @@ class SubmissionStore:
         # CE that has scrolled out of the window can never be read again.
         ce = f"\n\nThe compiler said:\n{r['compile_error'][-2000:]}" if r["compile_error"] else ""
         return _clip(
-            f"Submission #{r['id']} -- {r['verdict']}, submitted at "
+            f"Submission #{r['id']} -- {_only_verdict(r['verdict'])}, submitted at "
             f"{r['elapsed_s'] / 60.0:.1f} min, {r['code_lines']} lines.\n"
             f"Approach you recorded: {r['approach']}\n\n"
             f"```cpp\n{r['code'].rstrip()}\n```{ce}")
@@ -162,12 +173,12 @@ class SubmissionStore:
         if rb is None:
             return self._missing(b)
         if ra["code_sha256"] == rb["code_sha256"]:
-            return (f"Submissions #{a} ({ra['verdict']}) and #{b} ({rb['verdict']}) are the "
-                    f"same program byte for byte.")
+            return (f"Submissions #{a} ({_only_verdict(ra['verdict'])}) and #{b} "
+                    f"({_only_verdict(rb['verdict'])}) are the same program byte for byte.")
         diff = list(difflib.unified_diff(
             ra["code"].splitlines(), rb["code"].splitlines(),
-            fromfile=f"submission {a} ({ra['verdict']})",
-            tofile=f"submission {b} ({rb['verdict']})", lineterm="", n=3))
+            fromfile=f"submission {a} ({_only_verdict(ra['verdict'])})",
+            tofile=f"submission {b} ({_only_verdict(rb['verdict'])})", lineterm="", n=3))
         changed = sum(1 for ln in diff if ln[:1] in "+-" and ln[:3] not in ("+++", "---"))
         return _clip(f"{changed} changed line(s) from #{a} to #{b}.\n\n" + "\n".join(diff))
 
@@ -188,7 +199,7 @@ class SubmissionStore:
                     where.append(f"    {i:>4}: {line.rstrip()[:160]}")
                     hits += 1
             if where:
-                out.append(f"  #{r['id']} ({r['verdict']}):\n" + "\n".join(where))
+                out.append(f"  #{r['id']} ({_only_verdict(r['verdict'])}):\n" + "\n".join(where))
         if not out:
             return (f"No submission matches `{pattern}`. "
                     f"({len(self.records)} submission(s) searched.)")
