@@ -1,0 +1,887 @@
+<title>Reasoning Graph Pilot</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky header with problem tabs; a three-column workspace (trace rail · graph canvas · detail
+   panel) that collapses to two columns, then one, as the screen narrows. Semantic colors carry node
+   state; the accent is reserved for selection and solution paths. */
+:root {
+  --bg: #f2f4f7; --surface: #ffffff; --surface-2: #e9edf2; --fg: #171b22; --muted: #5e6775; --line: #d7dde5;
+  --accent: #1f5f8b; --accent-bg: #d9e9f4;
+  --est: #2a8a58; --est-bg: #d4efdf;
+  --wrong: #c1402e; --wrong-bg: #f8dcd6;
+  --work: #b2741a; --work-bg: #fbe7c2;
+  --given: #6a4db5; --given-bg: #e7e0f7;
+  --absent: #c4cbd5; --absent-bg: #f0f2f5; --absent-fg: #8d96a4;
+  --node-bg: #e8eefc; --edge: #1f2937; --end-bg: #dcfce7; --code-bg: #fef3c7;
+  --stuck: #171b22; --ac: #1f7a46; --fail: #a33a2b;
+  --shadow: 0 1px 2px rgba(23, 27, 34, .06), 0 6px 18px rgba(23, 27, 34, .06);
+  --font-ui: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14171c; --surface: #1b1f26; --surface-2: #232931; --fg: #e6e9ee; --muted: #98a2b0; --line: #2e3640;
+    --accent: #72b4dc; --accent-bg: #1c3447;
+    --est: #5cc58d; --est-bg: #1b3a29;
+    --wrong: #f08b7a; --wrong-bg: #4a2521;
+    --work: #e2ad50; --work-bg: #44351a;
+    --given: #b19bee; --given-bg: #2d2748;
+    --absent: #3a414c; --absent-bg: #1e232a; --absent-fg: #6b7583;
+    --node-bg: #263246; --edge: #c2c9d3; --end-bg: #1d4a30; --code-bg: #4a3d16;
+    --stuck: #e6e9ee; --ac: #5cc58d; --fail: #f08b7a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 18px rgba(0, 0, 0, .35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14171c; --surface: #1b1f26; --surface-2: #232931; --fg: #e6e9ee; --muted: #98a2b0; --line: #2e3640;
+  --accent: #72b4dc; --accent-bg: #1c3447;
+  --est: #5cc58d; --est-bg: #1b3a29;
+  --wrong: #f08b7a; --wrong-bg: #4a2521;
+  --work: #e2ad50; --work-bg: #44351a;
+  --given: #b19bee; --given-bg: #2d2748;
+  --absent: #3a414c; --absent-bg: #1e232a; --absent-fg: #6b7583;
+  --node-bg: #263246; --edge: #c2c9d3; --end-bg: #1d4a30; --code-bg: #4a3d16;
+  --stuck: #e6e9ee; --ac: #5cc58d; --fail: #f08b7a;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 18px rgba(0, 0, 0, .35);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 14px; line-height: 1.45; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--accent); }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+code, .mono { font-family: var(--font-mono); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.app { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 24px; }
+
+/* header */
+.top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 24px; align-items: end; padding-block: 18px 10px; }
+.top h1 { font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
+.top .sub { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.top .intro { grid-column: 1 / -1; margin: 0; max-width: 78ch; color: var(--muted); font-size: 13px; }
+.totals { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; min-width: 96px; }
+.stat b { display: block; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+@media (max-width: 760px) { .top { grid-template-columns: 1fr; align-items: start; } .totals { justify-content: flex-start; } }
+
+/* tabs */
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: flex; gap: 6px; overflow-x: auto; padding-block: 8px; margin: 0 -4px; padding-inline: 4px; background: var(--bg); border-bottom: 1px solid var(--line); scrollbar-width: thin; }
+.tab { flex: 0 0 auto; display: grid; gap: 2px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; min-width: 190px; }
+.tab .t-title { font-weight: 700; }
+.tab .t-meta { color: var(--muted); font-size: 11.5px; font-family: var(--font-mono); }
+.tab[aria-selected="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* workspace */
+.work { display: grid; grid-template-columns: 272px minmax(0, 1fr) 400px; gap: 14px; padding-top: 14px; align-items: start; }
+@media (max-width: 1280px) { .work { grid-template-columns: 240px minmax(0, 1fr); } .detail { grid-column: 1 / -1; } }
+@media (max-width: 820px) { .work { grid-template-columns: 1fr; } .rail { order: 2; } .stage-wrap { order: 1; } .detail { order: 3; } }
+.rail, .detail { display: grid; gap: 12px; min-width: 0; }
+.block { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-width: 0; }
+.block h2 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+.block h3 { font-size: 14px; font-weight: 700; }
+.group-h { display: flex; justify-content: space-between; align-items: baseline; margin: 8px 0 4px; font-size: 12px; font-weight: 700; }
+.group-h:first-child { margin-top: 0; }
+.group-h .n { color: var(--muted); font-weight: 500; font-family: var(--font-mono); }
+.trace { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; width: 100%; text-align: left; background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 6px 8px; }
+.trace:hover { background: var(--surface-2); }
+.trace[aria-pressed="true"] { background: var(--accent-bg); border-color: var(--accent); }
+.trace .t-main { font-weight: 600; font-size: 13px; }
+.trace .t-sub { grid-column: 1 / -1; color: var(--muted); font-size: 11.5px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.chip { display: inline-block; font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; padding: 1px 6px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); white-space: nowrap; }
+.chip.ac { background: var(--est-bg); color: var(--ac); border-color: transparent; }
+.chip.fail { background: var(--wrong-bg); color: var(--fail); border-color: transparent; }
+.chip.stuck { background: var(--work-bg); color: var(--work); border-color: transparent; }
+.chip.given { background: var(--given-bg); color: var(--given); border-color: transparent; }
+.chip.end { background: var(--est-bg); color: var(--ac); border-color: transparent; }
+.chip.path { background: var(--accent-bg); color: var(--accent); border-color: transparent; }
+.chip.haz { background: var(--wrong-bg); color: var(--fail); border-color: transparent; }
+.pathbtn { display: grid; gap: 2px; width: 100%; text-align: left; background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 6px 8px; }
+.pathbtn:hover { background: var(--surface-2); }
+.pathbtn[aria-pressed="true"] { background: var(--accent-bg); border-color: var(--accent); }
+.pathbtn .p-id { font-family: var(--font-mono); font-weight: 600; font-size: 12.5px; }
+.pathbtn .p-txt { color: var(--muted); font-size: 11.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.radio { display: grid; gap: 6px; }
+.radio label { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; }
+.radio label small { display: block; color: var(--muted); font-size: 11.5px; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--accent); font-size: 12px; text-decoration: underline; }
+
+/* stage */
+.stage-wrap { display: grid; gap: 10px; min-width: 0; }
+.stagebar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+.summary { display: flex; flex-wrap: wrap; gap: 6px 10px; color: var(--muted); font-size: 12.5px; }
+.summary b { color: var(--fg); font-weight: 700; font-variant-numeric: tabular-nums; }
+.ctrls { display: flex; gap: 4px; }
+.ctrls button { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 4px 9px; font-size: 12.5px; font-weight: 600; }
+.ctrls button:hover { background: var(--surface-2); }
+.ctrls button[aria-pressed="true"] { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
+.canvas { position: relative; height: clamp(380px, 62vh, 860px); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; touch-action: none; cursor: grab; box-shadow: var(--shadow); }
+.canvas.dragging { cursor: grabbing; }
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+.graphsvg { display: block; }
+.graphsvg text { font-family: 'DejaVu Sans', Verdana, 'Bitstream Vera Sans', sans-serif; fill: var(--fg); }
+.graphsvg .node { cursor: pointer; }
+.graphsvg .node path, .graphsvg .node polygon { fill: var(--node-bg); stroke: var(--edge); transition: fill .15s, stroke .15s, opacity .15s; }
+.graphsvg .node path:not(:first-of-type) { fill: none; }
+.graphsvg .node[data-id="END"] path:first-of-type { fill: var(--end-bg); }
+.graphsvg .node[data-id="CODE"] path:first-of-type { fill: var(--code-bg); }
+.graphsvg .edge path { fill: none; stroke: var(--edge); transition: stroke .15s, opacity .15s; }
+.graphsvg .edge polygon { fill: var(--edge); stroke: var(--edge); }
+.graphsvg .edge text { fill: var(--muted); }
+.canvas .dim { opacity: .22; }
+.graphsvg .node.on-path path:first-of-type { fill: var(--accent-bg); stroke: var(--accent); stroke-width: 1.6; }
+.graphsvg .node.on-path.key path:first-of-type { stroke-width: 2.8; }
+.graphsvg .edge.on-path path { stroke: var(--accent); stroke-width: 2.2; }
+.graphsvg .edge.on-path polygon { fill: var(--accent); stroke: var(--accent); }
+.graphsvg .edge.on-path text { fill: var(--accent); font-weight: 700; }
+.mode-trace .graphsvg .node.st-absent path:first-of-type { fill: var(--absent-bg); stroke: var(--absent); }
+.mode-trace .graphsvg .node.st-absent text { fill: var(--absent-fg); }
+.mode-trace .graphsvg .node.st-established path:first-of-type { fill: var(--est-bg); stroke: var(--est); stroke-width: 1.5; }
+.mode-trace .graphsvg .node.st-wrong path:first-of-type { fill: var(--wrong-bg); stroke: var(--wrong); stroke-width: 1.5; }
+.mode-trace .graphsvg .node.st-working path:first-of-type { fill: var(--work-bg); stroke: var(--work); stroke-width: 1.5; }
+.mode-trace .graphsvg .node.given path:first-of-type { stroke: var(--given); stroke-width: 1.8; stroke-dasharray: 4 2; }
+.mode-trace .graphsvg .node.given.st-absent path:first-of-type { fill: var(--given-bg); }
+.mode-trace .graphsvg .node.given.st-absent text { fill: var(--fg); }
+.mode-trace .graphsvg .node.frontier path:first-of-type { stroke-dasharray: 2 2; stroke: var(--absent-fg); }
+.mode-trace .graphsvg .node.stuck path:first-of-type { stroke: var(--stuck); stroke-width: 3; stroke-dasharray: none; }
+.mode-trace .graphsvg .node[data-id="END"].reached path:first-of-type { fill: var(--est-bg); stroke: var(--est); stroke-width: 2; }
+.mode-trace .graphsvg .node[data-id="END"].reached path:not(:first-of-type) { stroke: var(--est); stroke-width: 2; }
+.mode-trace .graphsvg .node[data-id="CODE"].solved path:first-of-type { fill: var(--code-bg); stroke: var(--work); stroke-width: 2; }
+.mode-trace .graphsvg .edge.active path { stroke: var(--est); stroke-width: 2; }
+.mode-trace .graphsvg .edge.active polygon { fill: var(--est); stroke: var(--est); }
+.mode-trace .graphsvg .edge.active text { fill: var(--est); font-weight: 700; }
+.mode-trace .graphsvg .edge.to-wrong path { stroke: var(--wrong); stroke-dasharray: 3 2; stroke-width: 1.4; }
+.mode-trace .graphsvg .edge.to-wrong polygon { fill: var(--wrong); stroke: var(--wrong); }
+.mode-trace .graphsvg .edge.tripped path { stroke: var(--wrong); stroke-width: 2.4; }
+.mode-trace .graphsvg .edge.tripped polygon { fill: var(--wrong); stroke: var(--wrong); }
+.mode-trace .graphsvg .edge.tripped text { fill: var(--wrong); font-weight: 700; }
+.graphsvg .node.sel path:first-of-type { stroke: var(--accent) !important; stroke-width: 2.6 !important; filter: drop-shadow(0 0 4px var(--accent)); }
+.graphsvg .badge rect { fill: var(--stuck); }
+.graphsvg .badge text { fill: var(--surface); font-family: var(--font-mono); }
+.graphsvg .badge.b-given rect { fill: var(--given); }
+.graphsvg .badge.b-root rect { fill: var(--wrong); }
+.graphsvg .badge.b-key rect { fill: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 11.5px; color: var(--muted); align-items: center; }
+.legend .sw { display: inline-block; width: 14px; height: 10px; border-radius: 3px; border: 1.5px solid var(--edge); vertical-align: -1px; margin-right: 5px; background: var(--node-bg); }
+.legend .sw.est { background: var(--est-bg); border-color: var(--est); }
+.legend .sw.wrong { background: var(--wrong-bg); border-color: var(--wrong); }
+.legend .sw.work { background: var(--work-bg); border-color: var(--work); }
+.legend .sw.given { background: var(--given-bg); border-color: var(--given); border-style: dashed; }
+.legend .sw.absent { background: var(--absent-bg); border-color: var(--absent); }
+.legend .sw.stuck { border-color: var(--stuck); border-width: 2.5px; }
+.legend .sw.frontier { border-style: dotted; border-color: var(--absent-fg); }
+.legend .sw.path { background: var(--accent-bg); border-color: var(--accent); }
+.legend .sw.end { background: var(--end-bg); } .legend .sw.code { background: var(--code-bg); }
+.hint-empty { color: var(--muted); font-size: 12.5px; padding: 4px 0; }
+
+/* scrubber + timeline */
+.scrub { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.scrub label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; white-space: nowrap; }
+.scrub input[type=range] { width: 100%; accent-color: var(--accent); }
+.scrub .cp { grid-column: 1 / -1; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; font-size: 12.5px; }
+.scrub .cp .mono { color: var(--accent); font-weight: 600; }
+.scrub .cp .focus { color: var(--muted); }
+.timeline { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.timeline h2 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; margin-bottom: 6px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.timeline h2 span { text-transform: none; letter-spacing: 0; font-weight: 500; }
+.tl-scroll { overflow-x: auto; }
+.tl { border-collapse: separate; border-spacing: 2px; font-family: var(--font-mono); font-size: 11px; }
+.tl th { font-weight: 500; color: var(--muted); padding: 0 3px; white-space: nowrap; text-align: left; }
+.tl th.col { writing-mode: vertical-rl; transform: rotate(180deg); text-align: left; vertical-align: bottom; padding: 2px 0; cursor: pointer; }
+.tl th.col.cur, .tl th.col:hover { color: var(--accent); }
+.tl th.col.prog { font-weight: 700; }
+.tl th.row { cursor: pointer; } .tl th.row:hover { color: var(--accent); }
+.tl th.row.sel { color: var(--accent); font-weight: 700; }
+.tl td { width: 15px; height: 15px; border-radius: 3px; background: var(--absent-bg); cursor: pointer; }
+.tl td.s-established { background: var(--est); } .tl td.s-wrong { background: var(--wrong); } .tl td.s-working { background: var(--work); }
+.tl td.future { opacity: .3; }
+.tl td.cursel { outline: 2px solid var(--accent); outline-offset: -2px; }
+.tl .given-mark { color: var(--given); font-weight: 700; }
+.traj { font-family: var(--font-mono); letter-spacing: .08em; }
+.traj .c-established { color: var(--est); } .traj .c-wrong { color: var(--wrong); } .traj .c-working { color: var(--work); } .traj .c-absent { color: var(--absent-fg); }
+
+/* detail */
+.detail .head { display: grid; gap: 4px; }
+.detail .head .ttl { font-size: 16px; font-weight: 800; }
+.detail .head .meta { color: var(--muted); font-size: 12px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 10px; }
+.fact { background: var(--surface-2); border-radius: 8px; padding: 7px 9px; min-width: 0; }
+.fact span { display: block; color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; }
+.fact b { font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.fact.ok b { color: var(--ac); } .fact.bad b { color: var(--fail); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 13px; margin: 0; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.detail p { margin: 6px 0; font-size: 13px; }
+.detail details { margin-top: 8px; }
+.detail summary { cursor: pointer; font-weight: 600; font-size: 13px; color: var(--accent); }
+.detail pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: 11.5px; line-height: 1.4; background: var(--surface-2); border-radius: 8px; padding: 10px; max-height: 340px; overflow: auto; margin: 6px 0 0; }
+.ev { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; }
+.ev li { border-left: 3px solid var(--line); padding: 4px 0 4px 10px; font-size: 12.5px; }
+.ev li.wrong { border-color: var(--wrong); } .ev li.established { border-color: var(--est); } .ev li.working { border-color: var(--work); }
+.ev li.future { opacity: .45; }
+.ev .where { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.ev .state { font-family: var(--font-mono); font-size: 11px; font-weight: 600; }
+.ev .state.wrong { color: var(--wrong); } .ev .state.established { color: var(--est); } .ev .state.working { color: var(--work); }
+.ev blockquote { margin: 3px 0 0; padding: 5px 8px; background: var(--surface-2); border-radius: 6px; font-family: var(--font-mono); font-size: 11px; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 140px; overflow: auto; }
+.nodes-list { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 3px; }
+.nodes-list li { font-size: 12.5px; display: flex; gap: 6px; align-items: baseline; }
+.nodes-list button { background: none; border: 0; padding: 0; font-family: var(--font-mono); font-weight: 600; color: var(--accent); font-size: 12px; }
+.nodes-list .nm { color: var(--muted); }
+table.metrics { border-collapse: collapse; width: 100%; font-size: 12.5px; margin-top: 6px; }
+table.metrics td, table.metrics th { padding: 4px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+table.metrics th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+table.metrics td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
+.paths-ol { margin: 6px 0 0; padding-left: 0; list-style: none; display: grid; gap: 8px; }
+.paths-ol li { font-size: 12.5px; }
+.paths-ol .pid { font-family: var(--font-mono); font-weight: 700; color: var(--accent); margin-right: 6px; }
+.paths-ol .route { color: var(--muted); font-family: var(--font-mono); font-size: 11px; }
+.haz-ol { margin: 6px 0 0; padding-left: 0; list-style: none; display: grid; gap: 6px; font-size: 12.5px; }
+.haz-ol .hid { font-family: var(--font-mono); font-weight: 700; margin-right: 6px; }
+.note { color: var(--muted); font-size: 12px; }
+.diffbox { border: 1px dashed var(--given); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; margin-top: 8px; }
+
+/* tooltip */
+.tip .ta { margin-top: 6px; font-size: 11.5px; opacity: .85; }
+.tip { position: fixed; z-index: 50; max-width: 400px; background: var(--fg); color: var(--bg); padding: 8px 10px; border-radius: 8px; font-size: 12px; line-height: 1.4; pointer-events: none; box-shadow: var(--shadow); }
+.tip .tt { font-weight: 700; margin-bottom: 2px; }
+.tip .ts { font-family: var(--font-mono); font-size: 11px; opacity: .8; margin-top: 4px; }
+.tip .tq { margin-top: 4px; font-family: var(--font-mono); font-size: 10.5px; opacity: .85; white-space: pre-wrap; max-height: 90px; overflow: hidden; }
+footer { margin-top: 18px; color: var(--muted); font-size: 11.5px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>Reasoning Graph Pilot</h1>
+      <p class="sub">Four ICPC World Finals problems · 40 graded solver traces · ReasoningGraph Ver2</p>
+    </div>
+    <div class="totals" id="totals"></div>
+    <p class="intro">Each graph is an AND–OR graph of intermediate conclusions for one problem, built by an explorer model from the statement alone; a route into <b>END</b> is a solution family whose program the judge accepted, and the <b>END → CODE</b> edge carries the implementation hazards. A grader then reads each solver trace and marks every node <i>established</i>, <i>wrong</i>, <i>working</i> or <i>absent</i>, each with a verbatim quote. Pick a trace to see the path it took through the graph and where it got stuck. Hover a node for its full statement, click it for the accept criteria and the quoted evidence; drag to pan, scroll to zoom.</p>
+  </header>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Problems"></nav>
+  <main class="work" id="work">
+    <aside class="rail">
+      <section class="block">
+        <h2>Traces</h2>
+        <div id="traces"></div>
+      </section>
+      <section class="block">
+        <h2>Solution paths</h2>
+        <div id="paths"></div>
+      </section>
+      <section class="block">
+        <h2>Grading</h2>
+        <div class="radio" id="cohorts"></div>
+      </section>
+    </aside>
+    <section class="stage-wrap">
+      <div class="stagebar">
+        <div class="summary" id="summary"></div>
+        <div class="ctrls">
+          <button type="button" id="btn-fit" title="Fit the graph to the canvas">Fit</button>
+          <button type="button" id="btn-100" title="Actual size">1:1</button>
+          <button type="button" id="btn-in" aria-label="Zoom in">+</button>
+          <button type="button" id="btn-out" aria-label="Zoom out">−</button>
+          <button type="button" id="btn-labels" aria-pressed="false" title="Put the full node statements inside the boxes (the graph.png layout)">Full text</button>
+          <button type="button" id="btn-clear" title="Show the full figure with nothing selected">Full figure</button>
+        </div>
+      </div>
+      <div class="canvas" id="canvas"><div class="stage" id="stage"></div></div>
+      <div class="legend" id="legend"></div>
+      <div class="scrub" id="scrub" hidden>
+        <label for="scrubber">Checkpoint</label>
+        <input type="range" id="scrubber" min="1" max="1" value="1">
+        <div class="cp" id="cp-info"></div>
+      </div>
+      <div class="timeline" id="timeline" hidden></div>
+    </section>
+    <aside class="detail" id="detail"></aside>
+  </main>
+  <footer id="foot"></footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script id="data" type="application/json">/*__DATA__*/</script>
+<script>
+(function () {
+  'use strict';
+  const DATA = JSON.parse(document.getElementById('data').textContent);
+  const SYM = { '+': 'established', 'x': 'wrong', '~': 'working', '.': 'absent' };
+  const RANK = { wrong: 3, established: 2, working: 1, absent: 0 };
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const NS = 'http://www.w3.org/2000/svg';
+
+  const S = { pi: 0, cohort: 'pilot', run: null, path: null, node: null, t: null, full: false };
+  let P = null;          // current problem
+  let G = null;          // indexed svg: nodeEls, edges, byId
+  const view = { x: 0, y: 0, k: 1 };
+  let viewBox = [0, 0, 100, 100];
+
+  // ---------- data helpers ----------
+  function cohortData() { return P.cohorts[S.cohort] || P.cohorts.pilot || Object.values(P.cohorts)[0]; }
+  function runs() { return cohortData().runs; }
+  function currentRun() { return S.run ? runs().find((r) => r.label === S.run) || null : null; }
+  function nodeById(id) { return G.byId.get(id); }
+  function nodeName(id) { const n = nodeById(id); return n ? n.name : id; }
+  function pathOfKey(key) { return P.paths.find((p) => p.key_node === key); }
+
+  function statesAt(run, t) {
+    const st = {}, cnt = {};
+    for (const [nid, r] of Object.entries(run.results)) {
+      let s = 'absent', w = 0, k = 0;
+      const traj = t == null ? r.trajectory : r.trajectory.slice(0, t);
+      for (const ch of traj) {
+        const v = SYM[ch] || 'absent';
+        if (v !== 'absent') s = v;
+        if (v === 'wrong') w++; else if (v === 'working') k++;
+      }
+      st[nid] = s; cnt[nid] = { wrong: w, working: k };
+    }
+    return { st, cnt };
+  }
+  function closure(run, t) {
+    const { st, cnt } = statesAt(run, t);
+    const given = new Set(run.given || []);
+    const held = new Set(given);
+    for (const [nid, s] of Object.entries(st)) if (s === 'established') held.add(nid);
+    const supported = (n) => (n.routes || []).some((r) => r.every((x) => held.has(x)));
+    const frontier = P.nodes.filter((n) => !held.has(n.id) && supported(n)).map((n) => n.id);
+    const routesOk = P.key_routes.map((keys, i) => keys.every((k) => held.has(k)) ? i : -1).filter((i) => i >= 0);
+    let stuck = null, best = null;
+    for (const nid of frontier) {
+      const score = 2 * cnt[nid].wrong + cnt[nid].working;
+      if (score <= 0) continue;
+      const n = nodeById(nid);
+      const key = [score, -n.depth, -n.index];
+      if (!best || key[0] > best[0] || (key[0] === best[0] && (key[1] > best[1] || (key[1] === best[1] && key[2] > best[2])))) { best = key; stuck = nid; }
+    }
+    const wrong = new Set(Object.entries(st).filter(([, s]) => s === 'wrong').map(([k]) => k));
+    const roots = P.nodes.filter((n) => wrong.has(n.id) && !(n.routes || []).some((r) => r.some((x) => wrong.has(x)))).map((n) => n.id);
+    return { st, cnt, given, held, frontier, routesOk, stuck, roots };
+  }
+  function classLabel(cls) {
+    if (!cls) return '';
+    if (cls === 'END+AC') return 'END + AC';
+    if (cls.startsWith('noEND+fail/stuck:')) return 'stuck at ' + cls.split(':')[1];
+    if (cls === 'noEND+fail/stalled') return 'stalled (never entered the graph)';
+    if (cls.startsWith('END+fail/hazard')) return 'END, tripped ' + cls.split(':')[1];
+    return cls;
+  }
+  function modelShort(m) { return m === 'qwen' ? 'Qwen' : m === 'nemotron' ? 'Nemotron' : m; }
+
+  // ---------- rendering: tabs, totals ----------
+  function renderTabs() {
+    const el = $('tabs'); el.innerHTML = '';
+    DATA.problems.forEach((p, i) => {
+      const c = p.cohorts[S.cohort] || p.cohorts.pilot;
+      const m = (c && c.report && c.report.metrics) || {};
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'tab'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(i === S.pi));
+      b.innerHTML = `<span class="t-title">${esc(p.title)}</span><span class="t-meta">${esc(p.problem)} · ${p.nodes.length} nodes · ${p.paths.length} paths</span>` +
+        `<span class="t-meta">sound ${esc(m.soundness_n || '–')} · discr. ${esc(m.discrimination_n || '–')}</span>`;
+      b.addEventListener('click', () => selectProblem(i));
+      el.appendChild(b);
+    });
+  }
+  function renderTotals() {
+    let acEnd = 0, ac = 0, failNo = 0, fail = 0, nodes = 0, paths = 0;
+    for (const p of DATA.problems) {
+      nodes += p.nodes.length; paths += p.paths.length;
+      const c = p.cohorts[S.cohort] || p.cohorts.pilot;
+      for (const r of c.runs) {
+        if (r.solved) { ac++; if (r.reached_end) acEnd++; }
+        else { fail++; if (!r.reached_end || (r.hazards_tripped || []).length) failNo++; }
+      }
+    }
+    $('totals').innerHTML =
+      `<div class="stat"><b>${DATA.problems.length}</b><span>graphs</span></div>` +
+      `<div class="stat"><b>${nodes}</b><span>nodes</span></div>` +
+      `<div class="stat"><b>${paths}</b><span>judge-verified paths</span></div>` +
+      `<div class="stat"><b>${acEnd}/${ac}</b><span>AC traces reach END</span></div>` +
+      `<div class="stat"><b>${failNo}/${fail}</b><span>failed traces stopped short</span></div>`;
+  }
+
+  // ---------- rendering: rail ----------
+  function renderTraces() {
+    const el = $('traces'); el.innerHTML = '';
+    const rs = runs();
+    const groups = [['Accepted', rs.filter((r) => r.solved)], ['Failed', rs.filter((r) => !r.solved)]];
+    for (const [name, list] of groups) {
+      const h = document.createElement('div'); h.className = 'group-h';
+      h.innerHTML = `<span>${name}</span><span class="n">${list.length}</span>`; el.appendChild(h);
+      for (const r of list) {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'trace';
+        b.setAttribute('aria-pressed', String(S.run === r.label));
+        const via = r.reached_end ? (r.end_routes_satisfied || []).map((i) => (P.paths[i - 1] || {}).id || 'route ' + i).join(', ') : '';
+        const chips = [`<span class="chip ${r.solved ? 'ac' : 'fail'}">${r.solved ? 'AC' : 'fail'}</span>`];
+        if (r.insight) chips.push(`<span class="chip given">${r.given.length} given</span>`);
+        if (r.reached_end) chips.push(`<span class="chip end">END via ${esc(via)}</span>`);
+        else if (r.stuck) chips.push(`<span class="chip stuck">stuck ${esc(r.stuck)}</span>`);
+        else chips.push(`<span class="chip">stalled</span>`);
+        if ((r.hazards_tripped || []).length) chips.push(`<span class="chip haz">${esc(r.hazards_tripped.join(' '))}</span>`);
+        b.innerHTML = `<span class="t-main">${esc(modelShort(r.model))} · run ${esc(r.run)}</span><span class="chip">${esc(r.condition_label)}</span>` +
+          `<span class="t-sub">${chips.join('')}</span>`;
+        b.addEventListener('click', () => selectRun(S.run === r.label ? null : r.label));
+        el.appendChild(b);
+      }
+    }
+  }
+  function renderPaths() {
+    const el = $('paths'); el.innerHTML = '';
+    for (const p of P.paths) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'pathbtn';
+      b.setAttribute('aria-pressed', String(S.path === p.id));
+      b.innerHTML = `<span class="p-id">${esc(p.id)} → ${esc(p.key_node)}${p.source === 'editorial' ? ' <span class="chip">editorial</span>' : ''}</span><span class="p-txt">${esc(p.approach)}</span>`;
+      b.addEventListener('click', () => selectPath(S.path === p.id ? null : p.id));
+      el.appendChild(b);
+    }
+  }
+  function renderCohorts() {
+    const el = $('cohorts'); el.innerHTML = '';
+    const available = Object.keys(DATA.cohort_names).filter((k) => P.cohorts[k]);
+    el.closest('.block').hidden = available.length < 2;
+    if (!P.cohorts[S.cohort]) S.cohort = available[0];
+    const desc = { pilot: 'The grader read the windows as they are, judge verdicts included.',
+                   pilot_blind: 'Judge results removed from the windows; the grader was told no verdict.' };
+    for (const [key, name] of Object.entries(DATA.cohort_names)) {
+      if (!P.cohorts[key]) continue;
+      const id = 'cohort-' + key;
+      const lab = document.createElement('label');
+      lab.innerHTML = `<input type="radio" name="cohort" id="${id}" value="${key}" ${S.cohort === key ? 'checked' : ''}><span>${esc(name)} grading<small>${esc(desc[key] || '')}</small></span>`;
+      lab.querySelector('input').addEventListener('change', () => { S.cohort = key; renderAll(); });
+      el.appendChild(lab);
+    }
+  }
+  function renderSummary() {
+    const c = cohortData(); const m = (c.report && c.report.metrics) || {};
+    const ac = c.runs.filter((r) => r.solved).length, fail = c.runs.length - ac;
+    $('summary').innerHTML =
+      `<span><b>${P.nodes.length}</b> nodes</span><span><b>${P.paths.length}</b> paths</span><span><b>${P.hazards.length}</b> hazards</span>` +
+      `<span><b>${ac}</b> AC + <b>${fail}</b> failed traces</span>` +
+      `<span>soundness <b>${esc(m.soundness_n || '–')}</b></span><span>discrimination <b>${esc(m.discrimination_n || '–')}</b></span>`;
+  }
+  function renderLegend() {
+    const run = currentRun();
+    const L = $('legend');
+    if (run) {
+      L.innerHTML = `<span><i class="sw est"></i>established by the solver</span><span><i class="sw given"></i>given by the hint</span>` +
+        `<span><i class="sw wrong"></i>wrong</span><span><i class="sw work"></i>working on it</span><span><i class="sw absent"></i>absent</span>` +
+        `<span><i class="sw frontier"></i>frontier (prerequisites held)</span><span><i class="sw stuck"></i>stuck node</span>`;
+    } else if (S.path) {
+      L.innerHTML = `<span><i class="sw path"></i>on ${esc(S.path)}</span><span><i class="sw"></i>other nodes</span><span><i class="sw end"></i>END</span><span><i class="sw code"></i>CODE (hazards on the edge)</span>`;
+    } else {
+      L.innerHTML = `<span><i class="sw"></i>intermediate conclusion (arrows = derives from)</span><span><i class="sw end"></i>END: dashed edges are solution families P1…</span><span><i class="sw code"></i>CODE: the END → CODE edge lists hazards</span>` +
+        (S.full ? `<span>Same layout as graph.png.</span>` : `<span>Hover a node for its statement; click it for the accept criteria.</span>`);
+    }
+  }
+
+  // ---------- svg ----------
+  function mountSvg() {
+    const stage = $('stage');
+    stage.innerHTML = S.full ? P.svg_full : P.svg;
+    const svg = stage.querySelector('svg');
+    svg.classList.add('graphsvg');
+    viewBox = svg.getAttribute('viewBox').split(/[\s,]+/).map(Number);
+    svg.setAttribute('width', viewBox[2]); svg.setAttribute('height', viewBox[3]);
+    const nodeEls = new Map(), edges = [];
+    svg.querySelectorAll('g.node').forEach((g) => {
+      const id = g.querySelector('title').textContent.trim();
+      g.dataset.id = id; nodeEls.set(id, g);
+    });
+    svg.querySelectorAll('g.edge').forEach((g) => {
+      const t = g.querySelector('title').textContent.trim();
+      const [u, v] = t.split('->').map((s) => s.trim());
+      const lbl = g.querySelector('text');
+      g.dataset.u = u; g.dataset.v = v;
+      edges.push({ u, v, g, label: lbl ? lbl.textContent.trim() : '' });
+    });
+    G = { svg, nodeEls, edges, byId: new Map(P.nodes.map((n) => [n.id, n])) };
+    fit();
+  }
+  function clearBadges() { G.svg.querySelectorAll('.badge').forEach((b) => b.remove()); }
+  function addBadge(g, text, cls, side) {
+    const shape = g.querySelector('path, polygon'); if (!shape) return;
+    let b; try { b = shape.getBBox(); } catch (e) { return; }
+    const grp = document.createElementNS(NS, 'g'); grp.setAttribute('class', 'badge ' + cls);
+    const w = text.length * 4.6 + 8, h = 11;
+    const x = side === 'left' ? b.x - 3 : b.x + b.width - w + 3, y = b.y - h / 2 - 1;
+    const r = document.createElementNS(NS, 'rect');
+    r.setAttribute('x', x); r.setAttribute('y', y); r.setAttribute('width', w); r.setAttribute('height', h); r.setAttribute('rx', 3);
+    const t = document.createElementNS(NS, 'text');
+    t.textContent = text; t.setAttribute('x', x + w / 2); t.setAttribute('y', y + 8); t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('font-size', '7'); t.setAttribute('font-weight', '600');
+    grp.append(r, t); g.appendChild(grp);
+  }
+  function paint() {
+    const canvas = $('canvas');
+    const run = currentRun();
+    clearBadges();
+    canvas.classList.toggle('mode-trace', !!run);
+    canvas.classList.toggle('mode-path', !run && !!S.path);
+    if (run) {
+      const C = closure(run, S.t);
+      const reached = C.routesOk.length > 0;
+      const solved = run.solved && (S.t == null || S.t >= run.checkpoints.length);
+      const tripped = new Set(run.hazards_tripped || []);
+      for (const [id, g] of G.nodeEls) {
+        const cls = ['node'];
+        if (id === 'END') { cls.push(reached ? 'reached' : 'st-absent'); }
+        else if (id === 'CODE') { cls.push(solved ? 'solved' : 'st-absent'); }
+        else {
+          cls.push('st-' + (C.st[id] || 'absent'));
+          if (C.given.has(id)) cls.push('given');
+          if (C.frontier.includes(id)) cls.push('frontier');
+          if (C.stuck === id) cls.push('stuck');
+        }
+        if (S.node === id) cls.push('sel');
+        g.setAttribute('class', cls.join(' '));
+      }
+      for (const e of G.edges) {
+        let cls = 'edge dim';
+        if (e.v === 'END') {
+          const pi = P.paths.findIndex((p) => p.id === e.label);
+          const ok = pi >= 0 ? C.routesOk.includes(pi) : C.held.has(e.u);
+          cls = ok ? 'edge active' : 'edge dim';
+        } else if (e.u === 'END') {
+          cls = solved ? 'edge active' : (tripped.size && (S.t == null || S.t >= run.checkpoints.length)) ? 'edge tripped' : 'edge dim';
+        } else if (C.held.has(e.u) && C.held.has(e.v)) cls = 'edge active';
+        else if (C.held.has(e.u) && C.st[e.v] === 'wrong') cls = 'edge to-wrong';
+        e.g.setAttribute('class', cls);
+      }
+      for (const id of C.given) { const g = G.nodeEls.get(id); if (g) addBadge(g, 'given', 'b-given', 'left'); }
+      if (C.stuck) addBadge(G.nodeEls.get(C.stuck), C.roots.includes(C.stuck) ? 'stuck · root' : 'stuck', 'b-stuck', 'right');
+      for (const id of C.roots) if (id !== C.stuck) addBadge(G.nodeEls.get(id), 'root', 'b-root', 'right');
+    } else if (S.path) {
+      const p = P.paths.find((x) => x.id === S.path);
+      const on = new Set(p.end_route); on.add('END'); on.add('CODE');
+      for (const [id, g] of G.nodeEls) {
+        const cls = ['node'];
+        if (on.has(id)) { cls.push('on-path'); if (id === p.key_node) cls.push('key'); } else cls.push('dim');
+        if (S.node === id) cls.push('sel');
+        g.setAttribute('class', cls.join(' '));
+      }
+      for (const e of G.edges) {
+        let ok = false;
+        if (e.v === 'END') ok = e.label === p.id || (!e.label && e.u === p.key_node);
+        else if (e.u === 'END') ok = true;
+        else ok = on.has(e.u) && on.has(e.v);
+        e.g.setAttribute('class', ok ? 'edge on-path' : 'edge dim');
+      }
+      addBadge(G.nodeEls.get(p.key_node), 'key node', 'b-key', 'right');
+    } else {
+      for (const [id, g] of G.nodeEls) g.setAttribute('class', 'node' + (S.node === id ? ' sel' : ''));
+      for (const e of G.edges) e.g.setAttribute('class', 'edge');
+    }
+  }
+
+  // ---------- pan / zoom ----------
+  function applyView() { $('stage').style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.k})`; }
+  function fit() {
+    const c = $('canvas'); const cw = c.clientWidth, ch = c.clientHeight;
+    const k = Math.min((cw - 24) / viewBox[2], (ch - 24) / viewBox[3]);
+    view.k = Math.max(0.05, k); view.x = (cw - viewBox[2] * view.k) / 2; view.y = (ch - viewBox[3] * view.k) / 2; applyView();
+  }
+  function zoomBy(f, cx, cy) {
+    const c = $('canvas');
+    if (cx == null) { cx = c.clientWidth / 2; cy = c.clientHeight / 2; }
+    const k2 = Math.min(8, Math.max(0.05, view.k * f));
+    view.x = cx - (cx - view.x) * (k2 / view.k); view.y = cy - (cy - view.y) * (k2 / view.k); view.k = k2; applyView();
+  }
+  function centerOn(id) {
+    const g = G.nodeEls.get(id); if (!g) return;
+    const shape = g.querySelector('path, polygon'); let b; try { b = shape.getBBox(); } catch (e) { return; }
+    const c = $('canvas');
+    const nx = (b.x + b.width / 2) * view.k, ny = (b.y + b.height / 2) * view.k;
+    view.x = c.clientWidth / 2 - nx; view.y = c.clientHeight / 2 - ny; applyView();
+  }
+  function setupCanvas() {
+    const c = $('canvas');
+    const pointers = new Map(); let start = null, moved = false, pinch = null;
+    c.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const r = c.getBoundingClientRect();
+      zoomBy(Math.exp(-e.deltaY * 0.0015), e.clientX - r.left, e.clientY - r.top);
+    }, { passive: false });
+    c.addEventListener('pointerdown', (e) => {
+      try { c.setPointerCapture(e.pointerId); } catch (err) { /* synthetic or stale pointer */ }
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size === 1) { start = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y, target: e.target }; moved = false; }
+      if (pointers.size === 2) { const [a, b] = [...pointers.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), k: view.k }; }
+      c.classList.add('dragging');
+    });
+    c.addEventListener('pointermove', (e) => {
+      if (!pointers.has(e.pointerId)) { hoverTip(e); return; }
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size === 2 && pinch) {
+        const [a, b] = [...pointers.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y);
+        const r = c.getBoundingClientRect(); const mx = (a.x + b.x) / 2 - r.left, my = (a.y + b.y) / 2 - r.top;
+        const k2 = Math.min(8, Math.max(0.05, pinch.k * d / pinch.d));
+        view.x = mx - (mx - view.x) * (k2 / view.k); view.y = my - (my - view.y) * (k2 / view.k); view.k = k2; applyView();
+        moved = true; return;
+      }
+      if (start) {
+        const dx = e.clientX - start.x, dy = e.clientY - start.y;
+        if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+        view.x = start.vx + dx; view.y = start.vy + dy; applyView();
+      }
+    });
+    const up = (e) => {
+      pointers.delete(e.pointerId);
+      if (pointers.size < 2) pinch = null;
+      if (pointers.size === 0) {
+        c.classList.remove('dragging');
+        if (start && !moved) {
+          const g = start.target.closest && start.target.closest('g.node');
+          if (g && g.dataset.id !== 'END' && g.dataset.id !== 'CODE') selectNode(S.node === g.dataset.id ? null : g.dataset.id);
+          else if (!g) selectNode(null);
+        }
+        start = null;
+      }
+    };
+    c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up);
+    c.addEventListener('pointerleave', () => hideTip());
+    c.addEventListener('dblclick', () => fit());
+    $('btn-fit').addEventListener('click', fit);
+    $('btn-100').addEventListener('click', () => { view.k = 1; view.x = 12; view.y = 12; applyView(); });
+    $('btn-in').addEventListener('click', () => zoomBy(1.25));
+    $('btn-out').addEventListener('click', () => zoomBy(0.8));
+    $('btn-clear').addEventListener('click', () => { S.run = null; S.path = null; S.node = null; S.t = null; renderAll(); });
+    $('btn-labels').addEventListener('click', () => {
+      S.full = !S.full;
+      const b = $('btn-labels'); b.setAttribute('aria-pressed', String(S.full)); b.textContent = S.full ? 'Compact labels' : 'Full text';
+      mountSvg(); paint(); renderLegend();
+    });
+    window.addEventListener('resize', fit);
+  }
+
+  // ---------- tooltip ----------
+  function hoverTip(e) {
+    const g = e.target.closest && e.target.closest('g.node');
+    const tip = $('tip');
+    if (!g) { hideTip(); return; }
+    const id = g.dataset.id;
+    let html = '';
+    if (id === 'END') html = `<div class="tt">END · complete solution</div><div>${esc(P.end.statement || '')}</div>`;
+    else if (id === 'CODE') html = `<div class="tt">CODE · accepted program</div><div>Hazards on the way: ${esc(P.hazards.map((h) => h.id).join(', ') || 'none')}</div>`;
+    else {
+      const n = nodeById(id); if (!n) return;
+      html = `<div class="tt">${esc(n.id)} · ${esc(n.name)}</div><div>${esc(n.statement)}</div>`;
+      const run = currentRun();
+      if (run) {
+        const C = closure(run, S.t);
+        const s = C.given.has(id) && C.st[id] === 'absent' ? 'given by the hint' : C.st[id] + (C.given.has(id) ? ' (also given)' : '');
+        html += `<div class="ts">${esc(s)}${C.stuck === id ? ' · stuck node' : ''} · trajectory ${esc(run.results[id].trajectory)}</div>`;
+        const items = [...run.results[id].claims, ...run.results[id].evidence].filter((it) => S.t == null || run.checkpoints.findIndex((c) => c.id === it.checkpoint) < S.t);
+        const last = items.sort((a, b) => run.checkpoints.findIndex((c) => c.id === a.checkpoint) - run.checkpoints.findIndex((c) => c.id === b.checkpoint)).pop();
+        if (last) html += `<div class="tq">${esc(last.state)} @ ${esc(last.where)}: ${esc(last.claim || '')}</div>`;
+      } else {
+        html += `<div class="ts">${esc(n.kind)} · depth ${n.depth} · from ${esc(n.routes.map((r) => r.length ? r.join('+') : 'statement').join(' | '))}</div>` +
+          `<div class="ta"><b>Accept.</b> ${esc(n.accept)}</div>`;
+      }
+    }
+    tip.innerHTML = html; tip.hidden = false;
+    const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = e.clientX + pad, y = e.clientY + pad;
+    if (x + w > window.innerWidth - 8) x = e.clientX - w - pad;
+    if (y + h > window.innerHeight - 8) y = e.clientY - h - pad;
+    tip.style.left = Math.max(4, x) + 'px'; tip.style.top = Math.max(4, y) + 'px';
+  }
+  function hideTip() { $('tip').hidden = true; }
+
+  // ---------- scrubber + timeline ----------
+  function renderScrub() {
+    const run = currentRun(); const box = $('scrub'), tl = $('timeline');
+    if (!run) { box.hidden = true; tl.hidden = true; return; }
+    const K = run.checkpoints.length; const sl = $('scrubber');
+    sl.max = K; sl.value = S.t == null ? K : S.t;
+    sl.oninput = () => { S.t = Number(sl.value) >= K ? null : Number(sl.value); paint(); renderScrub(); renderDetail(); };
+    const t = S.t == null ? K : S.t; const cp = run.checkpoints[t - 1];
+    const kind = cp.kind === 'program' ? 'program' : 'window';
+    $('cp-info').innerHTML = `<span class="mono">${esc(cp.id)}</span><span>${t} / ${K} · ${kind}, round ${esc((cp.rounds || []).join(', '))}${S.t == null ? ' · final state' : ''}</span>` +
+      (cp.focus ? `<span class="focus">${esc(cp.focus)}</span>` : (cp.kind === 'program' ? `<span class="focus">${esc(programLine(run, cp))}</span>` : ''));
+    box.hidden = false;
+    // timeline matrix
+    const touched = P.nodes.filter((n) => /[^.]/.test(run.results[n.id].trajectory) || (run.given || []).includes(n.id));
+    let h = `<h2><span style="text-transform:uppercase;letter-spacing:.06em;font-weight:700">Node states over the checkpoints read</span><span>${touched.length} of ${P.nodes.length} nodes touched · click a column to scrub, a cell for its quote</span></h2><div class="tl-scroll"><table class="tl"><thead><tr><th></th>`;
+    run.checkpoints.forEach((c, i) => { h += `<th class="col ${c.kind === 'program' ? 'prog' : ''} ${i + 1 === t ? 'cur' : ''}" data-t="${i + 1}" title="${esc(c.focus || programLine(run, c))}">${esc(c.id)}</th>`; });
+    h += '</tr></thead><tbody>';
+    for (const n of touched) {
+      const r = run.results[n.id];
+      h += `<tr><th class="row ${S.node === n.id ? 'sel' : ''}" data-node="${n.id}" title="${esc(n.name)}">${n.id}${(run.given || []).includes(n.id) ? ' <span class="given-mark" title="given by the hint">g</span>' : ''}</th>`;
+      [...r.trajectory].forEach((ch, i) => {
+        const s = SYM[ch] || 'absent';
+        h += `<td class="s-${s} ${i + 1 > t ? 'future' : ''} ${S.node === n.id && i + 1 === t ? 'cursel' : ''}" data-node="${n.id}" data-t="${i + 1}" title="${n.id} @ ${esc(run.checkpoints[i].id)}: ${s}"></td>`;
+      });
+      h += '</tr>';
+    }
+    h += '</tbody></table></div>';
+    tl.innerHTML = h; tl.hidden = false;
+    tl.querySelectorAll('th.col').forEach((th) => th.addEventListener('click', () => { const v = Number(th.dataset.t); S.t = v >= K ? null : v; paint(); renderScrub(); renderDetail(); }));
+    tl.querySelectorAll('th.row').forEach((th) => th.addEventListener('click', () => selectNode(th.dataset.node, true)));
+    tl.querySelectorAll('td').forEach((td) => td.addEventListener('click', () => { const v = Number(td.dataset.t); S.t = v >= K ? null : v; S.node = td.dataset.node; paint(); renderScrub(); renderDetail(); centerOn(S.node); }));
+  }
+  function programLine(run, cp) {
+    const m = /^P(\d+)$/.exec(cp.id); if (!m) return '';
+    const pr = (run.programs || []).find((p) => String(p.id) === m[1]);
+    return pr ? `program #${pr.id} (${pr.role}) · verdict ${pr.verdict}` : '';
+  }
+
+  // ---------- detail ----------
+  function trajHtml(traj) { return `<span class="traj">${[...traj].map((c) => `<span class="c-${SYM[c] || 'absent'}">${esc(c)}</span>`).join('')}</span>`; }
+  function nodeLinks(ids) {
+    if (!ids.length) return '<p class="note">none</p>';
+    return `<ul class="nodes-list">${ids.map((id) => `<li><button type="button" data-node="${id}">${id}</button><span class="nm">${esc(nodeName(id))}</span></li>`).join('')}</ul>`;
+  }
+  function renderDetail() {
+    const el = $('detail'); const run = currentRun(); let h = '';
+    if (run) h += runCard(run);
+    else if (S.path) h += pathCard(P.paths.find((p) => p.id === S.path));
+    else h += problemCard();
+    if (S.node) h += nodeCard(S.node, run);
+    el.innerHTML = h;
+    el.querySelectorAll('button[data-node]').forEach((b) => b.addEventListener('click', () => selectNode(b.dataset.node, true)));
+    el.querySelectorAll('button[data-path]').forEach((b) => b.addEventListener('click', () => selectPath(b.dataset.path)));
+  }
+  function problemCard() {
+    const c = cohortData(); const m = (c.report && c.report.metrics) || {};
+    let h = `<section class="block"><div class="head"><div class="ttl">${esc(P.title)}</div><div class="meta"><span class="mono">${esc(P.problem)}</span><span>graph ${esc(P.status)}</span><span class="mono">v ${esc(P.version)}</span><span>explorer ${esc(P.provenance.model || '')}</span></div></div>`;
+    h += `<div class="facts"><div class="fact"><span>nodes</span><b>${P.nodes.length}</b></div><div class="fact"><span>END routes</span><b>${P.paths.length}</b></div><div class="fact"><span>hazards</span><b>${P.hazards.length}</b></div>` +
+      `<div class="fact ${m.soundness === 1 ? 'ok' : ''}"><span>soundness</span><b>${esc(m.soundness_n || '–')}</b></div><div class="fact ${m.discrimination === 1 ? 'ok' : ''}"><span>discrimination</span><b>${esc(m.discrimination_n || '–')}</b></div></div>`;
+    h += `<p class="note">Soundness: accepted traces that reach END. Discrimination: failed traces that do not reach END (or trip a named hazard). Both from the grading of the ${c.runs.length} traces listed on the left.</p>`;
+    if (m.classes) {
+      h += `<table class="metrics"><thead><tr><th>Run class</th><th>runs</th></tr></thead><tbody>` +
+        Object.entries(m.classes).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<tr><td>${esc(classLabel(k))}${k.includes('stuck:') ? ` <span class="nm note">${esc(nodeName(k.split(':')[1]))}</span>` : ''}</td><td class="num">${v}</td></tr>`).join('') + '</tbody></table>';
+    }
+    h += `<details><summary>Problem statement as shown to the solver</summary><pre>${esc(P.statement)}</pre></details></section>`;
+    h += `<section class="block"><h2>Solution paths (each program accepted by the judge)</h2><ol class="paths-ol">` + P.paths.map((p) =>
+      `<li><button type="button" class="linkbtn pid" data-path="${p.id}">${p.id}</button>${esc(p.approach)}<div class="route">${esc(p.end_route.join(' → '))} → END · key ${esc(p.key_node)}${p.source === 'editorial' ? ' · from the editorial' : ''}${p.tests ? ` · AC on ${p.tests} tests` : ''}</div></li>`).join('') + '</ol>';
+    if (P.editorial && P.editorial.covered === false) h += `<p class="note">The explorer did not find the editorial's approach on its own; an integrator added it as ${esc(P.editorial.path)} (new nodes ${esc((P.editorial.new_nodes || []).join(', '))}).</p>`;
+    else if (P.editorial && P.editorial.covered) h += `<p class="note">The editorial's approach was found among the explored paths.</p>`;
+    h += '</section>';
+    h += `<section class="block"><h2>Hazards on END → CODE</h2><ol class="haz-ol">` + P.hazards.map((z) => `<li><span class="hid">${esc(z.id)}</span>${esc(z.statement)}</li>`).join('') + '</ol></section>';
+    return h;
+  }
+  function pathCard(p) {
+    let h = `<section class="block"><div class="head"><div class="ttl">${esc(p.id)} · key node ${esc(p.key_node)}</div><div class="meta"><span>${p.source === 'editorial' ? 'added from the editorial by the integrator' : 'found by the explorer from the statement'}</span>${p.judge ? `<span class="chip ac">${esc(p.judge)}${p.tests ? ` · ${p.tests} tests` : ''}</span>` : ''}</div></div>`;
+    h += `<p>${esc(p.approach)}</p><h3>Route</h3>${nodeLinks(p.end_route)}`;
+    if (p.new_nodes.length) h += `<p class="note">Nodes this path added to the graph: ${esc(p.new_nodes.join(', '))}.</p>`;
+    const c = cohortData();
+    const users = c.runs.filter((r) => r.reached_end && (r.end_routes_satisfied || []).some((i) => (P.paths[i - 1] || {}).id === p.id));
+    h += `<p class="note">Traces reaching END on this route: ${users.length ? users.map((r) => `${modelShort(r.model)} ${r.condition_label} run ${r.run}`).join('; ') : 'none'}.</p></section>`;
+    return h;
+  }
+  function runCard(run) {
+    const C = closure(run, S.t);
+    const K = run.checkpoints.length;
+    const via = C.routesOk.map((i) => (P.paths[i] || {}).id || 'route ' + (i + 1));
+    const own = P.nodes.filter((n) => C.st[n.id] === 'established').map((n) => n.id);
+    const prof = run.profile || {}; const verdicts = Object.entries(prof.verdicts || {}).map(([k, v]) => `${k} ×${v}`).join(', ');
+    let h = `<section class="block"><div class="head"><div class="ttl">${esc(run.model_name)} · ${esc(run.condition_label)} · run ${esc(run.run)}</div>` +
+      `<div class="meta"><span class="chip ${run.solved ? 'ac' : 'fail'}">${run.solved ? 'accepted' : 'failed'}</span><span class="chip">${esc(classLabel(run.class))}</span><span class="mono">${esc(run.collection)}</span>${run.blind ? '<span class="chip given">blind grading</span>' : ''}</div></div>`;
+    h += `<div class="facts">` +
+      `<div class="fact ${C.routesOk.length ? 'ok' : 'bad'}"><span>END</span><b>${C.routesOk.length ? 'reached via ' + esc(via.join(', ')) : 'not reached'}</b></div>` +
+      `<div class="fact"><span>established by solver</span><b>${own.length}</b></div>` +
+      `<div class="fact"><span>given by hint</span><b>${C.given.size}</b></div>` +
+      `<div class="fact ${C.stuck ? 'bad' : ''}"><span>stuck node</span><b>${C.stuck ? esc(C.stuck) : '–'}</b></div>` +
+      `<div class="fact"><span>rounds read / total</span><b>${esc((run.rounds_read || []).join(', '))} / ${run.rounds_total}</b></div>` +
+      `<div class="fact"><span>submissions</span><b>${run.submissions}${verdicts ? ` <span class="note">(${esc(verdicts)})</span>` : ''}</b></div>` +
+      `<div class="fact"><span>stop reason</span><b>${esc(run.stop_reason)}</b></div>` +
+      `<div class="fact ${(run.hazards_tripped || []).length ? 'bad' : ''}"><span>hazards tripped</span><b>${esc((run.hazards_tripped || []).join(', ') || 'none')}</b></div></div>`;
+    if (S.t != null) h += `<p class="note">Showing the state after checkpoint ${S.t} of ${K}; move the slider to the end for the final state.</p>`;
+    if (C.stuck) h += `<p><b>Stuck:</b> ${esc(C.stuck)} · ${esc(nodeName(C.stuck))}. Its prerequisites are held but the solver kept getting it wrong or never settled it${C.roots.length ? `; root of what is wrong: ${esc(C.roots.join(', '))}` : ''}.</p>`;
+    else if (!C.routesOk.length && !run.solved) h += `<p><b>Stalled:</b> no frontier node was ever touched in the rounds read.</p>`;
+    h += `<h3>Held nodes</h3>${nodeLinks([...C.held].sort((a, b) => nodeById(a).index - nodeById(b).index))}`;
+    if (C.given.size) h += `<p class="note">Given = stated by the hint text (checked by the same probe), counted as held whether or not the solver repeated it.</p>`;
+    const wrongs = P.nodes.filter((n) => C.st[n.id] === 'wrong').map((n) => n.id);
+    if (wrongs.length) h += `<h3>Left wrong</h3>${nodeLinks(wrongs)}`;
+    if (run.hint) h += `<details><summary>Hint text the solver was given (${run.hint_chars} chars)</summary><pre>${esc(run.hint)}</pre></details>`;
+    if ((run.programs || []).length) {
+      h += `<details><summary>Programs read (${run.programs.length})</summary><ul class="ev">` + run.programs.map((p) => {
+        const trip = (p.hazards || []).filter((z) => z.status === 'tripped');
+        return `<li class="${trip.length ? 'wrong' : 'established'}"><span class="where">#${p.id} · ${esc(p.role)} · round ${p.round}</span> <span class="state ${trip.length ? 'wrong' : 'established'}">${esc(p.verdict)}</span>` +
+          (trip.length ? `<div>${trip.map((z) => `<div><b>${esc(z.hazard_id)}</b> ${esc(z.reason || '')}</div>${z.quote ? `<blockquote>${esc(z.quote)}</blockquote>` : ''}`).join('')}</div>` : '') + '</li>';
+      }).join('') + '</ul></details>';
+    }
+    // blind vs standard comparison
+    const other = S.cohort === 'pilot' ? P.cohorts.pilot_blind : P.cohorts.pilot;
+    if (other) {
+      const o = other.runs.find((r) => r.label === run.label);
+      if (o) {
+        const a = new Set(run.established), b = new Set(o.established);
+        const onlyHere = [...a].filter((x) => !b.has(x)), onlyThere = [...b].filter((x) => !a.has(x));
+        const oname = DATA.cohort_names[S.cohort === 'pilot' ? 'pilot_blind' : 'pilot'];
+        if (onlyHere.length || onlyThere.length || o.class !== run.class)
+          h += `<div class="diffbox"><b>${esc(oname)} grading differs:</b> ${o.class !== run.class ? `class ${esc(classLabel(o.class))}; ` : ''}${onlyHere.length ? `held here only: ${esc(onlyHere.join(', '))}; ` : ''}${onlyThere.length ? `held there only: ${esc(onlyThere.join(', '))}` : ''}${o.reached_end === run.reached_end ? ' · END decision identical' : ' · END decision differs'}</div>`;
+        else h += `<p class="note">${esc(oname)} grading: identical held set and class.</p>`;
+      }
+    }
+    h += `<p class="note mono">${esc(run.trace.replace(/^.*\/codebase\//, ''))}</p></section>`;
+    return h;
+  }
+  function nodeCard(id, run) {
+    const n = nodeById(id); if (!n) return '';
+    const inPaths = P.paths.filter((p) => p.end_route.includes(id)).map((p) => p.id);
+    let h = `<section class="block"><div class="head"><div class="ttl">${esc(n.id)} · ${esc(n.name)}</div><div class="meta"><span class="chip">${esc(n.kind)}</span><span>depth ${n.depth}</span><span>on ${esc(inPaths.join(', ') || 'no path')}</span>${P.paths.some((p) => p.key_node === id) ? '<span class="chip path">key node</span>' : ''}</div></div>`;
+    h += `<p><b>Statement.</b> ${esc(n.statement)}</p><p><b>Accept.</b> ${esc(n.accept)}</p>`;
+    h += `<dl class="kv"><dt>Derived from</dt><dd>${n.routes.map((r) => r.length ? r.join(' + ') : 'the statement').map(esc).join(' <i>or</i> ') || '–'}</dd></dl>`;
+    if (run) {
+      const r = run.results[id]; const C = closure(run, S.t);
+      const K = run.checkpoints.length; const t = S.t == null ? K : S.t;
+      h += `<h3>In this trace</h3><p>State: <b>${esc(C.given.has(id) && C.st[id] === 'absent' ? 'given by the hint' : C.st[id])}</b>${C.given.has(id) && C.st[id] !== 'absent' ? ' (also given by the hint)' : ''}${C.stuck === id ? ' · <b>stuck node</b>' : ''}${C.frontier.includes(id) ? ' · on the frontier' : ''} · trajectory ${trajHtml(r.trajectory)}</p>`;
+      const items = [...r.claims.map((c) => ({ ...c, _w: true })), ...r.evidence].map((it) => ({ ...it, _i: run.checkpoints.findIndex((c) => c.id === it.checkpoint) })).sort((a, b) => a._i - b._i);
+      if (items.length) {
+        h += `<ul class="ev">` + items.map((it) => `<li class="${esc(it.state)} ${it._i + 1 > t ? 'future' : ''}"><span class="where">${esc(it.where)}</span> <span class="state ${esc(it.state)}">${esc(it.state)}</span><div>${esc(it.claim || '')}</div>${it.quote ? `<blockquote>${esc(it.quote)}</blockquote>` : ''}</li>`).join('') + '</ul>';
+      } else h += `<p class="note">Not mentioned in the windows read.</p>`;
+      if (C.given.has(id) && run.hint) h += `<p class="note">This node was stated in the hint text.</p>`;
+    } else {
+      const c = cohortData(); const st = (c.report && c.report.nodes && c.report.nodes[id]) || null;
+      if (st) {
+        const ac = c.runs.filter((r) => r.solved).length, fail = c.runs.length - ac;
+        h += `<h3>Across the ${c.runs.length} traces</h3><div class="facts">` +
+          `<div class="fact"><span>held in AC runs</span><b>${st.held_ac}/${ac}</b></div><div class="fact"><span>held in failed runs</span><b>${st.held_fail}/${fail}</b></div>` +
+          `<div class="fact"><span>given by a hint</span><b>${st.given}</b></div><div class="fact"><span>runs with a wrong claim</span><b>${st.wrong_runs}</b></div>` +
+          `<div class="fact"><span>stuck here</span><b>${st.stuck_runs}</b></div><div class="fact"><span>root of the error</span><b>${st.root_runs}</b></div></div>`;
+        if ((st.claims || []).length) h += `<h3>Mistaken beliefs seen here</h3><ul class="ev">` + st.claims.map((cl) => `<li class="wrong"><span class="where">${esc(cl.run)}</span><div>${esc(cl.claim)}</div>${cl.quote ? `<blockquote>${esc(cl.quote)}</blockquote>` : ''}</li>`).join('') + '</ul>';
+      }
+      if (n.traps.length) h += `<h3>Traps</h3><ul class="ev">${n.traps.map((t) => `<li class="wrong">${esc(t)}</li>`).join('')}</ul>`;
+    }
+    h += '</section>';
+    return h;
+  }
+
+  // ---------- selection ----------
+  function selectProblem(i) {
+    S.pi = i; P = DATA.problems[i]; S.run = null; S.path = null; S.node = null; S.t = null;
+    try { history.replaceState(null, '', '#' + P.slug.replace(/_/g, '-')); } catch (e) { /* ignore */ }
+    renderTabs(); mountSvg(); renderAll();
+  }
+  function selectRun(label) { S.run = label; S.path = null; S.node = null; S.t = null; renderAll(); }
+  function selectPath(id) { S.path = id; S.run = null; S.node = null; S.t = null; renderAll(); }
+  function selectNode(id, center) { S.node = id; paint(); renderDetail(); renderScrub(); if (id && center) centerOn(id); }
+  function renderAll() {
+    renderTabs(); renderTotals(); renderCohorts(); renderTraces(); renderPaths(); renderSummary(); renderLegend(); paint(); renderScrub(); renderDetail();
+  }
+
+  // ---------- boot ----------
+  function boot() {
+    const hash = (location.hash || '').slice(1);
+    const idx = DATA.problems.findIndex((p) => p.slug.replace(/_/g, '-') === hash);
+    S.pi = idx >= 0 ? idx : 0; P = DATA.problems[S.pi];
+    setupCanvas(); renderTabs(); mountSvg(); renderAll();
+    $('foot').textContent = `Built ${DATA.built} from ReasoningGraph/Ver2: graph/graphs/*/graph.json, grade/runs/*/pilot/runs.jsonl, validate/reports/*/report.json. Graph layout rendered by graphviz from graph.dot. Solvers: ${[...new Set(DATA.problems.flatMap((p) => Object.values(p.cohorts).flatMap((c) => c.runs.map((r) => r.model_name))))].join(', ')}. Explorer and grader: gpt-6-astra.`;
+    window.addEventListener('hashchange', () => {
+      const hsh = (location.hash || '').slice(1);
+      const j = DATA.problems.findIndex((p) => p.slug.replace(/_/g, '-') === hsh);
+      if (j >= 0 && j !== S.pi) selectProblem(j);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+</script>
