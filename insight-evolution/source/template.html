@@ -1,0 +1,372 @@
+<title>Insight Evolution</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column of figures, each the same graph under a different condition, with a
+   progress chart above them. Palette and node-state colors are the Reasoning Graph viewer's, so the
+   two pages read as one site. */
+:root {
+  --bg: #f2f4f7; --surface: #ffffff; --surface-2: #e9edf2; --fg: #171b22; --muted: #5e6775; --line: #d7dde5;
+  --accent: #1f5f8b; --accent-bg: #d9e9f4;
+  --est: #2a8a58; --est-bg: #d4efdf;
+  --wrong: #c1402e; --wrong-bg: #f8dcd6;
+  --work: #b2741a; --work-bg: #fbe7c2;
+  --given: #6a4db5; --given-bg: #e7e0f7;
+  --absent: #c4cbd5; --absent-bg: #f0f2f5; --absent-fg: #8d96a4;
+  --node-bg: #e8eefc; --edge: #1f2937; --end-bg: #dcfce7; --code-bg: #fef3c7;
+  --stuck: #171b22; --ac: #1f7a46; --fail: #a33a2b;
+  --shadow: 0 1px 2px rgba(23, 27, 34, .06), 0 6px 18px rgba(23, 27, 34, .06);
+  --font-ui: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14171c; --surface: #1b1f26; --surface-2: #232931; --fg: #e6e9ee; --muted: #98a2b0; --line: #2e3640;
+    --accent: #72b4dc; --accent-bg: #1c3447;
+    --est: #5cc58d; --est-bg: #1b3a29;
+    --wrong: #f08b7a; --wrong-bg: #4a2521;
+    --work: #e2ad50; --work-bg: #44351a;
+    --given: #b19bee; --given-bg: #2d2748;
+    --absent: #3a414c; --absent-bg: #1e232a; --absent-fg: #6b7583;
+    --node-bg: #263246; --edge: #c2c9d3; --end-bg: #1d4a30; --code-bg: #4a3d16;
+    --stuck: #e6e9ee; --ac: #5cc58d; --fail: #f08b7a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 18px rgba(0, 0, 0, .35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14171c; --surface: #1b1f26; --surface-2: #232931; --fg: #e6e9ee; --muted: #98a2b0; --line: #2e3640;
+  --accent: #72b4dc; --accent-bg: #1c3447;
+  --est: #5cc58d; --est-bg: #1b3a29;
+  --wrong: #f08b7a; --wrong-bg: #4a2521;
+  --work: #e2ad50; --work-bg: #44351a;
+  --given: #b19bee; --given-bg: #2d2748;
+  --absent: #3a414c; --absent-bg: #1e232a; --absent-fg: #6b7583;
+  --node-bg: #263246; --edge: #c2c9d3; --end-bg: #1d4a30; --code-bg: #4a3d16;
+  --stuck: #e6e9ee; --ac: #5cc58d; --fail: #f08b7a;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 18px rgba(0, 0, 0, .35);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 14px; line-height: 1.5; }
+a { color: var(--accent); }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+code, .mono { font-family: var(--font-mono); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.app { max-width: 1020px; margin: 0 auto; padding-block: 20px 56px;
+       padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* header */
+.crumb { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.top h1 { font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
+.top .sub { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+.top .intro { margin: 14px 0 0; max-width: 84ch; color: var(--fg); font-size: 14px; }
+.top .intro + .intro { margin-top: 8px; color: var(--muted); font-size: 13px; }
+.totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 20px 0 0; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; box-shadow: var(--shadow); }
+.stat b { display: block; font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stat b.ok { color: var(--ac); } .stat b.no { color: var(--fail); }
+.stat span { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+
+h2.sec { font-size: 15px; font-weight: 700; margin: 34px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+p.note { margin: 0 0 14px; color: var(--muted); font-size: 13px; max-width: 84ch; }
+
+/* route strip */
+.route { display: flex; flex-wrap: wrap; gap: 6px; }
+.route .cell { flex: 1 1 108px; min-width: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+               padding: 7px 9px; }
+.route .cell .id { font-family: var(--font-mono); font-size: 12px; font-weight: 600; }
+.route .cell .nm { font-size: 11.5px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
+.route .cell.key { border-color: var(--accent); background: var(--accent-bg); }
+.route .cell.key .nm { color: var(--fg); }
+
+/* chart */
+.chartbox { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 12px 8px;
+            box-shadow: var(--shadow); overflow-x: auto; }
+.chartbox svg { display: block; min-width: 640px; width: 100%; height: auto; }
+.chartbox .ax { stroke: var(--line); }
+.chartbox .grid { stroke: var(--line); stroke-dasharray: 2 3; }
+.chartbox .lbl { fill: var(--muted); font-size: 10px; font-family: var(--font-mono); }
+.chartbox .lbl.b { fill: var(--fg); font-weight: 600; }
+.chartbox .ln { fill: none; stroke: var(--accent); stroke-width: 2; }
+.chartbox .pt { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
+.chartbox .pt.all { fill: var(--est); stroke: var(--est); }
+.chartbox .pt.some { fill: var(--work); stroke: var(--work); }
+.chartbox .bar { fill: var(--absent); } .chartbox .bar.on { fill: var(--est); }
+.chartbox .zone { fill: var(--absent-bg); }
+.chartbox .div { stroke: var(--line); stroke-width: 1.5; }
+.chartbox .ref { stroke: var(--wrong); stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
+.chartbox rect.pt.ref { fill: var(--surface); stroke: var(--wrong); stroke-width: 2; stroke-dasharray: none; }
+
+/* figures */
+.figs { display: grid; gap: 18px; }
+.fig { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
+.fig.hl { border-color: var(--accent); }
+.fhead { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; justify-content: space-between;
+         padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.fhead .ft { font-size: 15px; font-weight: 700; }
+.fhead .fs { font-weight: 400; color: var(--muted); font-size: 12.5px; margin-left: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-family: var(--font-mono); font-size: 11px; border: 1px solid var(--line); border-radius: 999px;
+        padding: 2px 9px; color: var(--muted); background: var(--surface); white-space: nowrap; }
+.chip.ac { color: var(--ac); border-color: var(--est); background: var(--est-bg); font-weight: 600; }
+.chip.no { color: var(--fail); border-color: var(--wrong); background: var(--wrong-bg); }
+.chip.tok { color: var(--accent); border-color: var(--accent); background: var(--accent-bg); }
+.chip.give { color: var(--given); border-color: var(--given); background: var(--given-bg); }
+
+.minirow { display: flex; gap: 3px; padding: 10px 14px 0; flex-wrap: wrap; align-items: center; }
+.minirow .ml { font-size: 11px; color: var(--muted); margin-right: 6px; text-transform: uppercase; letter-spacing: .05em; }
+.mini { width: 40px; height: 22px; border-radius: 5px; border: 1px solid var(--line); display: grid; place-items: center;
+        font-family: var(--font-mono); font-size: 10px; background: var(--absent-bg); color: var(--absent-fg); }
+.mini.established { background: var(--est-bg); border-color: var(--est); color: var(--est); font-weight: 600; }
+.mini.wrong { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); font-weight: 600; }
+.mini.working { background: var(--work-bg); border-color: var(--work); color: var(--work); }
+.mini.stuckm { box-shadow: 0 0 0 2px var(--stuck); }
+.mini.endm { width: 46px; }
+
+.canvas { padding: 8px 10px 12px; }
+.graphsvg { width: 100%; height: auto; display: block; }
+.graphsvg text { font-family: 'DejaVu Sans', Verdana, sans-serif; fill: var(--fg); }
+.graphsvg .node path, .graphsvg .node polygon { fill: var(--node-bg); stroke: var(--edge); stroke-width: .9; }
+.graphsvg .node path:not(:first-of-type) { fill: none; }
+.graphsvg .edge path { fill: none; stroke: var(--edge); opacity: .45; }
+.graphsvg .edge polygon { fill: var(--edge); stroke: var(--edge); opacity: .45; }
+.graphsvg .edge text { fill: var(--muted); font-size: 8px; }
+.graphsvg .node[data-id="END"] path:first-of-type { fill: var(--end-bg); }
+.graphsvg .node[data-id="CODE"] path:first-of-type { fill: var(--code-bg); }
+.graphsvg .node.st-absent path:first-of-type { fill: var(--absent-bg); stroke: var(--absent); }
+.graphsvg .node.st-absent text { fill: var(--absent-fg); }
+.graphsvg .node.st-established path:first-of-type { fill: var(--est-bg); stroke: var(--est); stroke-width: 1.6; }
+.graphsvg .node.st-wrong path:first-of-type { fill: var(--wrong-bg); stroke: var(--wrong); stroke-width: 1.6; }
+.graphsvg .node.st-working path:first-of-type { fill: var(--work-bg); stroke: var(--work); stroke-width: 1.6; }
+.graphsvg .node.given path:first-of-type { stroke-dasharray: 4 2.5; }
+.graphsvg .node.stuck path:first-of-type { stroke: var(--stuck); stroke-width: 3.4; stroke-dasharray: none; }
+.graphsvg .node.offroute { opacity: .42; }
+.graphsvg .edge.onroute path { opacity: 1; stroke-width: 1.7; }
+.graphsvg .edge.onroute polygon { opacity: 1; }
+.graphsvg .node[data-id="END"].reached path:first-of-type { fill: var(--est-bg); stroke: var(--est); stroke-width: 2.4; }
+.graphsvg .node[data-id="CODE"].solved path:first-of-type { stroke: var(--est); stroke-width: 2.4; }
+
+.cap { margin: 0; padding: 0 14px 12px; font-size: 13px; color: var(--muted); max-width: 90ch; }
+.cap b { color: var(--fg); font-weight: 600; }
+details.ins { border-top: 1px solid var(--line); }
+details.ins summary { padding: 9px 14px; cursor: pointer; font-size: 12.5px; color: var(--accent); font-weight: 600; }
+details.ins pre { margin: 0; padding: 0 14px 14px; white-space: pre-wrap; font-family: var(--font-mono); font-size: 12px;
+                  line-height: 1.55; color: var(--fg); max-height: 440px; overflow: auto; }
+
+/* legend */
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; background: var(--surface); border: 1px solid var(--line);
+          border-radius: 10px; padding: 11px 13px; font-size: 12.5px; color: var(--muted); }
+.legend .it { display: flex; align-items: center; gap: 6px; }
+.legend .sw { width: 17px; height: 13px; border-radius: 3px; border: 1.6px solid var(--absent); background: var(--absent-bg); }
+.legend .sw.est { border-color: var(--est); background: var(--est-bg); }
+.legend .sw.wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+.legend .sw.work { border-color: var(--work); background: var(--work-bg); }
+.legend .sw.given { border-style: dashed; border-color: var(--given); background: var(--given-bg); }
+.legend .sw.stuck { border-color: var(--stuck); border-width: 3px; }
+
+footer { margin-top: 32px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+@media (max-width: 560px) { .fhead { flex-direction: column; align-items: flex-start; } }
+</style>
+
+<div class="app">
+  <p class="crumb"><a href="../">InsightGeneration</a> › Insight evolution</p>
+  <header class="top">
+    <h1 id="h-title">Insight evolution on one problem</h1>
+    <p class="sub" id="h-sub"></p>
+    <p class="intro">An insight is a <b>cut on the reasoning graph</b>: the nodes of a solution route the model does not reach on its own. The engine adds them <b>one node per round</b>, measures every round with real two-hour solver runs, and grades those runs against the same graph. These figures are that record — the same graph, once per condition, coloured by what the runs actually established.</p>
+    <p class="intro">The problem is one the human editorial does not unlock for this model: five editorial runs solve none of them, and the editorial argues a different route into END than the one this model is closest to. Watch the black outline &mdash; the node where the runs get stuck &mdash; move down the route until it reaches END and the submission is accepted.</p>
+    <div class="totals" id="totals"></div>
+  </header>
+
+  <h2 class="sec">The route the engine chose</h2>
+  <p class="note" id="route-note"></p>
+  <div class="route" id="route"></div>
+
+  <h2 class="sec">How far the runs got, round by round</h2>
+  <p class="note">Mean number of route nodes the runs established before their first contradicted node, out of <span id="rlen"></span>; the bars below each point are the runs that solved the problem.</p>
+  <div class="chartbox" id="chartbox"></div>
+
+  <h2 class="sec">The graph under each condition</h2>
+  <p class="note">A node is coloured by the state a majority of that condition's runs left it in. The dashed outline marks a node the hint supplied; the thick black outline marks where most failing runs stopped. Nodes off the chosen route are faded. Hover a node for its statement.</p>
+  <div class="legend">
+    <span class="it"><span class="sw est"></span>established by the run</span>
+    <span class="it"><span class="sw wrong"></span>contradicted</span>
+    <span class="it"><span class="sw work"></span>raised, not settled</span>
+    <span class="it"><span class="sw"></span>never mentioned</span>
+    <span class="it"><span class="sw given"></span>supplied by the hint</span>
+    <span class="it"><span class="sw stuck"></span>where the runs got stuck</span>
+  </div>
+  <div class="figs" id="figs"></div>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const DATA = /*__DATA__*/;
+(function () {
+  const D = DATA, esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const routeSet = new Set(D.route), nodeById = new Map(D.nodes.map((n) => [n.id, n]));
+  const first = D.stages[0], ed = D.stages.find((s) => s.key === '__editorial__'), last = D.stages[D.stages.length - 1];
+  const edTok = ed ? ed.tokens : null, fTok = last ? last.tokens : null;
+
+  document.getElementById('h-title').textContent = 'Insight evolution: ' + D.title;
+  document.getElementById('h-sub').innerHTML = `<span class="mono">${esc(D.problem)}</span> · solver <span class="mono">${esc(D.model)}</span> · ${D.nodes.length} graph nodes, ${D.end_routes.length} solution routes · every condition measured with independent 2-hour runs`;
+  document.getElementById('rlen').textContent = D.route.length;
+
+  const stat = (b, s, cls) => `<div class="stat"><b class="${cls || ''}">${b}</b><span>${s}</span></div>`;
+  document.getElementById('totals').innerHTML =
+    stat(`${first.solved}/${first.runs}`, 'no insight', first.solved ? '' : 'no') +
+    (ed ? stat(`${ed.solved}/${ed.runs}`, 'human editorial', ed.solved ? '' : 'no') : '') +
+    stat(`${last.solved}/${last.runs}`, 'engine insight', last.solved === last.runs ? 'ok' : '') +
+    stat(fTok != null ? fTok : '—', 'insight tokens') +
+    stat(edTok != null ? edTok : '—', 'editorial tokens');
+
+  document.getElementById('route-note').innerHTML = `The engine picks the cheapest route into END for this model — the one whose missing nodes cost least. Here that is route <span class="mono">${D.route.join(' → ')}</span>, with <span class="mono">${esc(D.key_node)}</span> as the key node (the output rule). At round 0 the model held <b>none</b> of them. ${esc(D.approach || '')}`;
+  document.getElementById('route').innerHTML = D.route.map((id) => {
+    const n = nodeById.get(id) || {};
+    return `<div class="cell ${id === D.key_node ? 'key' : ''}" title="${esc(n.statement)}"><div class="id">${esc(id)}${id === D.key_node ? ' · key' : ''}</div><div class="nm">${esc(n.name)}</div></div>`;
+  }).join('');
+
+  /* ---- progress chart: the two reference arms, then the engine's rounds ---- */
+  (function chart() {
+    const S = D.stages, W = Math.max(680, 70 + S.length * 74), H = 262, L = 46, R = 120, T = 22, B = 74;
+    const maxY = D.route.length, x = (i) => L + (S.length === 1 ? 0 : i * (W - L - R) / (S.length - 1));
+    const y = (v) => T + (maxY - v) * (H - T - B) / maxY;
+    const isRef = (s) => s.key.indexOf('__') === 0;
+    const nRef = S.filter(isRef).length;
+    let g = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="route nodes held per condition">`;
+    for (let v = 0; v <= maxY; v++) {
+      g += `<line class="grid" x1="${L}" y1="${y(v)}" x2="${W - R}" y2="${y(v)}"/>`;
+      g += `<text class="lbl" x="${L - 8}" y="${y(v) + 3}" text-anchor="end">${v}</text>`;
+    }
+    g += `<text class="lbl b" x="${L}" y="11">route nodes held (mean of the condition's runs)</text>`;
+    if (nRef > 0 && nRef < S.length) {
+      const dx = (x(nRef - 1) + x(nRef)) / 2;
+      g += `<line class="div" x1="${dx}" y1="${y(maxY)}" x2="${dx}" y2="${y(0) + 30}"/>`;
+      g += `<text class="lbl" x="${dx - 6}" y="${y(maxY) + 10}" text-anchor="end">reference arms</text>`;
+      g += `<text class="lbl" x="${dx + 6}" y="${y(maxY) + 10}">one engine round per point</text>`;
+    }
+    if (ed) {
+      g += `<line class="ref" x1="${L}" y1="${y(ed.held_mean)}" x2="${W - R + 4}" y2="${y(ed.held_mean)}"/>`;
+      g += `<text class="lbl b" x="${W - R + 10}" y="${y(ed.held_mean) + 3}">human editorial, ${ed.solved}/${ed.runs}</text>`;
+    }
+    const eng = S.map((s, i) => [s, i]).filter(([s]) => !isRef(s));
+    g += `<polyline class="ln" points="${eng.map(([s, i]) => `${x(i)},${y(s.held_mean)}`).join(' ')}"/>`;
+    S.forEach((s, i) => {
+      const cls = s.solved === s.runs ? 'all' : (s.solved ? 'some' : '');
+      const tip = `<title>${esc(s.label)}: ${s.held_mean} of ${maxY} route nodes held, ${s.solved}/${s.runs} solved, ${s.ends}/${s.runs} reached END</title>`;
+      g += isRef(s)
+        ? `<rect class="pt ref ${cls}" x="${x(i) - 4.5}" y="${y(s.held_mean) - 4.5}" width="9" height="9" rx="1.5">${tip}</rect>`
+        : `<circle class="pt ${cls}" cx="${x(i)}" cy="${y(s.held_mean)}" r="4.5">${tip}</circle>`;
+      const bw = 7, by = H - B + 16;
+      for (let k = 0; k < s.runs; k++) {
+        g += `<rect class="bar ${k < s.solved ? 'on' : ''}" x="${x(i) - (s.runs * (bw + 2) - 2) / 2 + k * (bw + 2)}" y="${by}" width="${bw}" height="9" rx="2"/>`;
+      }
+      const short = s.key === '__baseline__' ? 'no hint' : s.key === '__editorial__' ? 'editorial' : s.key;
+      g += `<text class="lbl ${isRef(s) ? 'b' : ''}" x="${x(i)}" y="${H - B + 9}" text-anchor="middle">${esc(short)}</text>`;
+      if (s.tokens != null) g += `<text class="lbl" x="${x(i)}" y="${H - B + 40}" text-anchor="middle">${s.tokens}</text>`;
+    });
+    g += `<text class="lbl" x="${L - 8}" y="${H - B + 9}" text-anchor="end">arm</text>`;
+    g += `<text class="lbl" x="${L - 8}" y="${H - B + 40}" text-anchor="end">tokens</text>`;
+    g += `<text class="lbl" x="${L - 8}" y="${H - B + 24}" text-anchor="end">solved</text>`;
+    g += `<line class="ax" x1="${L}" y1="${y(0)}" x2="${W - R}" y2="${y(0)}"/>`;
+    g += '</svg>';
+    document.getElementById('chartbox').innerHTML = g;
+  })();
+
+  /* ---- one figure per stage ---- */
+  const tpl = document.createElement('template');
+  tpl.innerHTML = D.svg;
+  const baseSvg = tpl.content.querySelector('svg');
+
+  function svgFor(s) {
+    const svg = baseSvg.cloneNode(true);
+    svg.setAttribute('class', 'graphsvg');
+    svg.querySelectorAll('g.node').forEach((g) => {
+      const id = (g.querySelector('title') || {}).textContent ? g.querySelector('title').textContent.trim() : '';
+      g.dataset.id = id;
+      if (id === 'END') {
+        if (s.ends > 0) g.classList.add('reached');
+        const t = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        t.textContent = `END reached in ${s.ends} of ${s.runs} runs`;
+        g.replaceChild(t, g.querySelector('title'));
+        return;
+      }
+      if (id === 'CODE') {
+        if (s.solved > 0) g.classList.add('solved');
+        const t = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        t.textContent = `accepted in ${s.solved} of ${s.runs} runs`;
+        g.replaceChild(t, g.querySelector('title'));
+        return;
+      }
+      const st = s.states[id] || 'absent', c = s.counts[id] || {};
+      g.classList.add('st-' + st);
+      if (!routeSet.has(id)) g.classList.add('offroute');
+      if ((s.given[id] || 0) * 2 >= s.runs && s.given[id] > 0) g.classList.add('given');
+      const stuckN = s.stuck[id] || 0;
+      if (stuckN > 0 && stuckN === Math.max(...Object.values(s.stuck))) g.classList.add('stuck');
+      const n = nodeById.get(id) || {};
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      t.textContent = `${id} — ${n.name}\n${n.statement}\n\nacross ${s.runs} runs: established ${c.established || 0}, contradicted ${c.wrong || 0}, raised ${c.working || 0}, absent ${c.absent || 0}`
+        + ((s.given[id] || 0) ? `\nsupplied by the hint in ${s.given[id]} run(s)` : '')
+        + (stuckN ? `\nstuck here in ${stuckN} run(s)` : '');
+      g.replaceChild(t, g.querySelector('title'));
+    });
+    svg.querySelectorAll('g.edge').forEach((g) => {
+      const t = (g.querySelector('title') || {}).textContent || '';
+      const m = t.replace(/&#45;/g, '-').split('->');
+      if (m.length === 2) {
+        const a = m[0].trim(), b = m[1].trim();
+        const ia = D.route.indexOf(a), ib = D.route.indexOf(b);
+        if ((ia >= 0 && ib >= 0) || (ia >= 0 && b === 'END')) g.classList.add('onroute');
+      }
+    });
+    return svg;
+  }
+
+  function changeText(s) {
+    if (s.note) return s.note;
+    const c = s.change;
+    if (!c) return '';
+    if (c.kind === 'add') return `This round adds <b>${esc(c.node)}</b> to the hint, at level ${c.level}.`;
+    if (c.kind === 'escalate') return `The runs contradicted <b>${esc(c.node)}</b> again, so this round rewrites it at level ${c.level} (was level ${c.from}).`;
+    return '';
+  }
+
+  function stuckText(s) {
+    const e = Object.entries(s.stuck).sort((a, b) => b[1] - a[1]);
+    if (!e.length) return 'No run stopped short: every run reached END.';
+    return 'Failing runs stopped at ' + e.map(([k, v]) => `<b>${esc(k)}</b> (${v})`).join(', ') + '.';
+  }
+
+  const figs = document.getElementById('figs');
+  D.stages.forEach((s) => {
+    const art = document.createElement('article');
+    art.className = 'fig' + (s.solved === s.runs ? ' hl' : '');
+    const chips = [];
+    chips.push(`<span class="chip ${s.solved === s.runs ? 'ac' : (s.solved ? '' : 'no')}">${s.solved}/${s.runs} accepted</span>`);
+    chips.push(`<span class="chip">${s.ends}/${s.runs} reached END</span>`);
+    chips.push(`<span class="chip">${s.held_mean} of ${D.route.length} route nodes held</span>`);
+    if (s.tokens != null) chips.push(`<span class="chip tok">${s.tokens} tokens</span>`);
+    const givenRoute = D.route.filter((id) => (s.given[id] || 0) * 2 >= s.runs && s.given[id] > 0);
+    if (givenRoute.length) chips.push(`<span class="chip give">supplies ${givenRoute.join(' ')}</span>`);
+    const mini = D.route.map((id) => {
+      const st = s.states[id] || 'absent', c = s.counts[id] || {};
+      const stuckN = s.stuck[id] || 0, isStuck = stuckN > 0 && stuckN === Math.max(...Object.values(s.stuck));
+      return `<span class="mini ${st} ${isStuck ? 'stuckm' : ''}" title="${esc(id)}: established in ${c.established || 0} of ${s.runs} runs">${esc(id)}</span>`;
+    }).join('') + `<span class="mini endm ${s.ends ? 'established' : ''}" title="END reached in ${s.ends} of ${s.runs} runs">END</span>`;
+    art.innerHTML = `<div class="fhead"><div><span class="ft">${esc(s.label)}</span>${s.sub ? `<span class="fs">${esc(s.sub)}</span>` : ''}</div><div class="chips">${chips.join('')}</div></div>`
+      + `<div class="minirow"><span class="ml">route</span>${mini}</div>`
+      + `<div class="canvas"></div>`
+      + `<p class="cap">${changeText(s)} ${stuckText(s)}</p>`
+      + (s.hint ? `<details class="ins"><summary>${s.key === '__editorial__' ? 'Human editorial' : 'Insight text'} (${s.tokens != null ? s.tokens + ' solver tokens' : 'text'})</summary><pre>${esc(s.hint)}</pre></details>` : '');
+    art.querySelector('.canvas').appendChild(svgFor(s));
+    figs.appendChild(art);
+  });
+
+  document.getElementById('foot').innerHTML = `Graph built by an explorer model from the statement alone and judge-verified; runs graded blind against it. Engine: GPTv4 · graphs and grader: ReasoningGraph · built ${esc(D.built)} · <a href="https://github.com/xupy2003/InsightGeneration">code</a>`;
+})();
+</script>

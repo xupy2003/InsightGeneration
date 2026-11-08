@@ -18,6 +18,7 @@
   a.card:hover { border-color: var(--accent); }
   a.card b { color: var(--accent); font-size: 17px; }
   a.card p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+  .cards { display: grid; gap: 12px; }
   footer { margin-top: 28px; color: var(--muted); font-size: 13px; }
   footer a { color: var(--accent); }
 </style>
@@ -26,10 +27,16 @@
 <main>
   <h1>InsightGeneration</h1>
   <p class="sub">Interactive pages from the project. Code lives on the <a href="https://github.com/xupy2003/InsightGeneration" style="color:var(--accent)">main branch</a>.</p>
+  <div class="cards">
   <a class="card" href="reasoning-graph/">
     <b>Reasoning Graph Pilot</b>
     <p>Four ICPC World Finals problems as AND–OR graphs of intermediate conclusions, and 40 graded solver traces: pick a trace to see its path through the graph, where it got stuck, and the quoted evidence.</p>
   </a>
+  <a class="card" href="insight-evolution/">
+    <b>Insight Evolution</b>
+    <p>One problem the human editorial never unlocks, and the same graph once per condition: no hint, the editorial, then each round as the engine adds one missing node. The node where the runs get stuck moves down the route until they reach END and the submission is accepted.</p>
+  </a>
+  </div>
   <footer>Peiyang Xu · Princeton University</footer>
 </main>
 </body>
