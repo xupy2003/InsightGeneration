@@ -76,8 +76,8 @@ if len(arms) > 1:
     print(f"!! mixed configurations in one directory: {arms}")
 else:
     ins, inl, hip, ts = arms.pop()
-    print(f"配置: insight={ins}  toolset={ts}  inline_last_code={inl}  history_in_prompt={hip}")
-print(f"结果文件 {done}/{len(listed) * N}  (题目 {len(runs)}/{len(listed)})\n")
+    print(f"config: insight={ins}  toolset={ts}  inline_last_code={inl}  history_in_prompt={hip}")
+print(f"result files {done}/{len(listed) * N}  (problems {len(runs)}/{len(listed)})\n")
 
 rows = []
 for p in listed:
@@ -88,24 +88,24 @@ for p in listed:
 # --- stability -------------------------------------------------------------
 buckets = Counter(k for _, n, k, _ in rows if n == N)
 if buckets:
-    print(f"=== 稳定性（仅统计已跑满 {N} 次的题）===")
+    print(f"=== stability (problems with all {N} runs done) ===")
     for k in range(N, -1, -1):
         if buckets[k]:
-            tag = {N: "稳定解出", 0: "稳定失败"}.get(k, "不稳定")
-            print(f"  {k}/{N} 次解出: {buckets[k]:>3} 题   {tag}")
+            tag = {N: "always solved", 0: "never solved"}.get(k, "flaky")
+            print(f"  solved {k}/{N}: {buckets[k]:>3} problems   {tag}")
     tot = sum(buckets.values()); flaky = tot - buckets[N] - buckets[0]
-    print(f"  合计 {tot} 题，其中 {flaky} 题结果不一致（{100*flaky/tot:.0f}%）")
+    print(f"  {tot} problems, {flaky} with inconsistent results ({100*flaky/tot:.0f}%)")
 
 # --- by year ---------------------------------------------------------------
-print(f"\n=== 按年份（解出次数/总运行次数）===")
+print(f"\n=== by year (solved runs / runs) ===")
 by = defaultdict(lambda: [0, 0])
 for p, n, k, _ in rows:
     by[p.split("/")[0]][0] += n; by[p.split("/")[0]][1] += k
-print(f"{'年份':<28}{'运行':>6}{'解出':>6}{'率':>7}")
+print(f"{'year':<28}{'runs':>6}{'solved':>7}{'rate':>7}")
 for c, (n, k) in sorted(by.items()):
-    print(f"{c:<28}{n:>6}{k:>6}{100*k/n:>6.0f}%")
+    print(f"{c:<28}{n:>6}{k:>7}{100*k/n:>6.0f}%")
 tn = sum(n for _, n, _, _ in rows); tk = sum(k for _, _, k, _ in rows)
-print(f"{'总计':<28}{tn:>6}{tk:>6}{100*tk/tn:>6.0f}%")
+print(f"{'total':<28}{tn:>6}{tk:>7}{100*tk/tn:>6.0f}%")
 
 # --- harness health --------------------------------------------------------
 fmt, tools, stop = Counter(), Counter(), Counter()
@@ -121,32 +121,32 @@ for _, _, _, v in rows:
         prompts.append(d.get("max_prompt_tokens", 0))
         repeats.append(d.get("repeated_calls", 0))
 
-print(f"\n=== harness 健康度（{len(rounds)} 次运行）===")
+print(f"\n=== harness health ({len(rounds)} runs) ===")
 nf = sum(fmt.values()) or 1
-print(f"  工具调用格式   " + "  ".join(f"{k}={v} ({100*v/nf:.0f}%)" for k, v in fmt.most_common()))
-print(f"  工具使用       " + "  ".join(f"{k}={v}" for k, v in tools.most_common()))
-print(f"  结束原因       " + "  ".join(f"{k}={v}" for k, v in stop.most_common()))
+print(f"  call formats    " + "  ".join(f"{k}={v} ({100*v/nf:.0f}%)" for k, v in fmt.most_common()))
+print(f"  tool use        " + "  ".join(f"{k}={v}" for k, v in tools.most_common()))
+print(f"  stop reasons    " + "  ".join(f"{k}={v}" for k, v in stop.most_common()))
 if ratio:
-    print(f"  轮/提交        中位 {st.median(ratio):.1f}  均值 {st.mean(ratio):.1f}"
-          f"   (baseline 臂按构造是 1.0)")
-print(f"  提交次数       中位 {st.median(subs):.0f}  最多 {max(subs)}")
-print(f"  最大 prompt    中位 {st.median(prompts):.0f}  最大 {max(prompts)} tok")
-print(f"  重复调用       共 {sum(repeats)} 次，{sum(1 for x in repeats if x)} 次运行出现过")
+    print(f"  rounds/submit   median {st.median(ratio):.1f}  mean {st.mean(ratio):.1f}"
+          f"   (1.0 by construction in the baseline arm)")
+print(f"  submissions     median {st.median(subs):.0f}  max {max(subs)}")
+print(f"  max prompt      median {st.median(prompts):.0f}  max {max(prompts)} tok")
+print(f"  repeated calls  {sum(repeats)} in all, in {sum(1 for x in repeats if x)} runs")
 
 # --- per problem -----------------------------------------------------------
-print(f"\n=== 逐题 ===")
-print(f"{'题目':<42}{'解出/运行':>10}  {'每次提交次数':<18}{'每次轮数'}")
+print(f"\n=== per problem ===")
+print(f"{'problem':<42}{'solved/runs':>11}  {'submissions per run':<20}{'rounds per run'}")
 for p, n, k, v in sorted(rows, key=lambda r: (r[2] / r[1], r[0])):
     cell = lambda key: ",".join(str(v[i].get(key, 0)) if i in v else "-" for i in range(1, N + 1))
-    print(f"{p:<42}{k}/{n:<9}  {cell('num_submissions'):<18}{cell('num_rounds')}")
+    print(f"{p:<42}{k}/{n:<10}  {cell('num_submissions'):<20}{cell('num_rounds')}")
 
 # --- optional comparison ---------------------------------------------------
 if args.compare:
     _, other, _ = load(args.compare)
     if not other:
         print(f"\n(no results in {args.compare} to compare against)"); sys.exit(0)
-    print(f"\n=== 与 {Path(args.compare).name} 对比（只比两臂语义相同的量）===")
-    print(f"{'题目':<42}{'本臂':>10}{'对照':>10}   {'提交数 本/对照'}")
+    print(f"\n=== against {Path(args.compare).name} (only quantities that mean the same in both arms) ===")
+    print(f"{'problem':<42}{'this arm':>10}{'other':>10}   {'submissions this/other'}")
     a_s = a_n = b_s = b_n = 0
     for p, n, k, v in sorted(rows):
         o = other.get(p, {})
@@ -157,5 +157,5 @@ if args.compare:
         mo = st.median([d.get("num_submissions", 0) for d in o.values()])
         print(f"{p:<42}{k}/{n:<8}{ok}/{on:<8}   {ms:.0f} / {mo:.0f}")
     if a_n and b_n:
-        print(f"{'总计':<42}{a_s}/{a_n:<8}{b_s}/{b_n:<8}   "
+        print(f"{'total':<42}{a_s}/{a_n:<8}{b_s}/{b_n:<8}   "
               f"{100*a_s/a_n:.0f}% vs {100*b_s/b_n:.0f}%")

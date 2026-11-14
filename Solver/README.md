@@ -1,6 +1,7 @@
-> 本目录是 `agentv3` harness 的代码（GPTv4 用它在 Slurm 上跑 solver）。下文提到的 `../agent`、`agentv2` 是更早的版本，
-> 不在本 repo 里（`legacy` 分支有早期的 `agent/`）。路径、conda、Slurm 设置见根目录的 `env.example.sh`；
-> 单独跑：`source ../env.sh && MODEL_PATH=$MODELS_DIR/Qwen3.6-35B-A3B CONDA_ENV=qwen PROBLEM=2024/K-tower-of-noiha sbatch contest.sh`。
+> This directory is the code of the `agentv3` harness (GPTv4 runs the solver on Slurm with it). The `../agent` and
+> `agentv2` mentioned below are earlier versions that are not in this repository (branch `legacy` has the early
+> `agent/`). Paths, conda and Slurm settings: `env.example.sh` at the repository root. A single run:
+> `source ../env.sh && MODEL_PATH=$MODELS_DIR/Qwen3.6-35B-A3B CONDA_ENV=qwen PROBLEM=2024/K-tower-of-noiha sbatch contest.sh`
 
 # agentv3: agentv2 with a sample runner
 

@@ -1,56 +1,52 @@
 # InsightGeneration
 
-用 reasoning graph 给弱 solver 模型写 model-specific insight：先给一道题建一张“中间结论”图，再按图给 solver 的推理轨迹判分，
-找出这个模型自己到不了的节点，只把缺的节点写成提示，用真实 solver run 评测，按判分结果逐轮修改。
+Model-specific insights for weak solver models, written from a reasoning graph. For each problem we build a graph of
+intermediate conclusions, grade the solver's reasoning traces against it, find the nodes this model does not reach by
+itself, write hints for the missing nodes only, evaluate them with real solver runs, and revise them round by round from
+the grading.
 
-| 目录 | 内容 |
+| Directory | Contents |
 |---|---|
-| [`ReasoningGraph/`](ReasoningGraph/) | 建图（`graph/explore.py`：explorer 只看题面，每条解法交 judge AC 才成为一条路径；reviewer / integrator 用 editorial 核对和补路）、判分（`grade/`：把 run 的文字逐窗口判成每节点 established / wrong / working / absent）、验证（`validate/`：soundness 与 discrimination）。30 道 ICPC WF 题的图在 `graph/graphs/`。 |
-| [`GPTv4/`](GPTv4/) | insight 引擎（`loop.py`）：模型画像 → 选 END route → 逐节点写提示 → 在 Slurm 上跑 solver → 用同一张图判分 → 升级 / 前移 / 压缩 → 确认。 |
-| [`Solver/`](Solver/) | solver harness（agentv3）：vLLM 上的工具调用 agent、ICPC judge、`contest.sh`（一个 Slurm 作业 = 一次 2 h 的 run）。 |
+| [`ReasoningGraph/`](ReasoningGraph/) | Graph building (`graph/explore.py`: the explorer sees only the statement, and an approach becomes a path once its program is accepted by the judge; a reviewer and an integrator check it against the editorial and add the editorial's path when missing), grading (`grade/`: a run's text, window by window, into per-node states established / wrong / working / absent) and validation (`validate/`: soundness and discrimination). The graphs of 30 ICPC WF problems are in `graph/graphs/`. |
+| [`GPTv4/`](GPTv4/) | The insight engine (`loop.py`): model profile → choose an END route → write hints node by node → run the solver on Slurm → grade with the same graph → escalate / move the frontier / compact → confirm. |
+| [`Solver/`](Solver/) | The solver harness (agentv3): a tool-calling agent on vLLM, the ICPC judge, and `contest.sh` (one Slurm job = one 2 h run). |
 
-设计细节见 [ReasoningGraph/design.md](ReasoningGraph/design.md) 和 [GPTv4/plan.md](GPTv4/plan.md)；每个目录的 README 有完整命令。
+Design details: [ReasoningGraph/design.md](ReasoningGraph/design.md) and [GPTv4/plan.md](GPTv4/plan.md). Each directory's
+README has the full set of commands.
 
-## 准备
+## Setup
 
 ```bash
-pip install -r requirements.txt        # 登录节点：openai、pytest
-cp env.example.sh env.sh               # 填 OPENAI_API_KEY、题库、模型、conda、Slurm 设置；env.sh 不进 git
+pip install -r requirements.txt        # login node: openai, pytest
+cp env.example.sh env.sh               # fill in OPENAI_API_KEY, the problem archive, models, conda, Slurm; env.sh is git-ignored
 source env.sh
 ```
 
-需要的外部数据（都不在 repo 里，路径由 `env.sh` 指定）：
+External data (not in the repository; `env.sh` gives the paths):
 
-- `WF_ARCHIVE`：ICPC WF 题库，每题一个目录（题面、`data/sample`、`data/secret`、`solution.tex`、`solution.cpp`），以及 `_verify/judging.json`。
-- `MODELS_DIR`：solver 权重 `Qwen3.6-35B-A3B/`、`Nemotron-Cascade-2-30B-A3B/`；`CONDA_ENVS` 下的 `qwen` / `nemotron` 环境（vLLM、transformers）。
-- `RUNPOOL`（可选）：以前的 solver run（`index.jsonl`），GPTv4 用它给模型做无提示画像；没有就先在 GPU 上跑 baseline。
+- `WF_ARCHIVE`: the ICPC WF archive, one directory per problem (statement, `data/sample`, `data/secret`, `solution.tex`, `solution.cpp`), plus `_verify/judging.json`.
+- `MODELS_DIR`: the solver checkpoints `Qwen3.6-35B-A3B/` and `Nemotron-Cascade-2-30B-A3B/`; the `qwen` / `nemotron` environments under `CONDA_ENVS` (vLLM, transformers).
+- `RUNPOOL` (optional): earlier solver runs (`index.jsonl`), which GPTv4 grades for the model's no-hint profile; without it, a baseline arm runs on the GPU first.
 
-## 检查
+## Checks
 
 ```bash
-(cd ReasoningGraph && python3 -m pytest -q tests)      # 39 个离线测试（伪 API）
-(cd GPTv4 && python3 -m pytest -q tests)               # 40 个离线测试（伪 API、伪 solver、伪 grader）
-(cd Solver && python3 -m pytest -q tests)              # 8 个 sample runner 测试（需要 WF_ARCHIVE）
+(cd ReasoningGraph && python3 -m pytest -q tests)      # 39 offline tests (fake API)
+(cd GPTv4 && python3 -m pytest -q tests)               # 40 offline tests (fake API, fake solver, fake grader)
+(cd Solver && python3 -m pytest -q tests)              # 8 sample-runner tests (need WF_ARCHIVE)
 python3 ReasoningGraph/graph/judge.py 2024/K-tower-of-noiha $WF_ARCHIVE/2024/K-tower-of-noiha/solution.cpp   # AC
 ```
 
-## 运行
+## Running
 
 ```bash
 cd ReasoningGraph
-python3 graph/explore.py --problems 2025/J-stacking-cups              # 建图（API，20 min–2 h）
+python3 graph/explore.py --problems 2025/J-stacking-cups              # build a graph (API, 20 min to 2 h)
 python3 grade/grade.py --graph graph/graphs/2025_J-stacking-cups/graph.json --runs '<transcripts>' --out grade/runs/2025_J-stacking-cups/x
 python3 validate/validate.py --graph graph/graphs/2025_J-stacking-cups/graph.json --runs grade/runs/2025_J-stacking-cups/x/runs.jsonl --out validate/reports/2025_J-stacking-cups
 
-cd ../GPTv4                                                           # 登录节点、tmux 里跑
-python3 loop.py --problem 2024/K-tower-of-noiha --model qwen --dry-run      # 判画像 + 写第 1 轮 insight（调 API），作业只 sbatch --test-only
-python3 loop.py --problem 2024/K-tower-of-noiha --model qwen                # 端到端，Ctrl-C 后重跑从 state.json 续
+cd ../GPTv4                                                           # on a login node, inside tmux
+python3 loop.py --problem 2024/K-tower-of-noiha --model qwen --dry-run      # grade the profile + write round 1's insight (API); jobs only go through sbatch --test-only
+python3 loop.py --problem 2024/K-tower-of-noiha --model qwen                # end to end; after Ctrl-C, rerunning resumes from state.json
 python3 report.py
 ```
-
-## 不在这个 repo 里的
-
-- 所有运行输出：agent trace、判分记录、验证报告、探索会话、`GPTv4/runs*/`（都已 gitignore，留在原工作目录）。
-- AtCoder 的题目加载器（CategoryEval），所以只支持 ICPC WF 题。
-- 结果页面（`gh-pages` 分支）的构建脚本。
-- 更早的代码（`LLM/`、`agent/`、`InsightGen/` 的 GPT / SelfGen 循环）在 [`legacy`](../../tree/legacy) 分支。

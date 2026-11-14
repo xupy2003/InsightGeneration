@@ -90,7 +90,7 @@ GATE_TOLERANCE = CONFIRM_TOLERANCE   # the gate may fall this many runs short of
 PHASE2_RUNS = CONFIRM_RUNS      # runs of a compaction round. They are confirmation-sized, so an accepted compaction is
                                 # already confirmed and no confirmation round follows phase 2.
 PHASE2_TOLERANCE = CONFIRM_TOLERANCE   # a compaction is accepted when it falls at most this many runs short of PHASE2_RUNS
-PHASE2_STOP_ON_FAIL = True      # the first rejected compaction ends phase 2 (user 2026-11-06, "直到失败为止"). False restores
+PHASE2_STOP_ON_FAIL = True      # the first rejected compaction ends phase 2 (user 2026-11-06, "until one fails"). False restores
                                 # the older search, which split a failed group in halves and went on through the queue.
 STALL_ROUNDS = 2                # rounds without a better score once every target is at its top level -> stop
 GRADE_WORKERS = 8

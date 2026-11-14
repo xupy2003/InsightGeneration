@@ -1,116 +1,116 @@
-# GPTv4：基于 reasoning graph 的 model-specific insight 引擎（实施计划，2026-11-03）
+# GPTv4: a model-specific insight engine based on the reasoning graph (implementation plan, 2026-11-03)
 
-目标：对一道求解模型（Qwen3.6-35B-A3B / Nemotron-Cascade-2-30B-A3B，agentv3 harness）解不出的题，自动生成一段 **compact** 的
-insight，让它解出来，并且用比 editorial 臂更少的 reasoning token。要求：效果 ≥ editorial / 简单提示；全自动；端到端；引擎核心不绑定 ICPC。
+Goal: for a problem the solver model (Qwen3.6-35B-A3B / Nemotron-Cascade-2-30B-A3B, agentv3 harness) cannot solve, automatically generate a **compact**
+insight that gets it solved, with fewer reasoning tokens than the editorial arm. Requirements: effect ≥ editorial / simple hint; fully automatic; end to end; the engine core is not tied to ICPC.
 
-## 0. 现状盘点（本计划建立在这些已有件上）
+## 0. Inventory (this plan builds on these existing pieces)
 
-| 件 | 位置 | 可直接用的接口 |
+| Piece | Location | Interfaces usable directly |
 |---|---|---|
-| 求解 harness | `Solver/agentv3` | `run.py --insight-file F`；`contest.sh`（Slurm ailab，1 GPU，2 h）；输出 `<slug>_runN_{transcript,submissions,reasoning,samples}.jsonl + summary.json`；transcript 每轮有 `completion_tokens`（= reasoning token 的度量） |
-| 推理图 | `ReasoningGraph/graph` | `explore.py --problems P` 只看题面建 AND-OR 图（30 题已建）；`graph.json`：nodes(statement/accept/routes/traps)、end.routes + keys、hazards、paths/P*.cpp |
-| 判分 | `ReasoningGraph/grade` | `grade.py --graph G --runs ... --out D`：每个 run 的 `results[N]`（trajectory、final、claims 带逐字 quote）、`given`、`established`、`reached_end`、`frontier`、`stuck`、`root`、`class`、`implemented`、`code_gap`、`hazards_tripped`、`off_graph`；盲判、终审默认开 |
-| 验证 | `ReasoningGraph/validate` | 30 题 309 run：soundness 188/195、discrimination 113/114 → grader 已可作为 loop 的信号源（design.md §5 留的"何时切换"条件已满足） |
-| 轨迹池 | `RunPool` | 2485 run，`index.jsonl`（model/problem/source/solved/insight）；每题两模型都有 baseline、editorial、GPT insight 臂 |
-| 旧引擎 | `InsightGen/GPTv3` | 可复用：`PricedGuidance/hints.py` 的写作规则与检查（ASCII、COPY_RUN=16、ANSWER_NUMBERS=8、无 `#include`/`main(`）、`tokens.py`（solver 自己的 tokenizer 计数）、`ErrorAnalysis/behavior.py`（行为画像）、`launch_eval.sh` 的 Slurm 模式（路径已失效：agentv3 搬到了 `Solver/`） |
-| API | `GeneralGenV2/session.py` 经 `ReasoningGraph/api.py` | gpt-6-astra、strict tool、重试、JSONL 记录 |
+| Solver harness | `Solver/agentv3` | `run.py --insight-file F`; `contest.sh` (Slurm ailab, 1 GPU, 2 h); output `<slug>_runN_{transcript,submissions,reasoning,samples}.jsonl + summary.json`; the transcript has `completion_tokens` per round (= the measure of reasoning tokens) |
+| Reasoning graph | `ReasoningGraph/graph` | `explore.py --problems P` builds the AND-OR graph from the statement only (30 problems built); `graph.json`: nodes(statement/accept/routes/traps), end.routes + keys, hazards, paths/P*.cpp |
+| Grading | `ReasoningGraph/grade` | `grade.py --graph G --runs ... --out D`: per run `results[N]` (trajectory, final, claims with verbatim quotes), `given`, `established`, `reached_end`, `frontier`, `stuck`, `root`, `class`, `implemented`, `code_gap`, `hazards_tripped`, `off_graph`; blind grading and adjudication on by default |
+| Validation | `ReasoningGraph/validate` | 30 problems, 309 runs: soundness 188/195, discrimination 113/114 → the grader can now serve as the loop's signal source (the "when to switch" condition left in design.md §5 is met) |
+| Run pool | `RunPool` | 2485 runs, `index.jsonl` (model/problem/source/solved/insight); every problem has baseline, editorial and GPT insight arms for both models |
+| Old engine | `InsightGen/GPTv3` | reusable: the writing rules and checks of `PricedGuidance/hints.py` (ASCII, COPY_RUN=16, ANSWER_NUMBERS=8, no `#include`/`main(`), `tokens.py` (counts with the solver's own tokenizer), `ErrorAnalysis/behavior.py` (behavior profile), the Slurm pattern of `launch_eval.sh` (paths are stale: agentv3 moved to `Solver/`) |
+| API | `GeneralGenV2/session.py` via `ReasoningGraph/api.py` | gpt-6-astra, strict tool, retries, JSONL logging |
 
-GPTv3 留下的结论，GPTv4 直接采纳：
-- 自推率 / 逐字计价 / 选择题难度都不预测真实解出 → **唯一的信号是真实 run + grader**。
-- 0/5 → 0/5 的轮次在 GPTv3 里没有任何信号，loop 退化成随机游走 → GPTv4 用图上的**进度**（到达的节点深度、END 数）替代单一解出数。
-- MA-07 最好轮次都超过"½ editorial"上限，先压缩再删会丢公式精度 → 阶段 1 不设硬上限，靠"只写模型没有的节点"做到紧凑，阶段 2 再做消融压缩。
-- 行为指令单独给（beh_only）两模型 2021/D 都 0/5，加在 editorial 上 +1/5 → 行为层只在诊断为行为型失败时才加，不默认加。
-- 2025/J Qwen：3 轮 57 词 0/5→5/5；editorial 776 词 → compact 可行；Nemotron 上一直没成 → 需要 model-specific 的 route 和写法。
+Conclusions left by GPTv3, adopted by GPTv4 as they are:
+- Own-rate / per-token pricing / multiple-choice difficulty do not predict real solves → **the only signal is real runs + the grader**.
+- Rounds going 0/5 → 0/5 carried no signal at all in GPTv3, and the loop degenerated into a random walk → GPTv4 replaces the single solve count with **progress** on the graph (depth of the nodes reached, number of ENDs).
+- The best MA-07 rounds all exceeded the "½ editorial" cap, and compressing first and deleting afterwards loses formula precision → phase 1 sets no hard cap and gets compactness from "write only the nodes the model lacks"; phase 2 then does ablation compaction.
+- Behavior instructions given alone (beh_only) got 0/5 on 2021/D for both models, and +1/5 when added to the editorial → the behavior layer is added only when the diagnosis finds a behavior-type failure, not by default.
+- 2025/J Qwen: 3 rounds, 57 words, 0/5→5/5; editorial 776 words → compact is feasible; never succeeded on Nemotron → needs a model-specific route and wording.
 
-## 1. 核心思想
+## 1. Core idea
 
-把 insight 定义为**图上的一个割**：从该模型在无提示 run 里已经自己到达的节点集 H_M 出发，到某条 END route 的 key node，
-缺的那几个节点就是 insight 的内容；每个节点的写法针对该模型在这个节点上的**自己的错误说法**（grader 的 claims/quotes）。
-模型不同 → H_M 不同、卡点不同、错误说法不同 → 选的 route、写的节点、措辞都不同，这就是 model-specific 的全部来源，不靠猜。
+Define the insight as **a cut of the graph**: from the node set H_M that the model already reaches by itself in its no-hint runs, to the key node of some END route,
+the few missing nodes are the content of the insight; the wording of each node targets the model's **own wrong statements** at that node (the grader's claims/quotes).
+Different model → different H_M, different sticking points, different wrong statements → a different route chosen, different nodes written, different wording; this is the entire source of model specificity, with no guessing.
 
-每轮用真实 agentv3 run（×5）评测，再用**同一张图**判分带提示的 run：
-- `given`（insight 送到了哪）vs `established`（模型自己接住了哪）→ 没接住的节点换写法 / 升级；
-- 新的 `stuck` / `root` → 下一个要写的节点；
-- `hazards_tripped` / `code_gap` / `END+fail` → 实现层条目；
-- `stalled` / 零提交 / 盲提交 → 行为层条目（或改 harness）。
+Each round is evaluated with real agentv3 runs (×5), and the hinted runs are graded with **the same graph**:
+- `given` (where the insight got through) vs `established` (what the model itself took up) → a node not taken up gets a new wording / is escalated;
+- new `stuck` / `root` → the next node to write;
+- `hazards_tripped` / `code_gap` / `END+fail` → implementation-layer items;
+- `stalled` / zero submissions / blind submissions → behavior-layer items (or change the harness).
 
-进度度量（每轮每个 run，纯离线）：目标 route 上被 held 且无 wrong 的最深节点深度、reached_end 数、solved 数、输出 token。
-这让 0/5 的轮次之间也能比较，keep-best 有了梯度。
+Progress measure (per run, per round, fully offline): the depth of the deepest node on the target route that is held with no wrong, the number of reached_end, the number solved, output tokens.
+This makes rounds at 0/5 comparable with each other too, so keep-best has a gradient.
 
-## 2. 引擎流程（`loop.py`，一条命令端到端）
+## 2. Engine flow (`loop.py`, one command end to end)
 
 ```
-python3 loop.py --problem 2024/G-kindergarten --model nemotron      # 可 --resume；状态在 runs/<slug>/<model>/state.json
+python3 loop.py --problem 2024/G-kindergarten --model nemotron      # --resume available; state in runs/<slug>/<model>/state.json
 ```
 
-1. **ensure_graph**：`graph/graphs/<slug>/graph.json` 不存在就调 `ReasoningGraph/graph/explore.py`（新题自动建图）。
-2. **round 0**：取该模型无提示 run（RunPool 优先；不足 5 个就用 `launch` 补跑 baseline），判分（已判过的 30 题直接读 `grade/runs/<slug>/pilot/runs.jsonl`）。
-   得到模型画像 `profile.json`：每节点 held 率 / wrong 率 / 作为 stuck 的次数、错误说法聚类（traps）、hazards、行为画像（behavior.py）。
-3. **diagnose**：
-   - **选 route**：对每条 END route 算代价 = Σ_{节点 ∉ H_M} w(节点)，w 由该模型在该节点的 wrong 率和深度定；取最小。两个模型可能选不同 route。
-   - **目标集**：route 上 ∉ H_M 的节点，按拓扑序。**2026-11-03 晚改为逐节点给（step 模式）**：第 1 轮只写第一个缺失节点；每轮判分后看前沿
-     （第一个在 <3/5 run 里 held 的节点）：前沿仍是刚给的节点 → 升一级，前沿越过它 → 在新前沿加一条等级 1；最后再压缩。
-     原来的"第 1 轮全部写再消融"保留为 cut 模式作对照：它第 1 轮就能解出，但盖住了"哪句话让模型过了哪个节点"，压缩只能一组组试，
-     且 2025/J 的压缩显示全给的文本里至少三个节点模型本可自己推出。
-   - **等级**：L1 仅结论（≤ 40 词）；L2 结论 + 该模型错的那个条件的否定（来自 quotes）；L3 输出规则的 case list / 伪代码；L4 加一个微型算例。只在 grader 判"given 但未 established / wrong"时升级。
-   - **附加条目**：hazards（只收该模型踩过的）；code_gap 对应的实现约束；行为指令（仅当 class 为 stalled、零提交、或 END+fail/other 占多数）。
-4. **write**（gpt-6-astra）：每个条目一次调用，输入 = 节点 statement/accept、该模型在此节点的 wrong claims 原文、上一版措辞及其接住情况、图上前驱节点（已写的）；
-   输出纯 ASCII 一段。检查：COPY_RUN（对 `paths/P*.cpp` 和 solution.cpp）、ANSWER_NUMBERS、无代码骨架、solver-token 计数（`tokens.py`）。
-5. **compose**：条目按 route 顺序 → hazards → 行为（放最前）；写成 `insight.txt`。
-6. **launch**：`Solver/agentv3/contest.sh` × 5 seed（Slurm，`--insight-file`，`MAX_TOKENS_PER_ROUND=262144`），等待完成（squeue 轮询，断点续跑）。
-7. **grade**：`ReasoningGraph/grade/grade.py` 判这 5 个 run（盲判；同图同缓存）。
-8. **score / keep-best**：分数 = (solved, reached_end 数, 平均目标 route 深度, −平均输出 token, −insight token) 字典序；不比最好差才接受，否则回退到最好轮的快照，写手看到"试过、更差"的版本。
-9. 停止：5/5 → 阶段 2；轮数上限（默认 8）；目标节点升到 L4 仍未接住且连续 2 轮无进度 → 报告"content 失败 / behavior 失败"并停。
-10. **阶段 2 压缩**（默认 6 轮）：按组消融——删掉该模型在带提示 run 里已能自己 established 的节点（given 之外仍 held）、高等级降到 L1、删 hazards / 行为；每次 5 run，5/5 且 END 数不降才接受，否则二分；最后确认轮 5 run。
-11. **report**：baseline / editorial / 引擎最终版：solved、insight token、解出 run 的平均输出 token、每节点接住率。
+1. **ensure_graph**: if `graph/graphs/<slug>/graph.json` does not exist, call `ReasoningGraph/graph/explore.py` (a new problem gets its graph automatically).
+2. **round 0**: take the model's no-hint runs (RunPool first; if there are fewer than 5, run baseline with `launch` to fill up), grade them (for the 30 problems already graded, read `grade/runs/<slug>/pilot/runs.jsonl` directly).
+   This gives the model profile `profile.json`: per node the held rate / wrong rate / number of times it is the stuck node, clusters of wrong statements (traps), hazards, behavior profile (behavior.py).
+3. **diagnose**:
+   - **Choose the route**: for each END route compute cost = Σ_{node ∉ H_M} w(node), with w set by this model's wrong rate at the node and the node's depth; take the minimum. The two models may choose different routes.
+   - **Target set**: the nodes on the route ∉ H_M, in topological order. **Changed on the evening of 2026-11-03 to one node at a time (step mode)**: round 1 writes only the first missing node; after each round's grading, look at the frontier
+     (the first node held in <3/5 runs): the frontier is still the node just given → escalate one level; the frontier moved past it → add a level-1 item at the new frontier; compaction comes last.
+     The original "write everything in round 1, then ablate" is kept as cut mode for comparison: it can solve in round 1, but it hides "which sentence got the model past which node", compaction can only try group by group,
+     and the 2025/J compaction showed that the fully given text contained at least three nodes the model could have derived by itself.
+   - **Levels**: L1 conclusion only (≤ 40 words); L2 conclusion + the negation of the condition this model got wrong (from quotes); L3 case list / pseudocode of the output rule; L4 adds a tiny worked example. Escalate only when the grader judges "given but not established / wrong".
+   - **Extra items**: hazards (only those this model tripped); implementation constraints for code_gap; behavior instructions (only when class is stalled, zero submissions, or END+fail/other is the majority).
+4. **write** (gpt-6-astra): one call per item, input = the node's statement/accept, this model's wrong claims at this node verbatim, the previous wording and whether it was taken up, the node's predecessors in the graph (already written);
+   output one paragraph of pure ASCII. Checks: COPY_RUN (against `paths/P*.cpp` and solution.cpp), ANSWER_NUMBERS, no code skeleton, solver-token count (`tokens.py`).
+5. **compose**: items in route order → hazards → behavior (placed first); written to `insight.txt`.
+6. **launch**: `Solver/agentv3/contest.sh` × 5 seeds (Slurm, `--insight-file`, `MAX_TOKENS_PER_ROUND=262144`), wait for completion (squeue polling, resumable).
+7. **grade**: `ReasoningGraph/grade/grade.py` grades these 5 runs (blind; same graph, same cache).
+8. **score / keep-best**: score = (solved, number of reached_end, mean target-route depth, −mean output tokens, −insight tokens), lexicographic; accepted only if not worse than the best, otherwise roll back to the best round's snapshot, and the writer sees the version as "tried, worse".
+9. Stop: 5/5 → phase 2; round cap (default 8); a target node escalated to L4 and still not taken up, with no progress for 2 consecutive rounds → report "content failure / behavior failure" and stop.
+10. **Phase 2 compaction** (default 6 rounds): ablation by group: remove the nodes this model can already establish by itself in the hinted runs (still held outside given), lower high levels to L1, remove hazards / behavior; 5 runs each time, accepted only at 5/5 with the END count not dropping, otherwise bisect; at the end a confirmation round of 5 runs.
+11. **report**: baseline / editorial / the engine's final version: solved, insight tokens, mean output tokens of solved runs, per-node take-up rate.
 
-## 3. Model-specific 的具体落点
+## 3. Where model specificity lands
 
-| 层 | 来源（都是该模型自己的 run） | 做法 |
+| Layer | Source (all from this model's own runs) | Approach |
 |---|---|---|
-| route 选择 | 无提示 run 的 held 集 | 不同模型走它更接近的路径（2025/L Qwen 的排序+线段树 DP 就是 explorer 没想到但图里补上的那种） |
-| 内容节点 | stuck / root / frontier | 只写缺的，不写它已会的 → 紧凑 |
-| 措辞 | 该节点的 wrong claims 逐字引用 | 写手直接针对模型的误解写否定条件；接不住再升级，不预先升级 |
-| 实现层 | hazards_tripped、implemented.contradicts、code_gap | 只在 END+fail 时加，一条一个约束 |
-| 行为层 | behavior.py 画像（Nemotron 盲提交 / 幻觉工具；Qwen CE 后重写、131k 截断零提交） | 诊断触发才加；若两轮无效，改 harness（用户已同意这条路线），不再占 insight 篇幅 |
-| 表示 | 上一轮接住率 | 对 Qwen 公式版接住率高（2025/J 0.95），Nemotron 待测；写手可在升级时换表示 |
+| route choice | held set of the no-hint runs | different models take the path they are closer to (2025/L Qwen's sort + segment-tree DP is exactly the kind the explorer did not think of but that was added to the graph) |
+| content nodes | stuck / root / frontier | write only what is missing, not what it already knows → compact |
+| wording | verbatim quotes of the wrong claims at the node | the writer writes negated conditions aimed directly at the model's misunderstanding; escalate only when not taken up, never escalate in advance |
+| implementation layer | hazards_tripped, implemented.contradicts, code_gap | added only on END+fail, one constraint per item |
+| behavior layer | behavior.py profile (Nemotron blind submits / hallucinated tools; Qwen rewrites after CE, zero submissions from the 131k truncation) | added only when the diagnosis triggers it; if it has no effect for two rounds, change the harness (the user has agreed to this route) and stop spending insight length on it |
+| representation | take-up rate of the previous round | for Qwen the formula version has a high take-up rate (2025/J 0.95), Nemotron not yet tested; the writer may switch representation when escalating |
 
-## 4. 评测协议（效果 ≥ 人写提示 / 简单提示）
+## 4. Evaluation protocol (effect ≥ human-written hint / simple hint)
 
-- 题集：先 **editorial-resistant 六题**（2023/J、2024/G、2024/K、2025/A、2023/F、2022/U；agentv3 baseline+editorial 臂已有、图已建、无提示 run 已判分）
-  + **2025/J**（有 GPTv3 的 ground truth）。之后扩 2024/J、2025/B、2024/I（只有 agentv2 臂，见 §6）。
-- 对照：baseline（已有）、editorial（已有，不重跑）、**key-node-only**（图的 key node 一句话，自动生成，作为"简单提示"对照，5 run）。
-- 指标：solved/5（最终 + 确认轮共 10）；insight 的 solver token；解出 run 的平均输出 token；未解按 2 h 实际 token 计。
-  通过线：solved ≥ editorial 且 insight token < editorial token；再报输出 token 的比值。
-- 成本：每轮 5 GPU-run（2.5 h 墙钟，并行）+ 判分约 0.5–1.5M 输入 token + 写作约 50k；一题一模型阶段 1+2 约 14 轮 ≈ 35 h 墙钟；
-  QOS 16 GPU → 3 个 (题, 模型) 并行。
+- Problem set: first the **six editorial-resistant problems** (2023/J, 2024/G, 2024/K, 2025/A, 2023/F, 2022/U; agentv3 baseline+editorial arms exist, graphs built, no-hint runs graded)
+  + **2025/J** (has GPTv3's ground truth). Then extend to 2024/J, 2025/B, 2024/I (agentv2 arms only, see §6).
+- Controls: baseline (exists), editorial (exists, not rerun), **key-node-only** (one sentence for the graph's key node, generated automatically, as the "simple hint" control, 5 runs).
+- Metrics: solved/5 (final + confirmation round, 10 in total); the insight's solver tokens; mean output tokens of solved runs; unsolved runs count at their actual tokens over 2 h.
+  Pass line: solved ≥ editorial and insight tokens < editorial tokens; then report the ratio of output tokens.
+- Cost: per round 5 GPU runs (2.5 h wall clock, in parallel) + grading about 0.5–1.5M input tokens + writing about 50k; one problem × one model, phases 1+2, about 14 rounds ≈ 35 h wall clock;
+  QOS 16 GPUs → 3 (problem, model) pairs in parallel.
 
-## 5. 目录与实施顺序
+## 5. Layout and implementation order
 
 ```
 GPTv4/
-  plan.md README.md config.py        # 路径、模型、等级、轮数、分数定义
-  adapters/problems.py               # → ReasoningGraph/problems.py（ICPC + AtCoder 已支持）
-  adapters/solver_agentv3.py         # launch / wait / collect（Slurm；路径指向 Solver/agentv3）
-  graph.py   grade.py                # 调 ReasoningGraph 的 explore / grade，读 graph.json / runs.jsonl
-  profile.py                         # 模型画像：held/wrong/stuck/traps/hazards/behavior
-  diagnose.py                        # route 选择、目标集、等级、附加条目、接住判定
-  write.py   compose.py              # 写手 prompt、检查、拼装
-  loop.py    report.py               # 状态机 + 报告
-  tests/                             # 伪 API + 伪 solver 的离线测试
+  plan.md README.md config.py        # paths, models, levels, round counts, score definition
+  adapters/problems.py               # → ReasoningGraph/problems.py (ICPC + AtCoder already supported)
+  adapters/solver_agentv3.py         # launch / wait / collect (Slurm; paths point to Solver/agentv3)
+  graph.py   grade.py                # call ReasoningGraph's explore / grade, read graph.json / runs.jsonl
+  profile.py                         # model profile: held/wrong/stuck/traps/hazards/behavior
+  diagnose.py                        # route choice, target set, levels, extra items, take-up check
+  write.py   compose.py              # writer prompt, checks, assembly
+  loop.py    report.py               # state machine + report
+  tests/                             # offline tests with a fake API + fake solver
   runs/<slug>/<model>/round<k>/{diagnosis.json, items.json, insight.txt, eval/, grade/}
 ```
 
-顺序：
-1. `config/adapters/graph/grade/profile` + 离线测试（读现有 30 题的 runs.jsonl，不调 API、不占 GPU）：半天。
-2. `diagnose/write/compose` + 伪 API 测试；在 2024/G、2023/J 两题上对两模型各生成第 1 轮 insight 人工看一遍：半天。
-3. `loop` + Slurm 适配 + `report`；2025/J Qwen 走通一轮（已知 3 轮可到 5/5，作为冒烟）：1 天。
-4. 六题 × 两模型正式跑（3 并行）：约 1 周墙钟；中途按 §2.9 的停止报告修引擎而不是修测量。
-5. 泛化检查：AtCoder 一题走完整链（problems.py 已支持），确认引擎核心无 ICPC 特定代码。
+Order:
+1. `config/adapters/graph/grade/profile` + offline tests (read the existing 30 problems' runs.jsonl, no API calls, no GPU): half a day.
+2. `diagnose/write/compose` + fake-API tests; on 2024/G and 2023/J, generate the round-1 insight for each of the two models and review it by hand: half a day.
+3. `loop` + Slurm adapter + `report`; get one round through on 2025/J Qwen (known to reach 5/5 in 3 rounds, serves as the smoke test): 1 day.
+4. Real runs, six problems × two models (3 in parallel): about 1 week wall clock; along the way, fix the engine rather than the measurement, following the stop reports of §2.9.
+5. Generalization check: one AtCoder problem through the whole chain (problems.py already supports it), confirming the engine core has no ICPC-specific code.
 
-## 6. 需要用户定的点（我先按推荐做，可否决）
+## 6. Points for the user to decide (I go with the recommendation for now; can be vetoed)
 
-1. 2025/J、2024/J、2025/B、2024/I 只有 agentv2 的 baseline/editorial 臂；推荐先做 hard2 六题 + 2025/J，这四题暂与 agentv2 臂对照并注明，不补跑 agentv3 editorial 臂（符合"不重测 editorial"）。
-2. 阶段 1 不设 insight 长度硬上限，只报超过 ½ editorial 的情况；阶段 2 压缩。
-3. 行为层默认关，诊断触发；两轮无效改 harness。
-4. 可选的廉价预筛（只跑 1 轮、只判第一轮是否接住目标节点，约 15 min GPU）：先不做，阶段 4 若写法迭代太贵再加。
+1. 2025/J, 2024/J, 2025/B, 2024/I only have agentv2 baseline/editorial arms; recommendation: do the six hard2 problems + 2025/J first; for now these four are compared against the agentv2 arms, noted as such, without running agentv3 editorial arms for them (consistent with "do not re-measure the editorial").
+2. Phase 1 sets no hard cap on insight length and only reports cases above ½ editorial; phase 2 compacts.
+3. The behavior layer is off by default and triggered by the diagnosis; if it has no effect for two rounds, change the harness.
+4. Optional cheap pre-screen (run only 1 round and only judge whether the first round takes up the target node, about 15 min of GPU): not done for now; add it in stage 4 if iterating on wordings gets too expensive.
