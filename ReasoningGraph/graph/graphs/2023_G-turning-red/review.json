@@ -1,0 +1,415 @@
+[
+ {
+  "round": 1,
+  "version": "415d7ff0694bab12",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Reducing optimal press counts modulo three and expressing a light's combined changes as an additive congruence are separate modeling claims. Keep the periodicity/optimal-count claim here and move the per-light congruence into N2."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": "Accept requires a spanning-tree traversal and checks of other edges and unary constraints, although the claim only establishes uniqueness conditional on the root value. Accept any path-propagation or induction argument establishing at most one completion; actual consistency checks belong to the subsequent algorithm or restriction nodes."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": false,
+     "separable": true,
+     "atomic": false,
+     "note": "Composing affine parent potentials and deriving the root relation needed to merge two sets are distinguishable steps and should be split. Path compression in the statement and mandatory union-by-size/rank in accept are optional implementation choices; state composition along parent paths and make these optimizations nonexclusive examples."
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "A solver can establish that each literal class reaches every button without establishing which classes represent valid assignments, particularly how duplicate states invalidate only their own class. Split the coverage lemma from the assignment-validity and cost characterization."
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Copy exchange pairing the doubled components is a separate structural claim from the constant paired-potential sum that reduces negation to one offset equation. Split component pairing from offset compatibility, keeping the distinct-pair and self-pair cases with the latter."
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All five END routes contain sufficient feasibility, consistency, and cost-minimization claims to implement their algorithms. Their stated implementations fit the limits using the at-most-2l incidence bound.",
+   "key_ok": true,
+   "key_note": "N5, N8, N11, N14, and N18 each state the corresponding path's complete output algorithm, including infeasibility.",
+   "hazards_ok": false,
+   "hazards_note": "H4 is too restrictive: intermediate modular subtraction may use signed representatives, provided congruence tests are correct and actual press costs use representatives 0, 1, and 2. H5 correctly requires stack safety but unnecessarily requires O(l+b) storage; require memory within the execution limit instead. H1-H3 cover the principal color, uncontrolled-light, and repeated/cyclic-constraint hazards; the optimum is at most 2b <= 800000, so a mandatory 64-bit accumulator would not be warranted.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1, through N1-N5, matches the editorial and reference solution: modulo-three counts, zero/unary/binary constraints, independent components, and propagation for three root values followed by minimum-cost selection.",
+   "order": "Move the congruence-model portion of N1 into N2. Split N9 into affine-potential composition and root-merge/restriction handling, N13 into class coverage and assignment characterization, and N17 into component pairing and offset compatibility. Keep consistency checking out of N3's acceptance criterion; its role is root-conditioned uniqueness.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N3 (a reader of a solver's work cannot decide whether the solver has it): Accept requires a spanning-tree traversal and checks of other edges and unary constraints, although the claim only establishes uniqueness conditional on the root value. Accept any path-propagation or induction argument establishing at most one completion; actual consistency checks belong to the subsequent algorithm or restriction nodes.",
+   "N9 (a reader of a solver's work cannot decide whether the solver has it; it states one implementation's choice, not what every correct solution through this step gets right; bundles claims a solver can have separately; split it): Composing affine parent potentials and deriving the root relation needed to merge two sets are distinguishable steps and should be split. Path compression in the statement and mandatory union-by-size/rank in accept are optional implementation choices; state composition along parent paths and make these optimizations nonexclusive examples.",
+   "hazards: H4 is too restrictive: intermediate modular subtraction may use signed representatives, provided congruence tests are correct and actual press costs use representatives 0, 1, and 2. H5 correctly requires stack safety but unnecessarily requires O(l+b) storage; require memory within the execution limit instead. H1-H3 cover the principal color, uncontrolled-light, and repeated/cyclic-constraint hazards; the optimum is at most 2b <= 800000, so a mandatory 64-bit accumulator would not be warranted."
+  ],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): Reducing optimal press counts modulo three and expressing a light's combined changes as an additive congruence are separate modeling claims. Keep the periodicity/optimal-count claim here and move the per-light congruence into N2.",
+   "N13 (bundles claims a solver can have separately; split it): A solver can establish that each literal class reaches every button without establishing which classes represent valid assignments, particularly how duplicate states invalidate only their own class. Split the coverage lemma from the assignment-validity and cost characterization.",
+   "N17 (bundles claims a solver can have separately; split it): Copy exchange pairing the doubled components is a separate structural claim from the constant paired-potential sum that reduces negation to one offset equation. Split component pairing from offset compatibility, keeping the distinct-pair and self-pair cases with the latter.",
+   "order: Move the congruence-model portion of N1 into N2. Split N9 into affine-potential composition and root-merge/restriction handling, N13 into class coverage and assignment characterization, and N17 into component pairing and offset compatibility. Keep consistency checking out of N3's acceptance criterion; its role is root-conditioned uniqueness."
+  ],
+  "time": "2026-11-03 01:27:44"
+ },
+ {
+  "round": 2,
+  "version": "2e0530399802b908",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All five END routes contain the constraint model, feasibility checks, exhaustive characterization of their candidates, and cost minimization. Their accepts supply implementations within the limits. In particular, P4 explains how to group literal classes by button component, and P5 includes both opposite-copy compatibility and counting only positive-copy costs.",
+   "key_ok": true,
+   "key_note": "N5, N8, N11, N14, and N18 each specify the corresponding path's complete output algorithm, including minimization and impossible cases; none is merely a feasibility or complexity claim.",
+   "hazards_ok": true,
+   "hazards_note": "H1–H5 are necessary, checkable constraints covering color direction, uncontrolled lights and zero buttons, all light equations, modular arithmetic and integer costs, and traversal/resource safety. The output convention is explicit in every output node. No additional wide-integer or precision requirement is needed: the optimum is at most 2b <= 800000.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial and reference solution: reduce counts modulo three, form light constraints, independently try three root values per button component, reject inconsistent trials, and sum the minimum valid costs. Uncontrolled nonred lights are also explicitly handled.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-03 01:32:26"
+ }
+]

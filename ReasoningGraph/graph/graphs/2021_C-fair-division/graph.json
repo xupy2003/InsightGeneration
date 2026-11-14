@@ -1,0 +1,555 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2021/C-fair-division",
+ "title": "Fair Division",
+ "status": "accepted",
+ "version": "eca5789a26b6a2ca",
+ "solution_outline": "P1: Write the remaining fraction as a/b in lowest terms. P2: Instead of testing every reduced ratio, enumerate the divisors of m as the possible primitive weight sums. P3: When k divides n, the k-term primitive geometric sum divides the full n-term sum, so feasibility forces this smaller polynomial to divide m. P4: Use the primitive-prime-divisor theorem for b^n-a^n: except for n=6 and (a,b)=(1,2), a feasible ratio yields an order-n element a/b modulo some prime factor of m.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Infinite shares form a geometric progression",
+   "kind": "modeling",
+   "statement": "Let r=1-f. Pirate i, numbered from zero, receives x_i=m(1-r)r^i/(1-r^n) after infinitely many rounds. Thus the final shares have common ratio r and sum to m.",
+   "routes": [
+    []
+   ],
+   "accept": "Sum the geometric series of payments m(1-r)r^(i+kn), for k>=0. Equivalent reasoning using the ratio between adjacent pirates and conservation of the total loot also establishes the formula.",
+   "anchors": [
+    "fraction f",
+    "pirates",
+    "total loot"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Primitive weight sum must divide loot",
+   "kind": "reformulation",
+   "statement": "Write r=a/b with 1<=a<b and gcd(a,b)=1. Define D=sum from i=0 to n-1 of b^(n-1-i)a^i. Every final share is an integer exactly when D divides m; the corresponding fraction is f=(b-a)/b.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "The shares are m times the integer weights b^(n-1-i)a^i divided by D. The endpoint weights are coprime, so integrality of all shares forces D|m by Bezout; divisibility also plainly suffices. The equivalent expression D=(b^n-a^n)/(b-a) is valid.",
+   "anchors": [
+    "fraction f",
+    "integer total loot",
+    "a",
+    "b",
+    "D"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Feasible reduced denominators are small",
+   "kind": "key_property",
+   "statement": "For a feasible pair, b^(n-1)<D<=m and D>=2^n-1. Under the input limits this implies n<=59 and b<=3981.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Each term of D is positive, and a>=1,b>=2 minimizes D at a=1,b=2. Compare 2^60-1 and 3982^5 with 10^18, using n>=6. Tighter bounds from m or the minimum D for a particular b also count.",
+   "anchors": [
+    "number of pirates n",
+    "total loot m",
+    "denominator b",
+    "D"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Enumerate bounded primitive weight sums",
+   "kind": "algorithm",
+   "statement": "If n>=60, output impossible. Otherwise enumerate coprime 1<=a<b with b^(n-1)<m, test D|m, and output (b-a,b) minimizing (b,b-a). If no tested pair succeeds, output impossible.",
+   "routes": [
+    [
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Enumerating denominators increasingly and a decreasingly makes the first valid pair optimal. Compute D by its sum, geometric quotient, or Horner recurrence, rejecting values exceeding m. At most about eight million pairs occur, and O(n) arithmetic plus a gcd per pair fits the limits.",
+   "anchors": [
+    "smallest q",
+    "smallest p",
+    "impossible",
+    "D"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N5",
+   "name": "Weight sum is coordinatewise increasing",
+   "kind": "key_property",
+   "statement": "For every integer h>=2, the geometric weight sum D_h(a,b)=sum from i=0 to h-1 of b^(h-1-i)a^i is strictly increasing in either positive integer argument.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Increasing either argument never decreases a term and strictly increases an endpoint term. This applies to the full n-term sum and to shorter block sums, even when a and b are not coprime.",
+   "anchors": [
+    "geometric weight sum D_h",
+    "a",
+    "b"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N6",
+   "name": "Staircase finds a prescribed weight sum",
+   "kind": "algorithm",
+   "statement": "For each positive target d, all positive integer pairs a<b satisfying D(a,b)=d can be enumerated by monotone row/column elimination within a bounded search region containing every solution.",
+   "routes": [
+    [
+     "N3",
+     "N5"
+    ]
+   ],
+   "accept": "One realization starts a=1,b=floor(d^(1/(n-1))). When D<d discard the current a by increasing it; when D>d discard the current b by decreasing it. After equality, strict monotonicity permits discarding both. Stop at a>=b. Equivalent staircase initializations and updates count if they preserve complete coverage. This realization uses O(d^(1/(n-1))) evaluations.",
+   "anchors": [
+    "D",
+    "target d",
+    "a",
+    "b"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N7",
+   "name": "Search divisor level sets for optimum",
+   "kind": "algorithm",
+   "statement": "Reject n>=60. Factor m and enumerate its positive divisors d. For each d, find all D(a,b)=d pairs by staircase search and retain coprime pairs. Output (b-a,b) minimizing (b,b-a), or impossible if none exists.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N6"
+    ]
+   ],
+   "accept": "Generate divisors from the prime factorization, using a suitable 64-bit factorization method. Exact staircase searches cost O(n times the sum over d|m of d^(1/(n-1))) arithmetic operations. Divisors below 2^n-1 may be omitted; once a denominator is known, larger denominators and unreachable larger divisors may be omitted.",
+   "anchors": [
+    "divisors of m",
+    "smallest q",
+    "smallest p",
+    "impossible"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N8",
+   "name": "Shorter geometric blocks divide full sum",
+   "kind": "key_property",
+   "statement": "For every divisor k>=2 of n, D_k(a,b)=(b^k-a^k)/(b-a) divides D_n(a,b). Consequently every feasible reduced pair satisfies D_k(a,b)|m.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Factor b^n-a^n as (b^k-a^k) times the geometric sum in b^k and a^k. Equivalently, group the n primitive weights into blocks of length k. The quotient is an integer for all positive a<b.",
+   "anchors": [
+    "number of pirates n",
+    "D_k",
+    "D_n",
+    "total loot m"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N9",
+   "name": "Search short-block divisor level sets",
+   "kind": "algorithm",
+   "statement": "For composite n, choose a proper divisor k>=2 and an upper bound B for feasible denominators. Enumerating divisors d|m up to D_k(B-1,B), then their level sets D_k(a,b)=d with 1<=a<b<=B, includes every feasible pair.",
+   "routes": [
+    [
+     "N3",
+     "N5",
+     "N8"
+    ]
+   ],
+   "accept": "Use a small enough k and denominator bound for efficient enumeration; reject B<2. One realization takes the smallest prime factor k and B=floor(m^(1/(n-1))). For composite n<=59, its target bound is at most 93457, allowing direct divisibility checks instead of factoring m. Monotone staircase searches enumerate each level set in O(B) evaluations. Other choices count when they preserve coverage and fit the limits.",
+   "anchors": [
+    "shorter sum D_k",
+    "divisors of m",
+    "candidate ratios",
+    "denominator bound B"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N10",
+   "name": "Combine prime and composite pirate searches",
+   "kind": "algorithm",
+   "statement": "Reject n>=60. For prime n enumerate bounded coprime pairs; for composite n use the short-block divisor searches. Among candidates with gcd(a,b)=1 and D_n(a,b)|m, output (b-a,b) minimizing (b,b-a), or impossible if none exists.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N9"
+    ]
+   ],
+   "accept": "A direct full-sum test removes candidates satisfying only the necessary short-block condition. Compare denominators first, then numerators. With B=floor(m^(1/(n-1))), prime n>=7 implies B<=1000. The smallest-prime-factor short-block realization uses at most 93457 target checks and O(B) staircase steps per dividing target, comfortably within the limits.",
+   "anchors": [
+    "smallest q",
+    "smallest p",
+    "prime n",
+    "composite n",
+    "impossible"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N11",
+   "name": "Feasibility produces a primitive prime witness",
+   "kind": "key_property",
+   "statement": "For coprime 1<=a<b and n>=6, except (n,a,b)=(6,1,2), some prime ℓ dividing D_n makes a/b have multiplicative order n modulo ℓ. Thus every such feasible pair has a witness ℓ|m with n|(ℓ-1).",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Apply the Bang–Zsigmondy primitive-prime-divisor theorem to b^n-a^n. A primitive prime divides neither ab nor b-a, divides D_n, and gives b/a, hence a/b, exact order n. For n>=6 the theorem's only exception is b=2,a=1,n=6.",
+   "anchors": [
+    "primitive sum D_n",
+    "prime divisors of m",
+    "ratio a/b"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N12",
+   "name": "Generate all possible witness residues",
+   "kind": "algorithm",
+   "statement": "For a prime ℓ with n|(ℓ-1), all order-n witness ratios are exactly w^j modulo ℓ, where w is any residue of order n and 1<=j<=n satisfies gcd(j,n)=1.",
+   "routes": [
+    [
+     "N11"
+    ]
+   ],
+   "accept": "Find any order-n element, for example by projecting random nonzero g to w=g^((ℓ-1)/n), verifying w^(n/t)!=1 for each prime t|n. Cyclicity ensures such an element exists and its coprime powers give all and only order-n residues. Uniform random projection succeeds with probability φ(n)/n; other complete subgroup-generation methods also count.",
+   "anchors": [
+    "prime witness ℓ",
+    "order-n residues",
+    "ratio a/b"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N13",
+   "name": "Enumerate primitive-witness congruence candidates",
+   "kind": "algorithm",
+   "statement": "Form candidates from bounded pairs satisfying a≡rb modulo some prime ℓ|m and some order-n residue r, together with (a,b)=(1,2) when n=6. Retain coprime pairs with D_n|m; output (b-a,b) minimizing (b,b-a), or impossible.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N11",
+     "N12"
+    ]
+   ],
+   "accept": "Reject n>=60 before enumeration. Factor m and enumerate order-n residues for eligible primes. For each bounded b not divisible by ℓ, enumerate 1<=a<b in the residue class rb. Include the exceptional pair independently; testing denominator two upfront for all n is also valid. The denominator bound keeps this manageable, and the full divisibility test remains necessary.",
+   "anchors": [
+    "smallest q",
+    "smallest p",
+    "prime witnesses",
+    "exceptional pair",
+    "impossible"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 5
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N6",
+    "N7"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N8",
+    "N9",
+    "N10"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N11",
+    "N12",
+    "N13"
+   ]
+  ],
+  "keys": [
+   "N4",
+   "N7",
+   "N10",
+   "N13"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Polynomial values and intermediate products can exceed 64-bit ranges even though m<=10^18; overflow must not create false divisibility or bounds.",
+   "check": "Use guarded/capped multiplication or sufficiently wide arithmetic with proven bounds. For candidates satisfying b^(n-1)<=m, a<b and n<=59, the sum and one extra multiplication fit __int128. Denominator-bound computations also need safe evaluation; b<=3981 and n<=59 alone do not establish safety."
+  },
+  {
+   "id": "H2",
+   "statement": "The chosen fraction must satisfy the denominator-first, numerator-second minimum; equivalent unreduced representations cannot improve the answer.",
+   "check": "Enumerate reduced pairs or reduce fractions before comparison. For fixed denominator b, the smallest numerator b-a corresponds to the largest feasible a. Print impossible only when no feasible pair exists."
+  },
+  {
+   "id": "H3",
+   "statement": "If factorization is used, primality decisions, prime factors, and divisors must be correct for m<=10^18; modular products must not overflow.",
+   "check": "Use exact or overflow-safe modular arithmetic. Deterministic 64-bit Miller–Rabin bases and Pollard rho with retries on trivial factors are valid examples; other correct factorization methods also count."
+  },
+  {
+   "id": "H4",
+   "statement": "Search bounds and their rounding must preserve every candidate that could still improve the answer within the region or target being searched.",
+   "check": "An unconditional global feasibility bound must cover every feasible denominator. Target-specific bounds need cover only that target; after finding denominator b0, larger denominators can be discarded. Use exact, conservative, or verified rounded bounds. Equality b^(n-1)=m may be excluded because D>b^(n-1)."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Write the remaining fraction as a/b in lowest terms. The pirates' final shares are proportional to the coprime integer weights b^(n-1), ab^(n-2), ..., a^(n-1), so their sum D must divide m. Feasibility forces n<=59 and b<=3981, allowing exhaustive enumeration of all reduced pairs and selection of the required minimum denominator and numerator.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   "key_node": "N4",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 73,
+    "n_tests": 73,
+    "max_time_s": 0.337,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Instead of testing every reduced ratio, enumerate the divisors of m as the possible primitive weight sums. For each divisor d, the symmetric polynomial D(a,b) is strictly increasing in both arguments, so a two-pointer staircase finds all pairs with D(a,b)=d in only O(d^(1/(n-1))) evaluations. Factorization uses deterministic 64-bit Miller–Rabin with Pollard rho, and all polynomial tests use exact integer arithmetic.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N6",
+    "N7"
+   ],
+   "key_node": "N7",
+   "new_nodes": [
+    "N5",
+    "N6",
+    "N7"
+   ],
+   "new_hazards": [
+    "H3",
+    "H4"
+   ],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 73,
+    "n_tests": 73,
+    "max_time_s": 0.037,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "When k divides n, the k-term primitive geometric sum divides the full n-term sum, so feasibility forces this smaller polynomial to divide m. For composite n, choose its smallest prime factor k: the relevant smaller sums are at most 93457, allowing direct divisor enumeration and monotone searches without factoring m. Prime n is at least seven, where bounded pair enumeration is already small; all candidates are checked against the full divisibility condition and compared lexicographically.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N8",
+    "N9",
+    "N10"
+   ],
+   "key_node": "N10",
+   "new_nodes": [
+    "N8",
+    "N9",
+    "N10"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 73,
+    "n_tests": 73,
+    "max_time_s": 0.023,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Use the primitive-prime-divisor theorem for b^n-a^n: except for n=6 and (a,b)=(1,2), a feasible ratio yields an order-n element a/b modulo some prime factor of m. Factor m, generate the order-n residues for its eligible prime factors, and enumerate only bounded integer pairs satisfying the resulting congruences. Exact gcd and full-sum divisibility checks remove false positives, while a direct denominator-two test covers the theorem's exception.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N11",
+    "N12",
+    "N13"
+   ],
+   "key_node": "N13",
+   "new_nodes": [
+    "N11",
+    "N12",
+    "N13"
+   ],
+   "new_hazards": [],
+   "program": "paths/P4.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 73,
+    "n_tests": 73,
+    "max_time_s": 0.114,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Four accepted approaches cover bounded ratio enumeration, divisor-level monotone search, short-block factor searches, and primitive-prime congruence enumeration. The remaining ideas either reuse these same mechanisms or introduce substantially more complexity without a genuinely different solution path.",
+  "considered": [
+   "Enumerating individual integer pirate shares or the common scaling factor: their ranges can reach 10^18, unlike the bounded reduced denominator.",
+   "Binary-searching each divisor level set instead of using a staircase: this reuses the same monotonicity and divisor characterization, so it is an implementation alternative rather than a new approach.",
+   "Stern–Brocot or Farey enumeration of reduced ratios: this changes how the bounded coprime pairs are generated, but still follows the first path's enumeration rule.",
+   "Special formulas for n=6 and even n: their useful divisibility constraints are already covered by the short-block factorization path.",
+   "Enumerating all modular roots of the geometric-sum polynomial rather than primitive order-n roots: this broadens the existing prime-witness candidate enumeration rather than introducing a distinct search mechanism.",
+   "Floating-point optimization or numerical integrality testing: neither replaces the exact divisibility condition reliably at the input bounds."
+  ],
+  "submissions": 4
+ },
+ "builder_notes": "H4 now distinguishes unconditional feasibility bounds from target-specific and incumbent-based pruning. Splitting N3 remains a structural recommendation requiring permission to add a node and update the fixed routes; this submission preserves the mandated IDs and routes.",
+ "open_issues": [],
+ "advisories": [
+  "N3 (bundles claims a solver can have separately; split it): The bound on n and the bound on b are independently discoverable: a solver can establish either without establishing the other. Split the minimum-sum argument yielding n<=59 from the leading-term argument bounding denominators.",
+  "order: For finer stuck-point attribution, split N3 into the minimum primitive-sum bound on n and the leading-term bound on b. This is a structural recommendation; the existing combined claim is correct and usable."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 5,
+  "submissions": 4,
+  "review_rounds": 3,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 116549,
+    "output_tokens": 23910,
+    "cached_tokens": 63727,
+    "reasoning_tokens": 12192
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 22291,
+    "output_tokens": 29476,
+    "reasoning_tokens": 26245
+   },
+   "total": {
+    "input_tokens": 138840,
+    "output_tokens": 53386,
+    "cached_tokens": 63727,
+    "reasoning_tokens": 38437
+   }
+  },
+  "inputs": {
+   "statement": "30a3d70ade396d0d22c6e574722d5ee6d1b019a2b09cb9c516dbd42949ec60da",
+   "editorial": "09710d41987543f1713645020a9030b17f1a925df3d5af8ac6f305c054e7f641",
+   "reference": "786fe34dc1303a6a705ac21d745201a523a3294211c411ebef51345a9cc3628c"
+  },
+  "created": "2026-11-03 00:55:23"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

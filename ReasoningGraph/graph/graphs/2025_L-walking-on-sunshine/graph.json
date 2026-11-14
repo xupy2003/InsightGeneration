@@ -1,0 +1,921 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2025/L-walking-on-sunshine",
+ "title": "Walking on Sunshine",
+ "status": "accepted",
+ "version": "3349bf7008e9185f",
+ "solution_outline": "P1: Horizontal travel is always free, so only the rectangles' vertical projections matter. P2: Because every vertical endpoint is integral, each open unit-height strip is either entirely coverable by shade or entirely uncovered. P3: Sweep the vertical endpoints of clipped rectangle projections while maintaining the number of active intervals. P4: Model relevant heights as vertices instead of explicitly computing interval coverage. P5: The direct-painting algorithm is unchanged, but stores unit-strip flags as packed bits and fills whole machine words. P6: Maintain the coverage union using a segment tree over unit-height strips. P7: Process each projection by deleting only its still-uncovered unit strips. P8: Maintain the uncovered portion of [ya,yc] directly as a set of disjoint intervals. P9: The repeated-scan greedy route can be accelerated using integral heights. P10: Expand the endpoint-height graph into every integer height between its minimum and maximum. P11: Analyze only zero-cost edges of the endpoint-height graph. P12: Use queue-based Bellman-Ford relaxation on the sparse endpoint-height graph instead of finalizing vertices with Dijkstra.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Free horizontal transfers erase x coordinates",
+   "kind": "modeling",
+   "statement": "Horizontal and northward travel cost zero. All points at the same height are mutually reachable for free, so a rectangle permits free descent between any two heights in its vertical projection, regardless of the endpoints' x coordinates.",
+   "routes": [
+    []
+   ],
+   "accept": "Recognizes that arbitrary horizontal detours are allowed and do not contribute to the objective. Replaces each rectangle by [y1,y2]; at a height belonging to that interval, one may move horizontally to an interior x coordinate and descend within the rectangle.",
+   "anchors": [
+    "horizontal travel",
+    "shaded areas",
+    "vertical projection"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Uncovered levels force paid descent",
+   "kind": "key_property",
+   "statement": "When yc>ya, every route costs at least the length of the part of [ya,yc] outside the union of all rectangle projections. Each such height must be crossed southward in sunlight, and walked distance is at least its vertical component.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "A horizontal-level crossing argument or integration of southward vertical displacement establishes the bound, even for paths that move north or cross a level repeatedly. No rectangle can shade a point at an uncovered height.",
+   "anchors": [
+    "yc",
+    "ya",
+    "sun shining in your eyes",
+    "vertical projection"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Answer equals uncovered vertical length",
+   "kind": "reformulation",
+   "statement": "The minimum cost is zero if yc<=ya; otherwise it is the uncovered length of [ya,yc] under the rectangles' vertical projections. This bound is attainable by descending within shade wherever possible and transferring horizontally between rectangles at shared heights.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "Shows that a connected union of projected intervals can be traversed downward for free using horizontal transfers, including transfers at touching endpoints. Gaps are traversed vertically, paying exactly their lengths. For yc<=ya, a horizontal-and-northward route has zero cost.",
+   "anchors": [
+    "minimum distance",
+    "yc",
+    "ya",
+    "union of projections"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Sorted interval union determines the answer",
+   "kind": "algorithm",
+   "statement": "Compute the union of the rectangles' vertical projections by sorted interval merging. If yc>ya, output the length of [ya,yc] outside that union; otherwise output zero.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Sorting by lower endpoint and merging overlaps is one realization; equivalent ascending or descending union scans also count. Projections may be clipped before merging, or merged components intersected with [ya,yc] afterward. Subtract covered length from yc-ya or sum uncovered gaps. Time O(n log n), space O(n); integer arithmetic is exact.",
+   "anchors": [
+    "rectangle projections",
+    "merged intervals",
+    "uncovered length",
+    "answer"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N5",
+   "name": "Integer heights partition cost into units",
+   "kind": "key_property",
+   "statement": "For integer h, the open strip of heights (h,h+1) is shaded somewhere exactly when some rectangle has y1<=h and y2>=h+1. Thus, for yc>ya, the answer equals the number of uncovered strips with ya<=h<yc.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Uses integrality of all rectangle and location coordinates to show no projection boundary lies inside a unit-height strip. The union complement's length is therefore precisely a count of unit strips, not a count of endpoints.",
+   "anchors": [
+    "integer coordinates",
+    "unit-height strips",
+    "answer"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N6",
+   "name": "Dense difference array counts uncovered strips",
+   "kind": "algorithm",
+   "statement": "For yc>ya, add +1 at each clipped projection's lower endpoint and -1 at its upper endpoint in a height-indexed difference array. Prefix sums give unit-strip coverage counts; output the number of zero counts over [ya,yc). For yc<=ya, output zero.",
+   "routes": [
+    [
+     "N5"
+    ]
+   ],
+   "accept": "Coordinates may be shifted by ya or by the global minimum. The prefix sum after processing height h describes (h,h+1). Allocate space for upper-endpoint updates and inspect only strips below yc. Work O(n+2000000) and memory O(2000000).",
+   "anchors": [
+    "difference array",
+    "coverage counts",
+    "unit-height strips"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N7",
+   "name": "Endpoint sweep integrates zero coverage",
+   "kind": "algorithm",
+   "statement": "For yc>ya, sweep sorted endpoints of projections clipped to [ya,yc], increasing coverage at lower endpoints and decreasing it at upper endpoints. Add each gap between event heights precisely when coverage there is zero, including boundary gaps. Output this sum; for yc<=ya, output zero.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "An endpoint-event sweep, an ordered map of signed events, or compressed-coordinate differences followed by a weighted gap sum establishes this algorithm. Coverage is constant between consecutive distinct endpoints. Equal-height events may be grouped or processed with zero-length gaps; negative and positive updates at that height must all precede the next gap.",
+   "anchors": [
+    "projection endpoints",
+    "active coverage",
+    "height gaps"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N8",
+   "name": "Sparse directed graph of endpoint heights",
+   "kind": "reformulation",
+   "statement": "Create vertices at yc, ya, and all rectangle y endpoints. Consecutive heights have a free northward edge and a southward edge weighted by their difference; each rectangle adds a zero-weight y2→y1 edge. The minimum hurt distance equals the shortest yc→ya path.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Every graph edge is realizable at no greater cost using horizontal transfers. Conversely, unshaded descent is represented by adjacent-height edges, while entering or leaving shade at intermediate heights can be represented by ascending freely to its top, taking its shortcut, and ascending freely from its bottom. Equivalently, subdivision at all endpoints turns covered elementary gaps into free descent paths through shortcuts.",
+   "anchors": [
+    "endpoint heights",
+    "northward edges",
+    "rectangle shortcuts",
+    "shortest path"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N9",
+   "name": "Dijkstra over heights and shaded shortcuts",
+   "kind": "algorithm",
+   "statement": "Build the endpoint-height graph with adjacent-height movement edges and one downward zero-cost shortcut per rectangle. Run Dijkstra from the contest height and output the distance to the awards ceremony height.",
+   "routes": [
+    [
+     "N8"
+    ]
+   ],
+   "accept": "Sort and deduplicate heights, map rectangle endpoints and locations to vertices, and use nonnegative-edge shortest paths. A heap-based Dijkstra implementation processes O(n) vertices and edges in O(n log n) time. The northward edges automatically produce zero when ya>=yc.",
+   "anchors": [
+    "Dijkstra",
+    "contest height",
+    "awards ceremony height",
+    "shaded shortcuts"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N10",
+   "name": "Directly paint every shaded unit strip",
+   "kind": "algorithm",
+   "statement": "If yc>ya, initialize all unit-height strips of [ya,yc] as uncovered. For each clipped rectangle projection, mark every strip it contains as covered. Output the number still uncovered. If yc<=ya, output zero.",
+   "routes": [
+    [
+     "N5"
+    ]
+   ],
+   "accept": "Uses Boolean, byte, or packed-bit flags and directly fills each projection's strip range; repeated marking is harmless. Counts uncovered strips after all rectangles. Word-packed realizations fill interior words and mask boundary words. This is direct range painting, without difference-array or interval-union optimization.",
+   "anchors": [
+    "unit-height strips",
+    "covered flags",
+    "rectangle projections"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N11",
+   "name": "Segment tree maintains projected union length",
+   "kind": "algorithm",
+   "statement": "Use segment-tree range-coverage updates to maintain the union length of rectangle projections within [ya,yc] when yc>ya. Output yc-ya minus that covered length; output zero when yc<=ya.",
+   "routes": [
+    [
+     "N5"
+    ]
+   ],
+   "accept": "A tree may represent unit strips or weighted gaps between compressed endpoints. Range-cover assignments or coverage counts maintain union length: a fully covered node contributes its whole span; otherwise sum children. Updates may skip permanently covered nodes. The tree's total covered length, or a range query intersecting [ya,yc], supplies the subtraction.",
+   "anchors": [
+    "segment tree",
+    "union length",
+    "rectangle range updates"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N12",
+   "name": "Successor deletion counts newly covered strips",
+   "kind": "algorithm",
+   "statement": "For yc>ya, start with every unit strip uncovered. Successor queries locate uncovered strips within each clipped projection; remove each found strip and decrement an initially yc-ya answer. A disjoint-set successor structure skips removed strips. Output the remaining count, or zero if yc<=ya.",
+   "routes": [
+    [
+     "N5"
+    ]
+   ],
+   "accept": "Each strip is charged only on its first removal. A successor structure returns the first unremoved strip at or after a queried index, with yc as a sentinel. It can use parent-to-next links with path compression, or union-by-size components storing their largest index. Range processing repeatedly removes successors until reaching the projection's upper endpoint.",
+   "anchors": [
+    "unit strips",
+    "successor queries",
+    "disjoint sets",
+    "uncovered count"
+   ],
+   "source": "exploration",
+   "path": "P7",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N13",
+   "name": "Incrementally subtract shade from uncovered gaps",
+   "kind": "algorithm",
+   "statement": "If yc>ya, initialize the uncovered interval set to [ya,yc]. For each rectangle projection, remove its intersection with every affected uncovered interval, retaining any left and right remainders. Output the sum of remaining interval lengths. If yc<=ya, output zero.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Maintains pairwise disjoint uncovered intervals and updates their total length while subtracting each projection. An ordered map or balanced search tree locates the first possible intersection and iterates only affected intervals. Each subtraction creates at most two remainder pieces; total insertions and erasures are O(n), giving O(n log n) time.",
+   "anchors": [
+    "uncovered intervals",
+    "projection subtraction",
+    "left and right remainders"
+   ],
+   "source": "exploration",
+   "path": "P8",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N14",
+   "name": "Deepest available free descent is safe",
+   "kind": "key_property",
+   "statement": "For yc>ya, clip projections to [ya,yc]. At height h, descend freely to the smallest bottom among rectangles with top>=h, if below h. Otherwise pay to reach the next lower top or ya. Repeating these choices is optimal.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "A rectangle attaining a bottom below h and having top>=h contains h, so the jump is free. Choosing the lowest reachable bottom cannot skip a useful opportunity: all heights passed belong to that rectangle's projection. If no such rectangle exists, the gap down to the next top is uncovered and necessarily paid.",
+   "anchors": [
+    "current height",
+    "deepest free descent",
+    "next rectangle top"
+   ],
+   "source": "exploration",
+   "path": "P9",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N15",
+   "name": "Suffix minima accelerate the descending route",
+   "kind": "algorithm",
+   "statement": "For yc>ya, group clipped projections by top and compute suffix minima of bottoms over integer heights. From yc, jump to this minimum when it is lower; otherwise pay one unit and decrease height by one. Output accumulated cost upon reaching ya. For yc<=ya, output zero.",
+   "routes": [
+    [
+     "N14",
+     "N5"
+    ]
+   ],
+   "accept": "For height h, a suffix minimum over tops at least h identifies the lowest free destination, bounded by h when no descent is possible. Integrality ensures that a failed free jump makes the entire next unit strip uncovered. The simulation strictly lowers height and takes O(n+U) total work including preprocessing, where U=yc-ya.",
+   "anchors": [
+    "suffix minima",
+    "rectangle tops",
+    "free jumps",
+    "unit paid descent"
+   ],
+   "source": "exploration",
+   "path": "P9",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N16",
+   "name": "Integer expansion makes all weights binary",
+   "kind": "reformulation",
+   "statement": "Subdivide every adjacent-height edge of the endpoint graph at all intervening integer heights. Each upward unit edge has cost zero, each downward unit edge costs one, and rectangle shortcuts remain zero. Subdivision preserves the contest-to-awards shortest-path distance.",
+   "routes": [
+    [
+     "N8"
+    ]
+   ],
+   "accept": "All endpoint heights are integers. A downward edge of length d becomes d unit-cost edges, while its reverse becomes a chain of zero-cost edges. New intermediate heights have no other shortcuts unless already original endpoints, so subdividing does not change shortest-path distances.",
+   "anchors": [
+    "integer heights",
+    "unit movement edges",
+    "rectangle shortcuts",
+    "binary weights"
+   ],
+   "source": "exploration",
+   "path": "P10",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N17",
+   "name": "Zero-one BFS on integer heights",
+   "kind": "algorithm",
+   "statement": "Use integer heights between the minimum and maximum relevant endpoints, with zero-cost upward steps and rectangle shortcuts and unit-cost downward steps. Run 0-1 BFS from yc and output the distance to ya.",
+   "routes": [
+    [
+     "N16"
+    ]
+   ],
+   "accept": "Use the binary-weight deque invariant: for example, remove from the front, inserting weight-zero relaxations at the front and weight-one relaxations at the back; consistently reversing ends is equivalent. Finalization or stale-distance checks may be used. Adjacent-height edges can be implicit. With U<=2000001 height vertices, time and space are O(n+U).",
+   "anchors": [
+    "0-1 BFS",
+    "integer-height graph",
+    "binary weights",
+    "awards distance"
+   ],
+   "source": "exploration",
+   "path": "P10",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N18",
+   "name": "Free components characterize covered height gaps",
+   "kind": "key_property",
+   "statement": "In the endpoint-height graph restricted to zero-cost edges, two adjacent height vertices have the same strongly connected component label exactly when a rectangle projection covers the gap between them.",
+   "routes": [
+    [
+     "N8"
+    ]
+   ],
+   "accept": "The free upward chain makes SCCs contiguous. A rectangle spanning an elementary gap gives a zero-cost reverse path; conversely, a zero-cost path crossing that gap downward must use a rectangle shortcut spanning it. Thus equal adjacent labels are equivalent to shaded gaps, and component boundaries are exactly uncovered gaps.",
+   "anchors": [
+    "zero-cost edges",
+    "strongly connected components",
+    "adjacent-height gaps",
+    "rectangle projections"
+   ],
+   "source": "exploration",
+   "path": "P11",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N19",
+   "name": "Contract free components and sum separating gaps",
+   "kind": "algorithm",
+   "statement": "Find strongly connected components using only zero-cost edges of the endpoint-height graph. If yc>ya, sum the differences between consecutive heights in [ya,yc] whose component labels differ, and output this sum. If yc<=ya, output zero.",
+   "routes": [
+    [
+     "N18"
+    ]
+   ],
+   "accept": "Tarjan, Kosaraju, or another correct SCC algorithm identifies free-motion components. Their contiguity means contracting them leaves an ordered chain: descending across each separating gap costs its height difference, while movement inside each component is free. Iterative DFS avoids recursion depth issues at up to 200002 vertices.",
+   "anchors": [
+    "SCC labels",
+    "component boundaries",
+    "height differences",
+    "answer"
+   ],
+   "source": "exploration",
+   "path": "P11",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N20",
+   "name": "Queue relaxation solves the height graph",
+   "kind": "algorithm",
+   "statement": "Build the endpoint-height graph and initialize only yc's distance to zero. Repeatedly process queued vertices, relaxing their adjacent-height edges and rectangle shortcuts and requeuing improved destinations. When the queue becomes empty, output ya's distance.",
+   "routes": [
+    [
+     "N8"
+    ]
+   ],
+   "accept": "A correct label-correcting shortest-path algorithm propagates every distance decrease and terminates only when no edge can improve a label. Nonnegative weights ensure no negative cycle; at convergence the labels are shortest distances. FIFO queues or small-label-first deque scheduling are valid, with an in-queue flag to avoid unnecessary duplicates.",
+   "anchors": [
+    "height graph",
+    "distance relaxations",
+    "queue",
+    "rectangle shortcuts"
+   ],
+   "source": "exploration",
+   "path": "P12",
+   "traps": [],
+   "depth": 3
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N6"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N7"
+   ],
+   [
+    "N1",
+    "N8",
+    "N9"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N10"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N11"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N12"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N13"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N14",
+    "N15"
+   ],
+   [
+    "N1",
+    "N8",
+    "N16",
+    "N17"
+   ],
+   [
+    "N1",
+    "N8",
+    "N18",
+    "N19"
+   ],
+   [
+    "N1",
+    "N8",
+    "N20"
+   ]
+  ],
+  "keys": [
+   "N4",
+   "N6",
+   "N7",
+   "N9",
+   "N10",
+   "N11",
+   "N12",
+   "N13",
+   "N15",
+   "N17",
+   "N19",
+   "N20"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Measure coverage by endpoint differences, not inclusive counts; touching endpoints create no positive gap. Print the answer exactly as an integer or with sufficient precision for the required 10^-7 absolute or relative error.",
+   "check": "Use r-l rather than r-l+1; zero-length intersections contribute zero. Exact integer output meets the tolerance. If using floating-point output, select adequate precision, such as fixed with at least seven fractional digits; default six significant digits can fail for large answers."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Horizontal travel is always free, so only the rectangles' vertical projections matter. Every height between the destination and a higher start that belongs to no projection must be crossed southward in sunlight; all remaining descent can be performed inside rectangles, with free horizontal transfers. Thus the answer is the uncovered length of that vertical interval, computed by sorting and merging projections in O(n log n) time and O(n) space.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   "key_node": "N4",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   "new_hazards": [
+    "H1"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.039,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Because every vertical endpoint is integral, each open unit-height strip is either entirely coverable by shade or entirely uncovered. Mark clipped rectangle intervals with a difference array and count zero-coverage strips between ya and yc. This avoids sorting and takes O(n+max(0,yc-ya)) time and at most about 8 MB of auxiliary memory.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N6"
+   ],
+   "key_node": "N6",
+   "new_nodes": [
+    "N5",
+    "N6"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.039,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Sweep the vertical endpoints of clipped rectangle projections while maintaining the number of active intervals. Between consecutive event heights, that count is constant, so add the height gap exactly when the active count is zero. This computes the uncovered length without explicitly forming union components, in O(n log n) time and O(n) space.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N7"
+   ],
+   "key_node": "N7",
+   "new_nodes": [
+    "N7"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.046,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Model relevant heights as vertices instead of explicitly computing interval coverage. Adjacent heights have a zero-cost northward edge and a southward edge costing their difference, while each rectangle adds a zero-cost edge from its top to its bottom. These edges represent all useful movement after free horizontal transfers, so Dijkstra's shortest path gives the answer in O(n log n) time and O(n) space.",
+   "end_route": [
+    "N1",
+    "N8",
+    "N9"
+   ],
+   "key_node": "N9",
+   "new_nodes": [
+    "N8",
+    "N9"
+   ],
+   "new_hazards": [],
+   "program": "paths/P4.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.104,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P5",
+   "approach": "The direct-painting algorithm is unchanged, but stores unit-strip flags as packed bits and fills whole machine words. It still computes exactly the union of covered unit strips, then subtracts the number of set bits from the total strip count. Packing reduces the repeated range writes by a factor of eight in memory traffic; this is the one performance retry after the byte-array version timed out.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N10"
+   ],
+   "key_node": "N10",
+   "new_nodes": [
+    "N10"
+   ],
+   "new_hazards": [],
+   "program": "paths/P5.cpp",
+   "submission": 6,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.283,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P6",
+   "approach": "Maintain the coverage union using a segment tree over unit-height strips. Each rectangle performs a range assignment to covered; a fully covered tree node needs no further work, and every other node stores the sum of its children's covered lengths. The root gives the total free descent, so subtract it from yc-ya; this takes O(n log U) update time and O(U) space, with U at most 2,000,000.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N11"
+   ],
+   "key_node": "N11",
+   "new_nodes": [
+    "N11"
+   ],
+   "new_hazards": [],
+   "program": "paths/P6.cpp",
+   "submission": 8,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.062,
+    "time_limit_s": 2.0
+   },
+   "notes": "The previously submitted complete-region graph with dense Dijkstra was abandoned after TLE on secret-02-wg; its unaccepted node ids are reused here."
+  },
+  {
+   "id": "P7",
+   "approach": "Process each projection by deleting only its still-uncovered unit strips. A disjoint-set successor structure jumps over strips covered by earlier rectangles, so each of at most 2,000,000 strips is deleted once. With union by size, path compression, and the maximum index stored per component, the algorithm takes O((n+U) alpha(U)) time and O(U) memory.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N12"
+   ],
+   "key_node": "N12",
+   "new_nodes": [
+    "N12"
+   ],
+   "new_hazards": [],
+   "program": "paths/P7.cpp",
+   "submission": 9,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.068,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P8",
+   "approach": "Maintain the uncovered portion of [ya,yc] directly as a set of disjoint intervals. Subtract each rectangle's vertical projection, deleting fully covered gaps and splitting partially covered ones; the final total gap length is the answer. An ordered map finds affected gaps, and since each update creates at most two replacement pieces, the total running time is O(n log n) with O(n) space.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N13"
+   ],
+   "key_node": "N13",
+   "new_nodes": [
+    "N13"
+   ],
+   "new_hazards": [],
+   "program": "paths/P8.cpp",
+   "submission": 10,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.078,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P9",
+   "approach": "The repeated-scan greedy route can be accelerated using integral heights. Group projections by their top height and take suffix minima of their bottoms, giving the deepest free descent available from every height. Then repeatedly jump downward for free when possible, or pay for one unit of descent otherwise; this is the one retry after the quadratic scan timed out, and takes O(n+U) time and O(U) space.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N14",
+    "N15"
+   ],
+   "key_node": "N15",
+   "new_nodes": [
+    "N14",
+    "N15"
+   ],
+   "new_hazards": [],
+   "program": "paths/P9.cpp",
+   "submission": 12,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.044,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P10",
+   "approach": "Expand the endpoint-height graph into every integer height between its minimum and maximum. Upward unit edges and rectangle shortcuts have weight zero, while downward unit edges have weight one, so a deque-based 0-1 BFS computes the optimum without a priority queue. There are at most 2,000,001 vertices and O(n+2,000,000) edges, generated implicitly except for rectangle shortcuts.",
+   "end_route": [
+    "N1",
+    "N8",
+    "N16",
+    "N17"
+   ],
+   "key_node": "N17",
+   "new_nodes": [
+    "N16",
+    "N17"
+   ],
+   "new_hazards": [],
+   "program": "paths/P10.cpp",
+   "submission": 14,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.072,
+    "time_limit_s": 2.0
+   },
+   "notes": "The earlier all-projections test for each elementary gap was abandoned after TLE on secret-02-wg; its unaccepted node id is reused."
+  },
+  {
+   "id": "P11",
+   "approach": "Analyze only zero-cost edges of the endpoint-height graph. Their strongly connected components are contiguous blocks of heights, and an adjacent-height gap is free exactly when both endpoints lie in the same component. Compute these components and sum the height gaps between different components on the downward route from yc to ya; this uses O(n log n) time including coordinate sorting and O(n) memory.",
+   "end_route": [
+    "N1",
+    "N8",
+    "N18",
+    "N19"
+   ],
+   "key_node": "N19",
+   "new_nodes": [
+    "N18",
+    "N19"
+   ],
+   "new_hazards": [],
+   "program": "paths/P11.cpp",
+   "submission": 15,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.129,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P12",
+   "approach": "Use queue-based Bellman-Ford relaxation on the sparse endpoint-height graph instead of finalizing vertices with Dijkstra. Every improved distance is propagated until no relaxation remains, at which point all graph shortest distances are correct. The graph uses O(n) memory; worst-case relaxation time is quadratic, so I leave runtime to the judge.",
+   "end_route": [
+    "N1",
+    "N8",
+    "N20"
+   ],
+   "key_node": "N20",
+   "new_nodes": [
+    "N20"
+   ],
+   "new_hazards": [],
+   "program": "paths/P12.cpp",
+   "submission": 16,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 59,
+    "n_tests": 59,
+    "max_time_s": 0.107,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "The judge reports that the graph has reached its limit of 12 accepted paths and explicitly requests finishing. The accepted paths cover sorted union, dense differences, endpoint sweeping, direct packed painting, segment trees, successor deletion, interval subtraction, greedy suffix minima, Dijkstra, 0-1 BFS, zero-cost SCC contraction, and queue-based shortest-path relaxation.",
+  "considered": [
+   "Complete graph of shaded regions with transfer weight max(0,bottom_i-top_j), solved by dense Dijkstra: submitted and received TLE on secret-02-wg; abandoned the quadratic implementation.",
+   "Independently scan every projection for each elementary endpoint gap: submitted and received TLE on secret-02-wg; abandoned.",
+   "Byte-array direct painting: submitted and received TLE on secret-01-wg. Its single performance retry used packed bits and was accepted as the direct-painting path.",
+   "Repeated full scans to choose the deepest free descent or next paid gap: submitted and received TLE on secret-02-wg. Its single retry used precomputed suffix minima and was accepted.",
+   "Compressed difference arrays, ordered event maps, alternate sort directions, and bucketed reach scans were treated as equivalent realizations of already represented sweep, merge, or greedy claims rather than additional paths.",
+   "A sparse factorization of the complete shaded-region transfer graph was considered but not submitted because the graph reached its explicit 12-path limit; it was not rejected for presumed speed.",
+   "Summing rectangle heights directly is incorrect because vertically overlapping projections can come from disjoint rectangles and must not be counted repeatedly. Horizontal separation does not prevent free transfers."
+  ],
+  "submissions": 16
+ },
+ "builder_notes": "Moved implementation choices from the statements of N4, N11, and N17 into their acceptance explanations. N18 now states only the shaded-gap/SCC-label characterization, with contiguity in its supporting explanation. Because hazard ids are fixed, incorporated the requested output-accuracy constraint into H1 while preserving its existing geometric-length requirements.",
+ "open_issues": [],
+ "advisories": [],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 17,
+  "submissions": 16,
+  "review_rounds": 2,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 449080,
+    "output_tokens": 29925,
+    "cached_tokens": 322314,
+    "reasoning_tokens": 11477
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 16939,
+    "output_tokens": 16241,
+    "reasoning_tokens": 13583
+   },
+   "total": {
+    "input_tokens": 466019,
+    "output_tokens": 46166,
+    "cached_tokens": 322314,
+    "reasoning_tokens": 25060
+   }
+  },
+  "inputs": {
+   "statement": "5920536214ab43491fe934b6d937663884af646b949aa292853ff71c06ffe74f",
+   "editorial": "a9851fe6d99c4d67a545579d7a2dad3a16ce22d1fcaa76c5787a2ba939309b10",
+   "reference": "5c6fdae7e2dc9e9131ffd3f17be8906a13e4f97cd65556d09be3601f23be6dec"
+  },
+  "created": "2026-11-03 13:08:02"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

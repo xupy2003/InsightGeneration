@@ -1,0 +1,469 @@
+[
+ {
+  "round": 1,
+  "version": "b261242fec1ba983",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The decision criterion is intrinsic, but requiring its evaluation through release-frequency prefix sums is an implementation choice; sorting all releases and checking their ranks evaluates the same criterion within the limits. Keep the criterion in the statement and present frequency aggregation, streaming counters, and the linear-time/O(m)-auxiliary implementation as examples in accept."
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "N10 already specifies reserving representatives, repeatedly matching maximum releases to maximum free pots, and the failure condition; N3 already supplies rejection for an empty candidate set. N11 adds only the output wrapper and routine sorting implementation, so merge N10 and N11 into one algorithm node with the exchange argument in accept."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All four END routes contain sufficient modeling, feasibility arguments, and efficient algorithms to implement a correct solution. The release, candidate, exchange, reverse-matching, and earliest-free-position claims are valid.",
+   "key_ok": true,
+   "key_note": "N6, N9, N11, and N13 each state the corresponding approach's complete yes/no output rule.",
+   "hazards_ok": false,
+   "hazards_note": "H1's 'may appear anywhere' is misleading: an unliked plant has no release restriction, but cannot occupy a requested pot; require accounting for all m plants, with release-frequency counting only an example. H2 should require correctness under arbitrary input-record order, with maximum-counter resets as an example for the streaming implementation rather than a universal mechanism. H4's underlying no-reuse constraint is valid, but queue marking/removal should be illustrative rather than mandatory. H5 must require detecting an absent legal free pot and never assigning outside 1..m; requiring a permanent m+1 terminal element excludes the explicitly permitted balanced-search-tree implementation. H3 is valid, and there is no additional special overflow or precision issue in these algorithms.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "P1 has the editorial's final criterion, but its END route requires N5's specific swap lemma, which the editorial does not establish. The editorial instead reserves representatives and observes that, for every prefix, removing the reserved plants and their pots subtracts the same number from availability and demand; the remaining plants can then fill free pots in increasing release order. Add this as an alternative proof route, or generalize N5 to preservation of feasibility under arbitrary representative reservations and accept both the swap and residual-prefix proofs.",
+   "order": "Merge N10 and N11, retaining N11's output rule and putting the exchange proof in accept. Move N6's particular frequency-based evaluation into accept. To cover the editorial without imposing an unused proof step, generalize N5 to representative-reservation feasibility or add an alternative residual-prefix route to N6.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N6 (it states one implementation's choice, not what every correct solution through this step gets right): The decision criterion is intrinsic, but requiring its evaluation through release-frequency prefix sums is an implementation choice; sorting all releases and checking their ranks evaluates the same criterion within the limits. Keep the criterion in the statement and present frequency aggregation, streaming counters, and the linear-time/O(m)-auxiliary implementation as examples in accept.",
+   "hazards: H1's 'may appear anywhere' is misleading: an unliked plant has no release restriction, but cannot occupy a requested pot; require accounting for all m plants, with release-frequency counting only an example. H2 should require correctness under arbitrary input-record order, with maximum-counter resets as an example for the streaming implementation rather than a universal mechanism. H4's underlying no-reuse constraint is valid, but queue marking/removal should be illustrative rather than mandatory. H5 must require detecting an absent legal free pot and never assigning outside 1..m; requiring a permanent m+1 terminal element excludes the explicitly permitted balanced-search-tree implementation. H3 is valid, and there is no additional special overflow or precision issue in these algorithms."
+  ],
+  "advisory": [
+   "N11 (comes with its prerequisite; merge it): N10 already specifies reserving representatives, repeatedly matching maximum releases to maximum free pots, and the failure condition; N3 already supplies rejection for an empty candidate set. N11 adds only the output wrapper and routine sorting implementation, so merge N10 and N11 into one algorithm node with the exchange argument in accept.",
+   "the editorial's approach is not among the paths: P1 has the editorial's final criterion, but its END route requires N5's specific swap lemma, which the editorial does not establish. The editorial instead reserves representatives and observes that, for every prefix, removing the reserved plants and their pots subtracts the same number from availability and demand; the remaining plants can then fill free pots in increasing release order. Add this as an alternative proof route, or generalize N5 to preservation of feasibility under arbitrary representative reservations and accept both the swap and residual-prefix proofs.",
+   "order: Merge N10 and N11, retaining N11's output rule and putting the exchange proof in accept. Move N6's particular frequency-based evaluation into accept. To cover the editorial without imposing an unused proof step, generalize N5 to representative-reservation feasibility or add an alternative residual-prefix route to N6."
+  ],
+  "time": "2026-11-03 01:33:33"
+ },
+ {
+  "round": 2,
+  "version": "59a90320366fb442",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Explicit active-count maintenance and removing the current group before selection are implementation choices for the forward greedy; release buckets or equivalent future-liker tests implement the same choices without those operations. State the algorithm as choosing any locally legal unused plant at each successive pot and accepting exactly when all pots are filled, with count maintenance retained as an example in accept."
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The essential test pairs remaining plants and free pots by sorted rank; visiting both sequences in increasing order gives exactly the same test as visiting them in decreasing order. State that rank-wise matching condition without prescribing traversal direction, and retain the reverse scan and heap implementation as examples in accept."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All four END routes contain the required stopping model, feasibility arguments, decision algorithm, and sufficiently efficient evaluation methods. No essential algorithmic claim is missing.",
+   "key_ok": true,
+   "key_note": "N6, N9, N11, and N13 each state the corresponding approach's complete yes/no output rule; none is merely a complexity statement or proof lemma.",
+   "hazards_ok": false,
+   "hazards_note": "H2 is not universal as written: the active-cat approach need not compute per-plant maximum requested pots or static candidate sets. State the universal constraint as handling arbitrary, ungrouped cat-record order correctly, and retain maximum/count-update procedures as conditional implementation examples. The other hazards describe sound validity or resource constraints; no additional arithmetic or precision hazard is apparent.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial and reference solution: aggregate per-plant lower bounds, check prefix availability, and require a common plant with the matching lower bound at every requested pot. N5 explicitly accepts the editorial's residual-prefix sufficiency proof, and N2 permits the reference solution's zero bound for unliked plants.",
+   "order": "",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N9 (it states one implementation's choice, not what every correct solution through this step gets right): Explicit active-count maintenance and removing the current group before selection are implementation choices for the forward greedy; release buckets or equivalent future-liker tests implement the same choices without those operations. State the algorithm as choosing any locally legal unused plant at each successive pot and accepting exactly when all pots are filled, with count maintenance retained as an example in accept.",
+   "N11 (it states one implementation's choice, not what every correct solution through this step gets right): The essential test pairs remaining plants and free pots by sorted rank; visiting both sequences in increasing order gives exactly the same test as visiting them in decreasing order. State that rank-wise matching condition without prescribing traversal direction, and retain the reverse scan and heap implementation as examples in accept.",
+   "hazards: H2 is not universal as written: the active-cat approach need not compute per-plant maximum requested pots or static candidate sets. State the universal constraint as handling arbitrary, ungrouped cat-record order correctly, and retain maximum/count-update procedures as conditional implementation examples. The other hazards describe sound validity or resource constraints; no additional arithmetic or precision hazard is apparent."
+  ],
+  "advisory": [],
+  "time": "2026-11-03 01:39:05"
+ },
+ {
+  "round": 3,
+  "version": "c9858e9b88e3bdbe",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All four routes include the stopping model, their required feasibility or exchange arguments, and a complete decision algorithm. Their accept criteria describe implementations that fit the aggregate input limits without an additional essential insight.",
+   "key_ok": true,
+   "key_note": "N6, N9, N11, and N13 each specify their path's complete yes/no rule, rather than merely a feasibility lemma or complexity claim.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover unliked plants, arbitrary input order, worst-case storage and processing, unique use of plants, and legal pot boundaries. The successor checks are examples for implementations performing placements, not a required data structure. No additional problem-specific overflow or precision constraint is needed, and the algorithm nodes state the required yes/no output.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial and reference solution: compute maximum requested positions, check prefix supply, and require a universally liked plant with the matching release at each requested pot. Release 1 for unliked plants is equivalent to the reference solution's release 0 because all pots have positive indices.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-03 01:41:31"
+ }
+]

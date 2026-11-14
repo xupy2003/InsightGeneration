@@ -1,0 +1,312 @@
+[
+ {
+  "round": 1,
+  "version": "650f5bf2438dff98",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Reconstructing the source positions from the logged walk and characterizing compatible priorities are distinct claims: a solver can establish either without establishing the other. Split walk reconstruction and available-neighbor computation from the local ordering-compatibility criterion."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The statement elevates the optional global-minimum reformulation into the algorithm claim, although accept correctly allows the reference solution's explicit predecessor transitions. State the DP through its minimum-change state meaning, zero-cost persistence, unit-cost switching, free first ordering, and minimum final cost; keep the optimized formula as an example in accept."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "This bundles the intersection characterization of one block with the reduction of the global objective to minimum feasible-block count minus one. Separate those claims, keeping subblock feasibility with the intersection characterization as its immediate corollary."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All five END routes contain the local compatibility model, their optimization justification, and a complete output algorithm. Explicit 24-by-24 DP transitions fit the limits, as do the permutation-intersection, four-vertex graph, last-incompatibility, and 20-cycle interval algorithms.",
+   "key_ok": true,
+   "key_note": "N3, N6, N8, N10, and N13 each determine their path's output for every valid input; none is merely a feasibility, complexity, or proof node.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover out-of-grid and rocky neighbors, revisiting the traversable starting cell, and the free initial ordering/change-count output convention. There is no additional essential overflow or precision issue at these bounds.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 represents the editorial and reference solution. Their explicit minimum over predecessor permutations is equivalent to N3's recurrence and is expressly permitted by its accept criterion; N1 and N2 supply the same compatibility and transition-cost model.",
+   "order": "Split N1 into walk reconstruction/availability and local priority compatibility. Split N4 into block-feasibility characterization, including subblock closure, and the minimum-block optimization reduction. Generalize N3's statement and leave its optional global-minimum computation in accept; the remaining dependency order is sound.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N3 (it states one implementation's choice, not what every correct solution through this step gets right): The statement elevates the optional global-minimum reformulation into the algorithm claim, although accept correctly allows the reference solution's explicit predecessor transitions. State the DP through its minimum-change state meaning, zero-cost persistence, unit-cost switching, free first ordering, and minimum final cost; keep the optimized formula as an example in accept."
+  ],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): Reconstructing the source positions from the logged walk and characterizing compatible priorities are distinct claims: a solver can establish either without establishing the other. Split walk reconstruction and available-neighbor computation from the local ordering-compatibility criterion.",
+   "N4 (bundles claims a solver can have separately; split it): This bundles the intersection characterization of one block with the reduction of the global objective to minimum feasible-block count minus one. Separate those claims, keeping subblock feasibility with the intersection characterization as its immediate corollary.",
+   "order: Split N1 into walk reconstruction/availability and local priority compatibility. Split N4 into block-feasibility characterization, including subblock closure, and the minimum-block optimization reduction. Generalize N3's statement and leave its optional global-minimum computation in accept; the remaining dependency order is sound."
+  ],
+  "time": "2026-11-03 00:54:30"
+ },
+ {
+  "round": 2,
+  "version": "7ebadec9da6001d7",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All five END routes include local move compatibility, the change-count objective, and a complete algorithm within the limits. The suffix recurrence follows from nondecreasing optimal prefix block counts; the cycle-timestamp threshold and mandatory-cut intervals also give the stated feasibility and optimization rules.",
+   "key_ok": true,
+   "key_note": "N3, N6, N8, N10, and N13 each specify their path's complete output-producing algorithm, rather than only a feasibility test or proof step.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards correctly cover traversability, boundary handling, and the free initial ordering with changes-versus-blocks accounting. No additional essential numerical or degeneracy constraint is missing; the answer is at most |s|-1, and each individual logged move is feasible.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial and reference solution: reconstruct the logged positions, test compatible permutations, and minimize adjacent ordering changes by permutation-state DP. N3 explicitly accepts the reference solution's full predecessor transition as well as the global-minimum optimization.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-03 00:56:58"
+ }
+]

@@ -1,0 +1,554 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2025/D-buggy-rover",
+ "title": "Buggy Rover",
+ "status": "accepted",
+ "version": "7ebadec9da6001d7",
+ "solution_outline": "P1: Simulate the logged route to determine which of the 24 direction permutations could produce each move. P2: A block of consecutive moves can use one ordering exactly when the intersection of its compatible-permutation sets is nonempty. P3: Instead of enumerating permutations, represent a block's priority requirements by a directed graph on the four directions. P4: Compute the earliest compatible suffix of every prefix using each permutation's most recent incompatible move. P5: Treat cosmic-ray boundaries as points that must hit every interval containing an unavoidable priority cycle.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Local move imposes priority constraints",
+   "kind": "modeling",
+   "statement": "Before a logged move d, let A be the directions leading from its source to in-bounds non-rocky cells. A direction ordering produces d exactly when d precedes every other direction in A. Blocked directions impose no priority constraints.",
+   "routes": [
+    []
+   ],
+   "accept": "Reconstruct move sources by following the logged walk from S, then compute available neighbors at each source. Require the first available direction in the ordering to equal the logged direction. Equivalently, add priority constraints from the chosen direction to every other available direction.",
+   "anchors": [
+    "direction ordering",
+    "moves",
+    "flat spaces",
+    "available directions"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Cosmic rays separate constant-order runs",
+   "kind": "reformulation",
+   "statement": "Assigning compatible permutations to moves requires one change for each adjacent unequal pair, with the initial choice free. Equivalently, the answer is the minimum number of contiguous blocks each admitting one fixed ordering, minus one.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Every adjacent unequal pair requires and permits one cosmic-ray event. Equal pairs need none. Splitting an assignment into runs yields a feasible block partition; choosing an ordering for each feasible block uses at most one change per boundary. These two directions prove the minimum-block reduction.",
+   "anchors": [
+    "direction orderings",
+    "cosmic rays",
+    "consecutive moves",
+    "constant-order blocks"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Minimum-change permutation dynamic programming",
+   "kind": "algorithm",
+   "statement": "For each processed prefix and direction permutation, store the minimum changes needed to end with that ordering. Only orderings compatible with the next move may follow: persistence costs zero and switching costs one. The first ordering is free; output the minimum cost over final orderings.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Explicitly minimize D_{i-1}(q)+[q≠p] over predecessors for each compatible p, with all first-move compatible states costing zero. Equivalently, initialize D_0(p)=0 and use D_i(p)=min(D_{i-1}(p),1+min_q D_{i-1}(q)); incompatible states have infinity. Both O(24²|s|+rc) explicit transitions and the O(24|s|+rc) global-minimum optimization fit the limits.",
+   "anchors": [
+    "compatible orderings",
+    "minimum changes",
+    "DP states"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Constant-order blocks are set intersections",
+   "kind": "key_property",
+   "statement": "For move i, let C_i be its compatible permutations. A contiguous block [l,r] admits one fixed ordering exactly when the intersection of C_l through C_r is nonempty. Every subblock of a feasible block is feasible.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "A single permutation must explain every move in a constant-order block, hence must belong to every compatibility set. Conversely, any permutation in the intersection explains the whole block. Removing moves cannot eliminate an ordering that already explains the block, establishing subblock feasibility.",
+   "anchors": [
+    "consecutive moves",
+    "compatible permutations",
+    "constant-order blocks"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N5",
+   "name": "Longest feasible prefix is optimal",
+   "kind": "key_property",
+   "statement": "Repeatedly taking the longest feasible prefix of the remaining move log minimizes the number of constant-order blocks. Extending a partition's first block to that prefix cannot increase its block count: delete covered blocks and retain the uncovered suffix of the next block, which remains feasible.",
+   "routes": [
+    [
+     "N4"
+    ]
+   ],
+   "accept": "Use exchange followed by induction on the remaining suffix, or show greedy block endpoints never precede the corresponding endpoints of an optimal partition. This relies on subblock feasibility and does not assume that any particular compatible permutation should be committed to early.",
+   "anchors": [
+    "longest feasible prefix",
+    "minimum feasible-block count"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N6",
+   "name": "Greedy compatible-permutation intersection",
+   "kind": "algorithm",
+   "statement": "Start with all 24 permutations possible and answer zero. For each move, intersect the current set with its compatible permutations. If the intersection is empty, increment the answer and replace the current set by that move's compatible set. Otherwise keep the intersection. Output the answer.",
+   "routes": [
+    [
+     "N4",
+     "N5"
+    ]
+   ],
+   "accept": "The maintained set is exactly the intersection for the current block. Resetting before the first incompatible move produces longest feasible blocks and implements the optimal greedy partition. A bitmask, Boolean array, or list of at most 24 permutations supports O(24|s|+rc) time.",
+   "anchors": [
+    "possible direction orderings",
+    "intersection",
+    "cosmic-ray count"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N7",
+   "name": "Priority graph characterizes feasible blocks",
+   "kind": "key_property",
+   "statement": "For a block, form a directed graph on N,E,S,W, adding d→e whenever a logged move chooses d while e is another available direction. The block admits one direction ordering exactly when this graph is acyclic; its topological orders are precisely the compatible permutations.",
+   "routes": [
+    [
+     "N1",
+     "N4"
+    ]
+   ],
+   "accept": "Necessity follows because every edge points forward in a compatible ordering. Sufficiency follows by taking a topological ordering. Detect all directed cycles, including cycles longer than two, using topological sorting, DFS, or transitive closure.",
+   "anchors": [
+    "priority constraints",
+    "direction ordering",
+    "directed graph",
+    "feasible block"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N8",
+   "name": "Greedy acyclic priority graph",
+   "kind": "algorithm",
+   "statement": "Maintain the union of priority edges for the current block. Add the next move's edges; if the graph becomes cyclic, count one change and reset the graph to only that move's edges. After processing the log, output the number of resets.",
+   "routes": [
+    [
+     "N5",
+     "N7"
+    ]
+   ],
+   "accept": "A single move's outgoing-edge star is always acyclic. Testing the four-vertex graph after each addition and restarting on the first cycle produces longest feasible blocks. Maintaining adjacency or reachability and testing cycles costs O(|s|+rc) with a constant depending only on four directions.",
+   "anchors": [
+    "priority graph",
+    "cycle",
+    "block reset",
+    "number of changes"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N9",
+   "name": "Last incompatibilities locate feasible suffixes",
+   "kind": "key_property",
+   "statement": "After i moves, let bad_i(p) be the most recent index incompatible with permutation p, or zero if none. A suffix [l,i] is feasible exactly when l>min_p bad_i(p). Therefore its earliest possible starting index is 1+min_p bad_i(p).",
+   "routes": [
+    [
+     "N4"
+    ]
+   ],
+   "accept": "Permutation p explains [l,i] iff its last failure is before l. Taking the union of these suffix-start ranges over all permutations gives the minimum last-failure threshold. Update only the last-failure indices of permutations incompatible with the new move.",
+   "anchors": [
+    "compatible permutations",
+    "last incompatible move",
+    "feasible suffix"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N10",
+   "name": "Earliest-suffix prefix dynamic programming",
+   "kind": "algorithm",
+   "statement": "Let B_i denote the minimum number of constant-order blocks covering the first i moves. Initialize B_0=0. For each i, compute t_i=min_p bad_i(p) and set B_i=1+B_{t_i}. Output B_|s|−1.",
+   "routes": [
+    [
+     "N9"
+    ]
+   ],
+   "accept": "Every compatible final block starts after a boundary j≥t_i, and j=t_i is allowed. B_j is nondecreasing because truncating a prefix partition cannot increase its block count. Thus the smallest admissible boundary minimizes B_j. Maintaining 24 last-failure indices gives O(24|s|+rc) time and O(|s|+rc) memory.",
+   "anchors": [
+    "prefix block counts",
+    "earliest feasible suffix",
+    "minimum cosmic rays"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N11",
+   "name": "Latest witnesses locate cyclic suffixes",
+   "kind": "key_property",
+   "statement": "Let last_i(e) be the latest index at most i imposing priority edge e, or zero if absent. Define T_i=max_C min_{e∈C} last_i(e) over directed simple cycles on the four directions. A block [l,i] is feasible exactly when l>T_i.",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "An edge occurs in [l,i] iff its latest occurrence is at least l. A cycle is present iff this holds for all its edges. Any directed cycle contains a simple cycle; there are only 20 simple directed cycles of lengths two through four. Missing edges have timestamp zero.",
+   "anchors": [
+    "priority edges",
+    "latest occurrences",
+    "directed cycles",
+    "feasible suffixes"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N12",
+   "name": "Changes become interval stabbing",
+   "kind": "reformulation",
+   "statement": "A partition into constant-order blocks is valid exactly when its cut positions hit every interval [T_i,i−1] with T_i>0, where cut k lies after move k. The minimum number of such cuts equals the requested minimum number of changes.",
+   "routes": [
+    [
+     "N11",
+     "N4"
+    ]
+   ],
+   "accept": "The incompatible interval of moves [T_i,i] requires a cut somewhere inside it. Conversely, an incompatible block [l,i] has l≤T_i, so its mandatory cut interval lies inside that block, contradicting the absence of cuts. A single move is always compatible, ensuring T_i<i.",
+   "anchors": [
+    "change boundaries",
+    "mandatory cut intervals",
+    "constant-order blocks"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N13",
+   "name": "Right-endpoint stabbing of cycle intervals",
+   "kind": "algorithm",
+   "statement": "Compute the intervals [T_i,i−1] while processing moves in order. Maintain the most recent selected cut. Whenever T_i>0 and that cut is less than T_i, select cut i−1 and increment the answer. Output the number of selected cuts.",
+   "routes": [
+    [
+     "N12"
+    ]
+   ],
+   "accept": "Intervals arrive in increasing right-endpoint order. For the first uncovered interval, moving a stabbing point within it to its right endpoint preserves coverage of every later interval that point covered, proving greedy optimality. A sentinel cut at zero handles initialization. Updating edge timestamps and inspecting the 20 cycles per move gives O(|s|+rc) time.",
+   "anchors": [
+    "mandatory cut intervals",
+    "right endpoints",
+    "minimum selected cuts"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 7
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3"
+   ],
+   [
+    "N1",
+    "N2",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   [
+    "N1",
+    "N2",
+    "N4",
+    "N5",
+    "N7",
+    "N8"
+   ],
+   [
+    "N1",
+    "N2",
+    "N4",
+    "N9",
+    "N10"
+   ],
+   [
+    "N1",
+    "N2",
+    "N4",
+    "N7",
+    "N11",
+    "N12",
+    "N13"
+   ]
+  ],
+  "keys": [
+   "N3",
+   "N6",
+   "N8",
+   "N10",
+   "N13"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "The starting cell 'S' remains traversable on later visits, while every cell outside the grid and every '#' cell is unavailable.",
+   "check": "Test grid bounds before accessing a neighbor and accept any in-bounds character other than '#', not only '.'."
+  },
+  {
+   "id": "H2",
+   "statement": "The initial ordering costs no change. Output changes between moves, not the number of constant-ordering blocks; a one-move log always needs zero changes.",
+   "check": "A DP gives every compatible first-move ordering zero cost; initializing all orderings at zero before processing moves is equivalent. A block-counting solution subtracts one from its positive number of blocks, while a restart-counting solution starts at zero."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Simulate the logged route to determine which of the 24 direction permutations could produce each move. Use dynamic programming over the current permutation: keeping it costs zero and replacing it costs one, with every initial permutation free. This considers every possible explanation and runs in O(rc + 24|s|) time with constant-size DP storage.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3"
+   ],
+   "key_node": "N3",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 26,
+    "n_tests": 26,
+    "max_time_s": 0.011,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "A block of consecutive moves can use one ordering exactly when the intersection of its compatible-permutation sets is nonempty. Feasibility is preserved by taking subblocks, so repeatedly taking the longest feasible prefix is optimal by an exchange argument. Maintain its intersection as a 24-bit mask and start a new block only when the next intersection becomes empty, giving O(rc + 24|s|) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "key_node": "N6",
+   "new_nodes": [
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 26,
+    "n_tests": 26,
+    "max_time_s": 0.015,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Instead of enumerating permutations, represent a block's priority requirements by a directed graph on the four directions. Each observed move adds edges from its chosen direction to every other currently available direction; one fixed ordering exists exactly when this graph is acyclic. Detect the first cycle, restart the block with that move's edges, and count restarts; the longest-feasible-prefix theorem makes this optimal, and four-vertex cycle tests take constant time per move.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N4",
+    "N5",
+    "N7",
+    "N8"
+   ],
+   "key_node": "N8",
+   "new_nodes": [
+    "N7",
+    "N8"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 26,
+    "n_tests": 26,
+    "max_time_s": 0.013,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Compute the earliest compatible suffix of every prefix using each permutation's most recent incompatible move. Prefix-optimal block counts are nondecreasing, so among all possible final blocks the longest one leaves a prefix with minimum possible cost. This yields B[i]=1+B[min_p last_bad[p]], followed by B[|s|]-1, in O(rc + 24|s|) time without maintaining greedy blocks or permutation-cost states.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N4",
+    "N9",
+    "N10"
+   ],
+   "key_node": "N10",
+   "new_nodes": [
+    "N9",
+    "N10"
+   ],
+   "new_hazards": [],
+   "program": "paths/P4.cpp",
+   "submission": 5,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 26,
+    "n_tests": 26,
+    "max_time_s": 0.014,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P5",
+   "approach": "Treat cosmic-ray boundaries as points that must hit every interval containing an unavoidable priority cycle. The latest occurrence of each of the 12 possible priority edges determines the latest-starting cyclic suffix: maximize the oldest edge occurrence over the 20 directed simple cycles. This produces mandatory cut intervals in increasing right-endpoint order, so the standard right-endpoint interval-stabbing greedy algorithm returns the optimum in O(rc + |s|) time with small constants.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N4",
+    "N7",
+    "N11",
+    "N12",
+    "N13"
+   ],
+   "key_node": "N13",
+   "new_nodes": [
+    "N11",
+    "N12",
+    "N13"
+   ],
+   "new_hazards": [],
+   "program": "paths/P5.cpp",
+   "submission": 6,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 26,
+    "n_tests": 26,
+    "max_time_s": 0.008,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Five accepted paths cover permutation-state optimization, greedy compatibility intersections, greedy priority-graph acyclicity, last-incompatibility prefix DP, and cycle-witness interval stabbing. I have no further genuinely different approach that I believe adds a substantive characterization or algorithm beyond these paths.",
+  "considered": [
+   "Explicit layered shortest paths or 0-1 BFS encode the same permutation states and transition costs as the accepted permutation DP, rather than introducing a distinct reasoning path.",
+   "Reverse scanning, precomputed compatible runs, and range-intersection queries implement the existing longest-compatible-block characterization with different traversal or storage choices.",
+   "Quadratic partition DP examines every possible last block; the accepted earliest-suffix DP already captures that optimization and explains why only the earliest admissible boundary is needed.",
+   "DFS, transitive closure, and subset-based topological sorting are alternative implementations of the existing four-direction acyclicity test.",
+   "Committing to an arbitrary compatible permutation and changing only when it fails is not optimal: another still-compatible permutation could extend the current block farther.",
+   "Checking only contradictory direction pairs misses longer priority cycles; the accepted graph and cycle-witness methods handle all cycle lengths.",
+   "Enumerating complete ordering histories or all possible cut subsets is exponential in the move-log length and cannot meet the limits."
+  ],
+  "submissions": 6
+ },
+ "builder_notes": "Generalized N3 to the state meaning and transition costs; its optional global-minimum formula is now only an accepted realization. Since node ids and routes must remain fixed, the suggested node splits cannot be added. Instead, N1 now focuses on local compatibility, with walk reconstruction in accept, and the minimum-block objective has moved from N4 to the equivalent run-count reformulation in N2. N4 now states only the block-intersection characterization and its subblock corollary.",
+ "open_issues": [],
+ "advisories": [],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 7,
+  "submissions": 6,
+  "review_rounds": 2,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 89808,
+    "output_tokens": 16062,
+    "cached_tokens": 51494,
+    "reasoning_tokens": 7155
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 13501,
+    "output_tokens": 12165,
+    "reasoning_tokens": 10493
+   },
+   "total": {
+    "input_tokens": 103309,
+    "output_tokens": 28227,
+    "cached_tokens": 51494,
+    "reasoning_tokens": 17648
+   }
+  },
+  "inputs": {
+   "statement": "e7672c174d4719edf6b74dbc89a864f7f7374b00c30446a542f8df982239e6b0",
+   "editorial": "6126d4ad1cb47019d5282a6a6db36f883d4492cbf90b5e283e3483c7dbed232f",
+   "reference": "af58f780161c0b5077452c9096bf385c632909d137d0ca965c062f54e65e3d95"
+  },
+  "created": "2026-11-03 00:50:50"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

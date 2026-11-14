@@ -1,0 +1,598 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2023/J-bridging-the-gap",
+ "title": "Bridging the Gap",
+ "status": "accepted",
+ "version": "99253eadd1c82ba4",
+ "solution_outline": "P1: Normalize a schedule into batches: one crossing carries a prefix of the fastest remaining walkers, who return one at a time while enabling slow-only crossings. P2: Separate empty replenishment batches from batches that carry permanent passengers: empty batches commute to the beginning and form an independent unbounded knapsack. P3: Sort the walkers and represent permanent transfers as largest blocks of a shrinking prefix, charging each crossing together with its fastest helpers’ eventual individual returns.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Sorted crossing-time model",
+   "kind": "modeling",
+   "statement": "A crossing costs its participants’ maximum time, and successive torch trips alternate direction, ending forward. Walker identities do not otherwise affect feasibility or cost, so the walkers may be indexed by sorted crossing times t1<=...<=tn.",
+   "routes": [
+    []
+   ],
+   "accept": "Establishes both the trip-cost model and invariance under relabeling walkers. Sorting is justified by interchangeable identities, not by an assumption that chronological crossings must follow sorted order. Equal-time walkers may be ordered arbitrarily.",
+   "anchors": [
+    "walkers",
+    "torch",
+    "crossing times"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Batch normal form with fastest returners",
+   "kind": "key_property",
+   "statement": "Some optimum consists of batches followed by one final crossing. A batch sends the k fastest remaining walkers and at most c-k permanent passengers forward, then returns those k walkers individually, interleaving k-1 groups of permanent passengers. Each interleaved group has at most c walkers.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Must establish the full batch normal form, not merely single-person returns. Exchange arguments justify individual returns, regrouping overlapping excursions into batches, and choosing the fastest currently remaining returners. Each batch leaves its returners on the original bank and its permanent passengers across the river, allowing concatenation.",
+   "anchors": [
+    "fastest remaining walkers",
+    "crosses back",
+    "bridge capacity",
+    "torch"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Current-set batch costs and credits",
+   "kind": "reformulation",
+   "statement": "With remaining times u1<=...<=um, a k-returner batch uses k-1 slow-only crossings. Excluding those crossings, its cost is sum_{r=1}^k ur plus the maximum time in its preparatory crossing; without preparatory permanent passengers, that maximum is uk.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Charges each of the k returners once and charges the preparatory crossing once; slow-only crossing costs are separate. If preparatory passengers exist, their largest time determines its maximum. These are current-set times: replacing ur by globally sorted tr requires establishing that the original fastest k walkers are still available.",
+   "anchors": [
+    "fastest remaining walkers",
+    "preparatory crossing",
+    "slow-only crossings",
+    "crosses back"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Largest groups and residual prefix normalization",
+   "kind": "key_property",
+   "statement": "Some optimum reserves the largest walkers for slow-only groups in blocks of c, except possibly the last; a partial last group leaves at most c others. Preparatory passengers are removed from the largest end of the complementary sorted prefix, and passenger-carrying preparatory crossings are full.",
+   "routes": [
+    [
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Uses passenger exchanges and fullness normalization. The residual prefix excludes all reserved slow-only groups, including those not yet physically transported. At subsequent batch boundaries this prefix only shortens from its largest end; reserved walkers are slower. Thus k returners chosen from this prefix have original times t1,...,tk, and their return cost is Sk=sum_{r=1}^k tr. Slack is confined to a possible last slow-only group or the final crossing; empty preparatory crossings remain allowed.",
+   "anchors": [
+    "bridge capacity",
+    "slow-only groups",
+    "sorted crossing times",
+    "preparatory passengers"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N5",
+   "name": "DP with prepaid slow-only crossings",
+   "kind": "algorithm",
+   "statement": "F(i,j) minimizes the additional cost of finishing the residual prefix of i walkers while serving j prepaid slow-only crossings. Finish directly when i<=c,j=0. An empty k-returner batch reduces j by k-1; for i>c, a full preparatory crossing also removes the c-k largest prefix walkers.",
+   "routes": [
+    [
+     "N3",
+     "N4"
+    ]
+   ],
+   "accept": "With Sk=sum_{r=1}^k tr, use F(i,0)=ti for i<=c; empty transitions Sk+tk+F(i,j-k+1), 2<=k<=min(c,i,j+1); and passenger-carrying transitions ti+Sk+F(i-c+k,j-k+1), i>c, 1<=k<=min(c-1,j+1). Empty means no preparatory permanent passengers. Infeasible choices are excluded. These minima admit acyclic evaluation, for example by increasing i and then j.",
+   "anchors": [
+    "residual prefix",
+    "prepaid slow-only crossings",
+    "minimum total time"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N6",
+   "name": "Minimize prepaid groups and finishing cost",
+   "kind": "algorithm",
+   "statement": "Minimize the sum of slow-only group maxima plus F(i,j), including j=0,i=n. For j>0 take j-1 full largest groups and one nonempty group of at most c walkers; its remaining prefix i must equal n-jc or satisfy i<=c. Output this minimum.",
+   "routes": [
+    [
+     "N1",
+     "N4",
+     "N5"
+    ]
+   ],
+   "accept": "Enumerates j<=ceil((n-2)/c); group maxima sum to t_n+t_(n-c)+...+t_(n-(j-1)c). Full groups leave i=n-jc; a partial last group leaves n-jc<i<=min(c,n-(j-1)c-1). States above c need only satisfy i+cj<=n. O(n^2) transition work and O(n^2/c+n) storage suffice. For n<=c, the result is tn.",
+   "anchors": [
+    "minimum total time",
+    "bridge capacity",
+    "entire group"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N7",
+   "name": "Empty batches separate from passenger batches",
+   "kind": "reformulation",
+   "statement": "Batches without preparatory passengers can precede all other batches at unchanged cost. Thus F(i,j)=min_{0<=e<=j}(K_min(i,c)(e)+M(i,j-e)), where K_L(e) minimizes the cost of e credits from such batches using at most L returners, and M permits only passenger-carrying batches and the final crossing.",
+   "routes": [
+    [
+     "N3",
+     "N4",
+     "N5"
+    ]
+   ],
+   "accept": "An empty preparatory batch removes nobody from the residual prefix, and its reserved slow-only groups are disjoint from other batches’ groups. Moving it earlier preserves returner availability. Conversely, executing an empty-batch plan and then a passenger-carrying plan realizes each candidate in the minimum. Credits count the slow-only crossings served.",
+   "anchors": [
+    "fastest walkers",
+    "slow-only crossings",
+    "preparatory crossing",
+    "residual prefix"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N8",
+   "name": "Empty replenishment is unbounded knapsack",
+   "kind": "algorithm",
+   "statement": "With Sk=sum_{r=1}^k tr, K_L(0)=0. For e>0, K_L(e)=min_{2<=k<=min(L,e+1)}(K_L(e-k+1)+Sk+tk). Each empty preparatory batch is therefore an unlimited knapsack item of credit weight k-1 and cost Sk+tk.",
+   "routes": [
+    [
+     "N3",
+     "N7"
+    ]
+   ],
+   "accept": "Establishes these minima for the needed limits L and credit totals, with unattainable totals excluded. Equivalent unbounded-knapsack computations count, including memoized recurrences or bottom-up methods. One implementation introduces items by increasing L and relaxes credit totals increasingly. Only totals through ceil((n-2)/c) are needed; prefix-limit answers can be consumed before retaining the final K_c array.",
+   "anchors": [
+    "fastest walkers",
+    "return credits",
+    "empty preparatory crossing",
+    "minimum total time"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 7
+  },
+  {
+   "id": "N9",
+   "name": "Passenger counts determine mixed credits",
+   "kind": "key_property",
+   "statement": "For i>c, if M(i,b) ends with m walkers and uses q passenger-carrying preparatory crossings, then i=m+q(c-1)-b and 2<=m<=c. Fixing m and q therefore determines the starting residual prefix i from the mixed-batch credit total b.",
+   "routes": [
+    [
+     "N5",
+     "N7"
+    ]
+   ],
+   "accept": "A full k-returner preparatory crossing removes c-k permanent walkers and supplies k-1 credits; their sum is c-1. Summing over q crossings gives the identity. The last passenger-carrying preparatory crossing starts with a prefix larger than c and leaves at least two walkers.",
+   "anchors": [
+    "bridge capacity",
+    "permanent passengers",
+    "final crossing",
+    "residual prefix"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 7
+  },
+  {
+   "id": "N10",
+   "name": "Cardinality partition of passenger batches",
+   "kind": "algorithm",
+   "statement": "For each final prefix m, set A(0,0)=tm. For q>=1 and b>=0, let i=m+q(c-1)-b>c. Then A(q,b)=ti+min_k(Sk+A(q-1,b-k+1)), where 1<=k<=min(c-1,b+1). Impossible states are excluded.",
+   "routes": [
+    [
+     "N3",
+     "N7",
+     "N9"
+    ]
+   ],
+   "accept": "A(q,b) minimizes the mixed-only cost with q preparatory crossings, b credits, and final prefix m. Retaining q+b<=floor((n-m)/(c-1)) and b<=ceil((n-2)/c) suffices: these bounds are necessary to fit the reserved slow-only groups within n walkers. The recurrence can use only the previous q row. Across m, its transitions take O(n^2) time.",
+   "anchors": [
+    "fastest walkers",
+    "preparatory crossing",
+    "return credits",
+    "minimum total time"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 8
+  },
+  {
+   "id": "N11",
+   "name": "Combine knapsack with cardinality partitions",
+   "kind": "algorithm",
+   "statement": "For n>c, let Pp=sum_{h=0}^{p-1}t_(n-hc). Minimize Pp+A(q,b)+Kc(p-b) over states with i=m+q(c-1)-b>c, integral p=(n-i)/c, and p>=b. Also minimize Pp+ti+Ki(p) for 2<=i<=c, p=ceil((n-i)/c). For n<=c, output tn.",
+   "routes": [
+    [
+     "N1",
+     "N4",
+     "N8",
+     "N10"
+    ]
+   ],
+   "accept": "The first minimum covers full slow-only groups together with passenger-carrying batches and independent empty preparatory batches. The second covers plans with no preparatory passengers, including a partial last slow-only group. The all-shuttle solution appears with p=b=0. Prefix sums, one knapsack array, and two partition rows provide an O(n)-space realization.",
+   "anchors": [
+    "minimum total time",
+    "entire group",
+    "bridge capacity"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 9
+  },
+  {
+   "id": "N12",
+   "name": "Unified prefix order for permanent transfers",
+   "kind": "key_property",
+   "statement": "Some optimum has a representation in which permanent transfers are consecutive largest blocks of a shrinking globally sorted prefix. Each such crossing also carries fastest helpers, filling the bridge or including the entire remaining prefix; crossings without permanent transfers are separate replenishment batches.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N4"
+    ]
+   ],
+   "accept": "With m remaining and s permanent passengers, 1<=s<=min(c,m), there are h=min(c,m)-s helpers with times t1,...,th. The crossing and their eventual returns cost tm+Sh. This is an accounting decomposition, not chronological removal. Exchanges from batch normal form must justify combining slow-only groups and passenger-carrying crossings into this single prefix order.",
+   "anchors": [
+    "sorted crossing times",
+    "permanent passengers",
+    "fastest walkers",
+    "bridge capacity"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N13",
+   "name": "Realizability of completed credit plans",
+   "kind": "reformulation",
+   "statement": "Complete normalized prefix-transfer plans, supplemented by empty replenishment batches to supply the required returns, can be reordered into legal torch schedules without changing their charged costs. Thus negative balances in accounting order do not make an otherwise completed plan infeasible.",
+   "routes": [
+    [
+     "N12",
+     "N7",
+     "N8"
+    ]
+   ],
+   "accept": "Define balance as charged individual returns minus forward crossings. A productive h-helper crossing contributes h-1. An empty k-returner batch contributes k-1 and costs tk+Sk: all k participants return. A terminal productive balance a<=-1 is completed to balance -1 for Kc(-1-a), using N8. Establish realizability by batch reordering; negative accounting prefixes need not be executable, and representations need not be unique.",
+   "anchors": [
+    "torch",
+    "crosses back",
+    "return credits",
+    "empty preparatory crossing"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 8
+  },
+  {
+   "id": "N14",
+   "name": "Bounded return-balance range",
+   "kind": "key_property",
+   "statement": "Let d be the number of walkers permanently transferred and a the signed return balance. Some optimal prefix-accounting plan satisfies -floor(d/c)-[d=n] <= a <= ceil((n-d)/c)-1 at every state, so balances outside this interval may be omitted without losing the optimum.",
+   "routes": [
+    [
+     "N12",
+     "N13",
+     "N8"
+    ]
+   ],
+   "accept": "Establish the lower bound from fullness of nonterminal prefix transfers and the possible final partial transfer. Establish the upper bound by normalizing away return capacity beyond what remaining capacity-sized groups need. The upper bound need not hold for arbitrary feasible schedules. Equivalent shifted credit conventions count if they preserve this admissible state set or establish another sufficient range with the required complexity.",
+   "anchors": [
+    "permanent passengers",
+    "return credits",
+    "bridge capacity",
+    "remaining walkers"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 9
+  },
+  {
+   "id": "N15",
+   "name": "Permanent-progress signed-balance dynamic program",
+   "kind": "algorithm",
+   "statement": "Minimize charged crossing costs over permanent-progress and signed-return-balance states using largest-block transfers with fastest helpers. After all walkers have permanent transfers, add the cheapest independent replenishment that leaves one unreturned final forward crossing. The minimum completed cost is the answer.",
+   "routes": [
+    [
+     "N1",
+     "N8",
+     "N12",
+     "N13",
+     "N14"
+    ]
+   ],
+   "accept": "Initialize D(0,0)=0. For m=n-d, r=min(c,m), choose 1<=s<=r, set h=r-s, and relax D(d+s,a+h-1) with D(d,a)+tm+Sh within N14’s range. Output min_{a<=-1}(D(n,a)+Kc(-1-a)); when c>=n, output tn. Optionally discard a>ℓ if D(d,a)>=D(d,ℓ)+Kc(a-ℓ), where ℓ is that row’s lower bound. Prefix sums and knapsack give O(n²) time and O(n²/c+n) space.",
+   "anchors": [
+    "minimum total time",
+    "entire group",
+    "return credits",
+    "crossing times"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 10
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N8",
+    "N12",
+    "N13",
+    "N14",
+    "N15"
+   ]
+  ],
+  "keys": [
+   "N6",
+   "N11",
+   "N15"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Accumulated crossing costs can exceed 32-bit range. Arithmetic involving unreachable states must not overflow or produce values that incorrectly improve a feasible answer.",
+   "check": "Verify sufficient range for accumulated costs, sums, and transition arithmetic, for example 64-bit integers. Individual times may remain 32-bit. Unreachable states may be omitted, guarded, or represented by safe sentinels whose arithmetic cannot corrupt the minima."
+  },
+  {
+   "id": "H2",
+   "statement": "When c>=n, the answer is the largest crossing time. In general, infeasible configurations must not contribute to the reported optimum.",
+   "check": "Verify the maximum-time answer for c>=n, whether obtained directly or through the general algorithm. Feasibility may be enforced through state definitions, transitions, or final settlement. An explicit early return or infinity initialization is unnecessary; signed intermediate credit deficits are legitimate if the final represented schedule is feasible."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Normalize a schedule into batches: one crossing carries a prefix of the fastest remaining walkers, who return one at a time while enabling slow-only crossings. After sorting, slow-only crossings can receive the largest walkers first; a two-dimensional DP matches these crossings with batches that supply their returners. The DP has O(n^2) total transition work and O(n^2/c+n) storage, uses 64-bit costs, and directly handles c>=n.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "key_node": "N6",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 104,
+    "n_tests": 104,
+    "max_time_s": 0.12,
+    "time_limit_s": 4.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Separate empty replenishment batches from batches that carry permanent passengers: empty batches commute to the beginning and form an independent unbounded knapsack. For the remaining batches, fixing the final prefix and number of preparatory crossings makes the current prefix size a function of the accumulated return credits, permitting a rolling cardinality-partition DP. Combining these two optimizations with the largest slow-only groups gives O(n^2) time and O(n) auxiliary space.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "key_node": "N11",
+   "new_nodes": [
+    "N7",
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 104,
+    "n_tests": 104,
+    "max_time_s": 0.081,
+    "time_limit_s": 4.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "source": "editorial",
+   "approach": "Sort the walkers and represent permanent transfers as largest blocks of a shrinking prefix, charging each crossing together with its fastest helpers’ eventual individual returns. Use a DP over permanent progress and signed return balance, then settle its terminal deficit with the existing unbounded knapsack for empty replenishment batches. Batch reordering justifies this accounting representation, while bounded balance ranges give O(n²) time and O(n²/c+n) space.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N8",
+    "N12",
+    "N13",
+    "N14",
+    "N15"
+   ],
+   "key_node": "N15",
+   "new_nodes": [
+    "N12",
+    "N13",
+    "N14",
+    "N15"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": null,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 104,
+    "n_tests": 104,
+    "max_time_s": 0.2,
+    "time_limit_s": 4.0
+   },
+   "notes": "The editorial's printed package formula omits the slowest package participant's return: a package creating h credits costs t_(h+1)+S_(h+1), as in the reference, not t_(h+1)+S_h. The DP order is accounting order, and correspondence with physical schedules is not one-to-one. N5 is included through the existing prerequisite chain of reused N7/N8; the new output algorithm does not evaluate F."
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Two accepted approaches cover the direct prepaid-crossing DP and a structurally different factorization into empty-batch knapsack and rolling cardinality partitions. I do not have another genuinely different characterization with a correct implementation that fits the limits.",
+  "considered": [
+   "A one-dimensional recurrence assigning consecutive slow walkers to each entire batch is not correct: slow-only groups and preparatory groups from different batches may need to interleave in sorted order. For c=3 and times 10,10,15,15,15,100,100,100,100,100,100, two mixed batches achieve 285, while the contiguous-batch restriction misses that arrangement.",
+   "Dijkstra over the exact subset of walkers on each bank models the mechanics directly but requires exponentially many states for n up to 10000.",
+   "Always using one fastest walker as the sole returner is suboptimal even on Sample 1; multiple returners must be represented.",
+   "Greedy selection or a convex-penalty optimization of empty batches is unjustified: their credit costs are an unbounded knapsack and need not be convex. With three unit-time returners, minimum costs for zero through three credits are 0,3,4,7.",
+   "Monge or min-plus optimizations of the existing partition recurrence might improve performance, but they would optimize an already established algorithm rather than provide another independently developed output characterization."
+  ],
+  "submissions": 2
+ },
+ "builder_notes": "N14 now states only the optimality-preserving balance-range lemma; the optional same-progress dominance test has moved to N15's acceptance criteria. N13 now focuses on realizability, with elementary balance accounting in its acceptance criteria. The suggested node splits, merges, and direct editorial END route require structural changes forbidden in this text-only revision, so they have not been performed. P3 therefore retains its indirect dependency chain through the alternative batch-DP claims. The corrected empty-package cost tk+Sk for k-1 net credits is retained.",
+ "open_issues": [],
+ "advisories": [
+  "N1 (bundles claims a solver can have separately; split it): The crossing/torch mechanics and the justification for sorting are independently establishable claims. Separate the trip model from invariance under relabeling and sorted indexing.",
+  "N2 (bundles claims a solver can have separately; split it): Single-person returns, regrouping excursions into batches, and choosing the fastest remaining returners are distinct normalization steps; a solver can establish the first without the others. Split these exchange lemmas so a partial normalization argument has its own location.",
+  "N3 (comes with its prerequisite; merge it): The k-1 interleaved crossings are already specified in N2, and the stated charge follows immediately from N1's crossing cost and N2's individual returns. Fold this accounting into the batch-normal-form acceptance criteria or the batch-cost definitions used by the DP.",
+  "N4 (bundles claims a solver can have separately; split it): Assigning the largest walkers to capacity-sized slow-only blocks and normalizing preparatory crossings to full crossings of a residual prefix require distinct exchanges. Separate the slow-only allocation lemma from preparatory fullness/prefix normalization, placing availability of the original fastest helpers with the latter.",
+  "N12 (bundles claims a solver can have separately; split it): Putting all permanent transfers into one largest-block accounting order and obtaining the fastest-helper/fullness normal form are separately establishable transformations, particularly around a partial slow-only block. Split the ordering claim from helper allocation and charging.",
+  "N14 (bundles claims a solver can have separately; split it): The lower bound is fullness-based accounting, whereas the upper bound requires an independent optimality-preserving surplus-return normalization. Move the elementary lower-bound accounting alongside the prefix-transfer definitions and retain the upper-bound normalization separately, or split the two bounds.",
+  "the editorial's approach is not among the paths: P3 matches the reference algorithm, but there is no END route a direct editorial solver would establish: P3 unnecessarily requires the alternative F recurrence in N5 and the F/M factorization in N7, as well as the segregated batch-development chain. Add a direct route through individual-return/fast-helper normalization, unified prefix accounting, replenishment knapsack, realizability, balance bounds, and N15. Separately, the supplied editorial's package formula omits one t_(h+1): N8 correctly uses t_k+S_k for k-1 credits, matching the reference's t[helpers]+fast_prefix[helpers+1].",
+  "order: Split the independent normalization claims in N1, N2, N4, and N12; fold N3's immediate accounting into the relevant batch definitions. Separate N14's elementary lower-bound bookkeeping from its substantive upper-bound normalization. Give the reference/editorial DP a direct derivation and END route that does not require constructing the alternative F and M dynamic programs."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 3,
+  "submissions": 2,
+  "review_rounds": 4,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 94203,
+    "output_tokens": 35269,
+    "reasoning_tokens": 28916,
+    "cached_tokens": 22912
+   },
+   "integrator": {
+    "input_tokens": 24786,
+    "output_tokens": 11257,
+    "reasoning_tokens": 7133,
+    "cached_tokens": 1592
+   },
+   "reviewer": {
+    "input_tokens": 27814,
+    "output_tokens": 45611,
+    "reasoning_tokens": 41261
+   },
+   "total": {
+    "input_tokens": 146803,
+    "output_tokens": 92137,
+    "reasoning_tokens": 77310,
+    "cached_tokens": 24504
+   }
+  },
+  "inputs": {
+   "statement": "3bfd56876bf95c94706aba19f793138bf158121401038c2c62e70ff25793a227",
+   "editorial": "c11ead8bf909ea9d98ee3c746c955605d7d26c37ed50acef870014656a17afdf",
+   "reference": "c4239f278b13824fd186aff6ea57f2e0bab167c995588e4a7cc79038784dc40c"
+  },
+  "created": "2026-11-02 20:35:00"
+ },
+ "editorial": {
+  "covered": false,
+  "path": "P3",
+  "new_nodes": [
+   "N12",
+   "N13",
+   "N14",
+   "N15"
+  ]
+ }
+}

@@ -1,0 +1,137 @@
+[
+ {
+  "round": 1,
+  "version": "9058dca81e70d529",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "This bundles the local length recurrences with their evaluation over an unordered dependency DAG; a solver can know the recurrences without having the evaluation strategy. Keep the recurrences here and move the traversal requirement to N4's algorithm/accept, where it is already substantially covered."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "A solver can correctly invert the alternating prefix while incorrectly continuing alternation after an input is exhausted. Separate the prefix inversion from the unmatched-tail rule so that this distinct failure point can be identified."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "The route supplies the length recurrences, both local predecessor transformations, invalid-query handling, termination at wire 1, and the final index-to-value rule. These suffice for the reference algorithm and its O(n+nq) running time.",
+   "key_ok": true,
+   "key_note": "N4 is the complete output-determining algorithm, including both none and numeric answers.",
+   "hazards_ok": false,
+   "hazards_note": "H3 unnecessarily requires rejecting an invalid rank before tracing; correctness only requires reporting none for a nonexistent position, regardless of where invalidity is detected. H2's check likewise prescribes an inclusive alternating branch and a particular tail-branch structure, although equivalent exhausted-input tests or separate boundary handling are valid. State these checks behaviorally: preserve the correct element at the interleaving boundary, handle either empty input without invalid access or division by zero, and report nonexistent positions as lowercase none on their own lines. H1 is valid; no additional essential numeric hazard is apparent under these bounds.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "The editorial establishes this END route: memoized dependency evaluation is explicitly admitted by N1, and its split inversion, merge prefix/tail inversion, and backward query traversal match N2–N4 and the reference code.",
+   "order": "Remove the network-evaluation requirement from N1 and retain it with N4. Split N3 into alternating-prefix inversion and exhausted-input tail inversion, making N4 depend on both.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "hazards: H3 unnecessarily requires rejecting an invalid rank before tracing; correctness only requires reporting none for a nonexistent position, regardless of where invalidity is detected. H2's check likewise prescribes an inclusive alternating branch and a particular tail-branch structure, although equivalent exhausted-input tests or separate boundary handling are valid. State these checks behaviorally: preserve the correct element at the interleaving boundary, handle either empty input without invalid access or division by zero, and report nonexistent positions as lowercase none on their own lines. H1 is valid; no additional essential numeric hazard is apparent under these bounds."
+  ],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): This bundles the local length recurrences with their evaluation over an unordered dependency DAG; a solver can know the recurrences without having the evaluation strategy. Keep the recurrences here and move the traversal requirement to N4's algorithm/accept, where it is already substantially covered.",
+   "N3 (bundles claims a solver can have separately; split it): A solver can correctly invert the alternating prefix while incorrectly continuing alternation after an input is exhausted. Separate the prefix inversion from the unmatched-tail rule so that this distinct failure point can be identified.",
+   "order: Remove the network-evaluation requirement from N1 and retain it with N4. Split N3 into alternating-prefix inversion and exhausted-input tail inversion, making N4 depend on both."
+  ],
+  "time": "2026-11-03 01:07:59"
+ },
+ {
+  "round": 2,
+  "version": "f67480c28962f15c",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Knowing that a merge adds lengths does not establish the split's odd-length rounding, or vice versa. Separate the split- and merge-length transfer rules, retaining the original length m as the base case."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "A solver can correctly invert the alternating prefix but incorrectly continue using parity after one input is exhausted. Separate prefix inversion from tail inversion so that this distinct failure point can be identified; requiring both in accept does not resolve the bundling."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Dependency-aware length evaluation and composing predecessor mappings into a query trace are separate steps: a solver can understand the trace but incorrectly compute lengths in input order. Give dependency evaluation its own prerequisite node and retain N4 as the query/output algorithm."
+    }
+   ],
+   "end_ok": true,
+   "end_note": "The END route supplies the length recurrences, both local inverse mappings, nonexistence handling, and the terminating backward trace. Together these suffice for the stated O(n+nq) algorithm.",
+   "key_ok": true,
+   "key_note": "N4 determines the output for every query: none for a nonexistent position, otherwise the index reached on source wire 1.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover unordered descriptions, empty streams and exhaustion boundaries, and the none output convention. No mandatory 64-bit arithmetic constraint is missing: after query validation, the reference formulas and their intermediates fit signed 32-bit arithmetic under the given bounds.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "The editorial and reference solution establish N1–N4 using memoized dependency evaluation followed by backward position tracing. That evaluation method is explicitly covered by N4's acceptance criteria.",
+   "order": "Split N1 into split-length and merge-length claims, keeping the source length as the base case. Split N3 into alternating-prefix and exhausted-tail inversion claims. Extract dependency-aware length evaluation from N4 into a prerequisite, leaving N4 as the final query/output algorithm, and update the routes accordingly.",
+   "verdict": "revise"
+  },
+  "blocking": [],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): Knowing that a merge adds lengths does not establish the split's odd-length rounding, or vice versa. Separate the split- and merge-length transfer rules, retaining the original length m as the base case.",
+   "N3 (bundles claims a solver can have separately; split it): A solver can correctly invert the alternating prefix but incorrectly continue using parity after one input is exhausted. Separate prefix inversion from tail inversion so that this distinct failure point can be identified; requiring both in accept does not resolve the bundling.",
+   "N4 (bundles claims a solver can have separately; split it): Dependency-aware length evaluation and composing predecessor mappings into a query trace are separate steps: a solver can understand the trace but incorrectly compute lengths in input order. Give dependency evaluation its own prerequisite node and retain N4 as the query/output algorithm.",
+   "order: Split N1 into split-length and merge-length claims, keeping the source length as the base case. Split N3 into alternating-prefix and exhausted-tail inversion claims. Extract dependency-aware length evaluation from N4 into a prerequisite, leaving N4 as the final query/output algorithm, and update the routes accordingly."
+  ],
+  "time": "2026-11-03 01:10:29"
+ }
+]

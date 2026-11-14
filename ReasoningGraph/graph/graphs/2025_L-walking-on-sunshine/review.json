@@ -1,0 +1,454 @@
+[
+ {
+  "round": 1,
+  "version": "5130c49d7000601e",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The statement fixes clipping before merging and sorting by lower endpoint, although its accept correctly allows other sorted union scans and clipping afterward. State the invariant algorithm—compute the projected union by sorted merging and output its uncovered length within the required descent—and move those ordering choices to accept."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The statement unnecessarily fixes the tree representation to unit strips and includes the optional optimization of avoiding further updates to full nodes; its accept already allows compressed weighted gaps and other range-cover implementations. State that segment-tree range coverage maintains the union length used to determine the answer, leaving the representation and pruning optimization in accept."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The particular deque front/back convention is an implementation choice: reversing both ends gives the same 0-1 BFS. Keep the integer-height graph, 0-1 shortest-path algorithm, and output rule in the statement, and put the deque convention in accept as an example."
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "A solver can establish SCC contiguity from the free upward chain without yet establishing the exact equivalence between shaded elementary gaps and equal SCC labels. Separate these claims, or make the node the characterization of free-motion components and place contiguity in its supporting acceptance explanation."
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Every END route supplies a complete output algorithm and the necessary geometric reduction. N10's accept includes the accepted packed-painting realization; neither its worst-case bound nor the accepted queue-relaxation approach is grounds for rejecting these routes.",
+   "key_ok": true,
+   "key_note": "All designated key nodes state the algorithm that determines the output, rather than merely a feasibility bound or supporting lemma.",
+   "hazards_ok": false,
+   "hazards_note": "H1 is valid, but the output-accuracy constraint is missing. Add a check that the answer is printed exactly as an integer or with enough precision to meet the required 1e-7 absolute or relative error; default floating-point formatting with six significant digits can fail even though the answer is integral.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1, through N1–N4, contains the editorial's reduction to vertical projections, matching lower bound and construction, and sorted interval-union algorithm.",
+   "order": "Move the implementation conventions identified in N4, N11, and N17 into their accepts. Refine N18 so contiguity and the exact shaded-gap characterization are not two independently establishable claims bundled into one node.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N4 (it states one implementation's choice, not what every correct solution through this step gets right): The statement fixes clipping before merging and sorting by lower endpoint, although its accept correctly allows other sorted union scans and clipping afterward. State the invariant algorithm—compute the projected union by sorted merging and output its uncovered length within the required descent—and move those ordering choices to accept.",
+   "N11 (it states one implementation's choice, not what every correct solution through this step gets right): The statement unnecessarily fixes the tree representation to unit strips and includes the optional optimization of avoiding further updates to full nodes; its accept already allows compressed weighted gaps and other range-cover implementations. State that segment-tree range coverage maintains the union length used to determine the answer, leaving the representation and pruning optimization in accept.",
+   "N17 (it states one implementation's choice, not what every correct solution through this step gets right): The particular deque front/back convention is an implementation choice: reversing both ends gives the same 0-1 BFS. Keep the integer-height graph, 0-1 shortest-path algorithm, and output rule in the statement, and put the deque convention in accept as an example.",
+   "hazards: H1 is valid, but the output-accuracy constraint is missing. Add a check that the answer is printed exactly as an integer or with enough precision to meet the required 1e-7 absolute or relative error; default floating-point formatting with six significant digits can fail even though the answer is integral."
+  ],
+  "advisory": [
+   "N18 (bundles claims a solver can have separately; split it): A solver can establish SCC contiguity from the free upward chain without yet establishing the exact equivalence between shaded elementary gaps and equal SCC labels. Separate these claims, or make the node the characterization of free-motion components and place contiguity in its supporting acceptance explanation.",
+   "order: Move the implementation conventions identified in N4, N11, and N17 into their accepts. Refine N18 so contiguity and the exact shaded-gap characterization are not two independently establishable claims bundled into one node."
+  ],
+  "time": "2026-11-03 13:13:34"
+ },
+ {
+  "round": 2,
+  "version": "3349bf7008e9185f",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Every END route includes the geometric reduction or an equivalent height-graph model and a complete output algorithm. The accepted packed-painting realization is covered by N10's acceptance explanation; neither its repeated work nor the queue-relaxation route's worst-case bound invalidates the accepted approaches.",
+   "key_ok": true,
+   "key_note": "All twelve designated key nodes state the algorithm determining the output, rather than merely its correctness justification or complexity.",
+   "hazards_ok": true,
+   "hazards_note": "H1 correctly distinguishes interval length from endpoint counts, handles touching endpoints and zero-length intersections, and specifies a usable output-accuracy check. Required height differences and the answer are at most 2,000,000, so no additional wide-integer requirement is essential. The algorithm nodes already cover non-southward destinations and empty coverage.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1, through N1–N4, matches the editorial and reference solution: discard x coordinates, characterize the answer as uncovered vertical length, and compute it by merging projected intervals.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-03 13:19:02"
+ }
+]

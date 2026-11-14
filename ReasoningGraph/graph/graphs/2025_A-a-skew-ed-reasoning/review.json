@@ -1,0 +1,124 @@
+[
+ {
+  "round": 1,
+  "version": "2b45eeeee029cb5e",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Both routes are complete. P1 supplies the exhaustive merge patterns, feasibility test, extremal choices, and an efficient way to realize the merges. P2 supplies the exact inverse operation, all producibility-preserving candidates, the pairing argument justifying the greedy branch, and a valid amortized bound via the corresponding forward insertions.",
+   "key_ok": true,
+   "key_note": "N6 and N10 each state the construction determining both output permutations, including rejection of impossible trees; neither key is merely a proof or complexity claim.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover worst-case depth, the required two-line versus impossible output convention, and avoiding quadratic sequence materialization. Neither accepted approach requires arithmetic beyond sizes and indices bounded by O(n), so no additional precision or wide-arithmetic hazard is essential to these paths.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 captures the reference's mathematical construction. The reference's empty_side=1 choice is E with prefix length a-b, and empty_side=0 is O with prefix length b-a+1; minimizing or maximizing that length implements N5. Its arithmetic-progression emitter realizes the same stable merges using a different representation from the linked-list example in N6. The editorial prose's assertion that the subtree root must be inserted first is inaccurate, but the reference and graph correctly permit a prefix before the root.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-02 21:02:32"
+ }
+]

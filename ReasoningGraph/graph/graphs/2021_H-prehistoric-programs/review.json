@@ -1,0 +1,107 @@
+[
+ {
+  "round": 1,
+  "version": "23181259bbf53e98",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The positive-group and negative-group sorting rules are distinct deductions: a solver can establish increasing a for nonnegative-net tablets while remaining stuck on decreasing b for negative-net tablets. Split these exchange lemmas into separate nodes so that this important failure point can be identified."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Both routes contain the necessary mechanics, correctness properties, construction, and sufficiently efficient implementation. For P2, total balance zero makes the two independently constructed sides end at the same height; reverse-complement symmetry therefore makes their join valid.",
+   "key_ok": true,
+   "key_note": "N5 and N8 state their respective permutation constructions and rejection conditions, rather than merely feasibility or complexity claims.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover the relevant numeric range and output requirements. Signed 32-bit arithmetic suffices under the total-length bound; there is no additional precision or empty-input issue.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial algorithm and reference implementation: a=-minPref and b=balance-minPref, so increasing a in the nonnegative group and decreasing b in the negative group are exactly the reference sorting keys.",
+   "order": "Split N4 into separate nonnegative-group and negative-group sorting lemmas. Make N5 depend on both; the canonical-order consequence can remain in N5's justification rather than requiring another node.",
+   "verdict": "revise"
+  },
+  "blocking": [],
+  "advisory": [
+   "N4 (bundles claims a solver can have separately; split it): The positive-group and negative-group sorting rules are distinct deductions: a solver can establish increasing a for nonnegative-net tablets while remaining stuck on decreasing b for negative-net tablets. Split these exchange lemmas into separate nodes so that this important failure point can be identified.",
+   "order: Split N4 into separate nonnegative-group and negative-group sorting lemmas. Make N5 depend on both; the canonical-order consequence can remain in N5's justification rather than requiring another node."
+  ],
+  "time": "2026-11-03 00:50:08"
+ }
+]

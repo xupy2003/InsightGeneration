@@ -1,0 +1,499 @@
+[
+ {
+  "round": 1,
+  "version": "093aebe7dbd7034f",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "A solver can establish convexity of F without establishing convexity after partial minimization, and can establish both without the Lipschitz bounds. Separate the two convexity steps and move the quantitative error bounds into N5's acceptance criteria."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "The claimed cut follows immediately by combining the two inequalities already stated in N6; retention after multiple cuts is the same implication applied repeatedly. Merge this consequence into N6 rather than treating it as a separate stopping point."
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": false,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Apart from labeling the coordinates as reservoir weights, this is the general two-dimensional central-cut ellipsoid formula, not a problem-specific claim. Its exact update coefficients and contraction factor are one implementation choice; move them into N14's acceptance examples, leaving any standalone node to state the problem-specific enclosing-region invariant."
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each route supplies its weighted-flow oracle, optimization procedure, stopping certificate or accuracy requirement, and percentage output rule. The geometric routes also address constant supporting planes in their acceptance criteria.",
+   "key_ok": true,
+   "key_note": "N5, N9, N12, and N14 are the respective output-determining algorithms, rather than merely feasibility, complexity, or proof claims.",
+   "hazards_ok": false,
+   "hazards_note": "H1's loss and unit requirements are correct, but its check unnecessarily requires conversion at input and multiplication by 100 at output; permit equivalent percentage-scaled computations and check consistent units instead. Add an explicit degeneracy constraint: constant or zero objectives and boundary optima are valid, and implementations using geometric cuts must handle a zero cut normal without division by zero or endless nonshrinking cuts; this is currently mentioned only in node acceptance criteria.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the reference solution's backward weighted-flow DP and one-dimensional or nested golden-section minimization over the reservoir simplex. Interchanging the two free coordinates is immaterial, and N1 supplies the valid duct-flow justification of convexity.",
+   "order": "Separate N4's support-function convexity from convexity of the partially minimized objective, and place its numerical Lipschitz bounds with N5's accuracy justification. Merge N7 into N6. Fold N13's generic ellipse-update formulas into N14's acceptance criteria, updating the affected routes.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N13 (not specific to this problem; it states one implementation's choice, not what every correct solution through this step gets right): Apart from labeling the coordinates as reservoir weights, this is the general two-dimensional central-cut ellipsoid formula, not a problem-specific claim. Its exact update coefficients and contraction factor are one implementation choice; move them into N14's acceptance examples, leaving any standalone node to state the problem-specific enclosing-region invariant.",
+   "hazards: H1's loss and unit requirements are correct, but its check unnecessarily requires conversion at input and multiplication by 100 at output; permit equivalent percentage-scaled computations and check consistent units instead. Add an explicit degeneracy constraint: constant or zero objectives and boundary optima are valid, and implementations using geometric cuts must handle a zero cut normal without division by zero or endless nonshrinking cuts; this is currently mentioned only in node acceptance criteria."
+  ],
+  "advisory": [
+   "N4 (bundles claims a solver can have separately; split it): A solver can establish convexity of F without establishing convexity after partial minimization, and can establish both without the Lipschitz bounds. Separate the two convexity steps and move the quantitative error bounds into N5's acceptance criteria.",
+   "N7 (comes with its prerequisite; merge it): The claimed cut follows immediately by combining the two inequalities already stated in N6; retention after multiple cuts is the same implication applied repeatedly. Merge this consequence into N6 rather than treating it as a separate stopping point.",
+   "order: Separate N4's support-function convexity from convexity of the partially minimized objective, and place its numerical Lipschitz bounds with N5's accuracy justification. Merge N7 into N6. Fold N13's generic ellipse-update formulas into N14's acceptance criteria, updating the affected routes."
+  ],
+  "time": "2026-11-02 23:51:41"
+ },
+ {
+  "round": 2,
+  "version": "407741780f857a30",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": false,
+     "note": "The at-most-one mixture-mass relaxation is an optional formulation: a solver can establish the restricted convex-mixture lower bound using sum λ=1 without establishing the additional relaxation/completion claim. State the restricted-mixture optimization and its lower-bound property in the node, and move the sum λ<=1 formulation and its equivalence proof into accept as an implementation example."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each accepted route supplies its weighted-flow oracle, optimization procedure, stopping certificate or accuracy requirement, and percentage output rule. No essential mathematical construction is missing.",
+   "key_ok": true,
+   "key_note": "N5, N9, N12, and N14 state the respective paths' output-determining algorithms rather than merely their proofs or complexity properties.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover lossy ducts, consistent percentage scaling, the required absolute accuracy, nested-search error, boundary and constant objectives, and safe handling of zero cut normals. The geometric nodes additionally explain the enclosing-region and precision obligations of their methods.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial and reference solution: the reservoir-weight minimax dual, backward weighted-drainage DP, convex partial minimization, and one or two nested interval searches. Swapping the names of the two free weights does not change the approach.",
+   "order": "Keep N10 as the restricted-policy-mixture lower-bound step, but move its optional subnormalized-mixture formulation and completion argument into accept; no additional node or route change is needed.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N10 (it states one implementation's choice, not what every correct solution through this step gets right; bundles claims a solver can have separately; split it): The at-most-one mixture-mass relaxation is an optional formulation: a solver can establish the restricted convex-mixture lower bound using sum λ=1 without establishing the additional relaxation/completion claim. State the restricted-mixture optimization and its lower-bound property in the node, and move the sum λ<=1 formulation and its equivalence proof into accept as an implementation example."
+  ],
+  "advisory": [
+   "order: Keep N10 as the restricted-policy-mixture lower-bound step, but move its optional subnormalized-mixture formulation and completion argument into accept; no additional node or route change is needed."
+  ],
+  "time": "2026-11-02 23:57:33"
+ },
+ {
+  "round": 3,
+  "version": "480d0f98b0c98a0a",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each route includes the flow model, minimax equality, weighted DAG oracle, and its final optimization procedure. The geometric routes include both sublevel preservation and a volume-to-objective certificate; the policy-generation route includes the restricted LP, dual-weight oracle queries, and an upper/lower-bound stopping certificate. No essential claim of the stated accepted approaches is missing.",
+   "key_ok": true,
+   "key_note": "N5, N9, N12, and N14 respectively state the complete output procedures for nested interval search, centroid cutting, policy generation, and ellipsoid localization. They are algorithm/output nodes rather than merely feasibility or complexity claims.",
+   "hazards_ok": true,
+   "hazards_note": "H1 correctly covers lossy duct coefficients and percentage units. H2 covers the required absolute-error budget, approximate inner evaluations, boundary and constant objectives, and safe handling of zero normals when geometric cuts are used. No additional essential overflow or output convention is missing.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial and reference implementation: evaluate weighted reservoir reward by reverse-altitude DP, minimize it over the reservoir-weight simplex using one-dimensional or nested golden-section searches, and convert the normalized result to a percentage. Exchanging the two coordinates in the nested search is immaterial.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-03 00:05:49"
+ }
+]

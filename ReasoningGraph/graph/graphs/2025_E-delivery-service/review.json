@@ -1,0 +1,278 @@
+[
+ {
+  "round": 1,
+  "version": "4d7a46cc0dbba967",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Updating distinct-city counts and updating split-component-pair multiplicities are independently checkable: a solver can get one right while mishandling the other. Split these into two local-update claims, retaining the binomial-delta calculations as implementation examples."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Requiring transfers specifically from the smaller block by copy count fixes one balancing policy; union-by-rank also bounds each copy's transfers and supports the same algorithm. Keep per-copy maintenance and the output rule in the statement, and give copy-count small-to-large as an efficient implementation example in accept."
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The contraction gain and the merged distinct-city count are separate claims; a solver can know the union-size identity without knowing the duplicate-corrected gain. Keep the gain here and move the merged-count identity into a shared overlap-count claim or the contraction algorithms' accepts."
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Moving specifically the smaller copy component is an implementation restriction, not an invariant of weighted component contraction: the reference chooses using vertex count plus map size, which need not choose the smaller copy component. State the multiplicity contraction and accumulated output rule independently of that policy, with sufficient balancing strategies as examples in accept."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The essential algorithm is expansion of the correction term by leaf enumeration and static overlap queries, not choosing the smaller component by its exact leaf count at every merge. Other amortized balancing policies, including union-by-rank, suffice; place the particular smaller-side policy in accept as an example."
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All three routes contain the mechanics, counting rule, necessary updates, and an implementation with sufficient time and space bounds. Initial counts and handling redundant insertions follow by routine coding from the stated singleton initialization and hazards.",
+   "key_ok": true,
+   "key_note": "N5, N8, and N11 each state the corresponding algorithm and determine the output after every hire; none is merely a feasibility or complexity claim.",
+   "hazards_ok": false,
+   "hazards_note": "H1's check covers binomial products but omits the potentially overflowing gain products (d_A-p_AB)(d_B-p_AB) and p_AC*p_BC used by P2 and P3. Require sufficiently wide exact arithmetic for all pair-count products and accumulated totals, with promotion before multiplication; 64-bit integers are a sufficient example rather than the only permissible representation. H2 is sound.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P2 matches the editorial's bulk component-contraction approach up to equivalent arithmetic. Writing t=p_AB, the reference changes tot1 by choose(d_A+d_B-t,2)-choose(d_A,2)-choose(d_B,2), and tot2 by -choose(t,2)+sum_C p_AC*p_BC; their difference is exactly N7's gain, and its symmetric multiplicity updates are N8's contraction. Maintaining two totals rather than one accumulated answer should be accepted as equivalent, as should the reference's alternative balancing policy.",
+   "order": "Split N4's two maintained-statistic updates. Remove the separate merged-count invariant from N7's gain claim and place it in a shared prerequisite or the algorithm accepts. Keep N5, N8, and N11 as output-rule nodes, but move their exact balancing policies into accept as examples.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N5 (it states one implementation's choice, not what every correct solution through this step gets right): Requiring transfers specifically from the smaller block by copy count fixes one balancing policy; union-by-rank also bounds each copy's transfers and supports the same algorithm. Keep per-copy maintenance and the output rule in the statement, and give copy-count small-to-large as an efficient implementation example in accept.",
+   "N8 (it states one implementation's choice, not what every correct solution through this step gets right): Moving specifically the smaller copy component is an implementation restriction, not an invariant of weighted component contraction: the reference chooses using vertex count plus map size, which need not choose the smaller copy component. State the multiplicity contraction and accumulated output rule independently of that policy, with sufficient balancing strategies as examples in accept.",
+   "N11 (it states one implementation's choice, not what every correct solution through this step gets right): The essential algorithm is expansion of the correction term by leaf enumeration and static overlap queries, not choosing the smaller component by its exact leaf count at every merge. Other amortized balancing policies, including union-by-rank, suffice; place the particular smaller-side policy in accept as an example.",
+   "hazards: H1's check covers binomial products but omits the potentially overflowing gain products (d_A-p_AB)(d_B-p_AB) and p_AC*p_BC used by P2 and P3. Require sufficiently wide exact arithmetic for all pair-count products and accumulated totals, with promotion before multiplication; 64-bit integers are a sufficient example rather than the only permissible representation. H2 is sound."
+  ],
+  "advisory": [
+   "N4 (bundles claims a solver can have separately; split it): Updating distinct-city counts and updating split-component-pair multiplicities are independently checkable: a solver can get one right while mishandling the other. Split these into two local-update claims, retaining the binomial-delta calculations as implementation examples.",
+   "N7 (bundles claims a solver can have separately; split it): The contraction gain and the merged distinct-city count are separate claims; a solver can know the union-size identity without knowing the duplicate-corrected gain. Keep the gain here and move the merged-count identity into a shared overlap-count claim or the contraction algorithms' accepts.",
+   "order: Split N4's two maintained-statistic updates. Remove the separate merged-count invariant from N7's gain claim and place it in a shared prerequisite or the algorithm accepts. Keep N5, N8, and N11 as output-rule nodes, but move their exact balancing policies into accept as examples."
+  ],
+  "time": "2026-11-02 23:50:45"
+ },
+ {
+  "round": 2,
+  "version": "dc9421d8da316474",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The distinct-city-count updates and the split-component-pair updates are independently understandable invariants: a solver can update d correctly while mishandling p, or conversely. Split these into two local-transition claims feeding N5; preserving existing IDs does not resolve this granularity issue."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All three routes supply the delivery model, the necessary counting identities, and an implementable update algorithm. Their accepts provide sufficient balancing and data-structure details to meet the limits.",
+   "key_ok": true,
+   "key_note": "N5, N8, and N11 each specify their path's complete prefix-answer algorithm, rather than only a proof or complexity property.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover sufficiently wide arithmetic, idempotent handling of redundant hires, and emitting an answer for every hire. Signed 64-bit arithmetic suffices for the reference's totals and all three paths' intermediate pair-count expressions.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "The reference's aggregate weighted-map contraction matches P2 up to equivalent answer accounting. Writing t=p_AB and d_M=d_A+d_B−t, its change in tot1−tot2 is binom(d_M,2)−binom(d_A,2)−binom(d_B,2)+binom(t,2)−Σ_C p_AC p_BC, which simplifies exactly to N7; its split_to updates implement N8. Keeping two binomial totals rather than one accumulated-gain variable does not require a separate algorithmic path.",
+   "order": "Split N4 into the distinct-city-count transition and the split-component-pair transition, with both prerequisites feeding N5. The remaining cuts and dependency ordering are sound.",
+   "verdict": "revise"
+  },
+  "blocking": [],
+  "advisory": [
+   "N4 (bundles claims a solver can have separately; split it): The distinct-city-count updates and the split-component-pair updates are independently understandable invariants: a solver can update d correctly while mishandling p, or conversely. Split these into two local-transition claims feeding N5; preserving existing IDs does not resolve this granularity issue.",
+   "order: Split N4 into the distinct-city-count transition and the split-component-pair transition, with both prerequisites feeding N5. The remaining cuts and dependency ordering are sound."
+  ],
+  "time": "2026-11-02 23:55:56"
+ }
+]

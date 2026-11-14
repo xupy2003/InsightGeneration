@@ -1,0 +1,104 @@
+[
+ {
+  "round": 1,
+  "version": "82e04f44b965c3de",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Both routes suffice. P1 establishes matching lower bounds and reachability for the reference solution's three output cases. P2 establishes a unique irreducible optimum and a linear-time suffix-reduction algorithm that reaches it.",
+   "key_ok": true,
+   "key_note": "N5 specifies the complete output construction for P1, and N8 specifies the algorithm producing the output for P2.",
+   "hazards_ok": true,
+   "hazards_note": "No additional problem-specific implementation hazard is missing. Single-character and constant inputs are covered by the constructions, both algorithms meet the limits, and the nodes explicitly require outputting the resulting string. There are no special overflow or precision concerns.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial: preserve endpoints and symbol presence, contract equal runs, shorten alternating strings by two, and output the shortest string permitted by the invariants. N5 agrees with the reference solution in every case.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-03 01:19:39"
+ }
+]

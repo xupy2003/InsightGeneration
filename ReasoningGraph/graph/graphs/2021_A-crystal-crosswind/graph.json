@@ -1,0 +1,463 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2021/A-crystal-crosswind",
+ "title": "Crystal Crosswind",
+ "status": "accepted",
+ "version": "c87e7fca21f66ea8",
+ "solution_outline": "P1: Represent every cell by a Boolean occupancy variable. P2: Contract the cell implication graph into strongly connected components: all cells in one component must share their occupancy. P3: For each wind, decompose the grid into exact-displacement chains.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Exact Boolean meaning of a boundary",
+   "kind": "modeling",
+   "statement": "For each wind w and in-grid location p, membership in its observed boundary set is equivalent to occupied(p) AND NOT occupied(p-w). Every location outside the specified rectangle is unoccupied.",
+   "routes": [
+    []
+   ],
+   "accept": "Uses the exact supplied wind vector, including nonprimitive vectors. Both directions of the equivalence matter: observed boundaries must exist, and unobserved boundaries must not appear.",
+   "anchors": [
+    "wind",
+    "boundary",
+    "molecule",
+    "specified dimensions"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Forced occupied and empty cells",
+   "kind": "key_property",
+   "statement": "Let P contain every observed boundary location. Let F contain every in-grid predecessor of an observed boundary, and every unobserved location whose predecessor for some wind is outside. Every consistent structure contains P and avoids F.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "For each listed boundary p, force p present and p-w absent when in bounds. For each wind, a location not listed with p-w outside must be absent. Overlapping constraints are compatible by the consistency guarantee.",
+   "anchors": [
+    "observed boundaries",
+    "predecessor",
+    "outside"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Crystal constraints form implication closure",
+   "kind": "reformulation",
+   "statement": "Create an arc p→p-w whenever p is not an observed boundary for that wind and p-w is in-grid. A set of occupied cells is consistent exactly when it contains P, avoids F, and is closed under these arcs.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "Checks listed boundaries through the fixed cells, and unlisted boundaries through either an implication arc or an exterior forced absence. Boundary positions do not create an implication for that wind.",
+   "anchors": [
+    "occupied cells",
+    "observed boundary",
+    "implication arcs",
+    "P",
+    "F"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Least crystal is positive reachability",
+   "kind": "key_property",
+   "statement": "The cells reachable from P along implication arcs form the unique inclusion-minimal consistent crystal. Every consistent crystal contains this reachability closure; consistency guarantees that it avoids F.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Reachability includes its starting vertices. Shows closure, satisfaction of fixed constraints, and containment in every solution, establishing unique minimum cardinality as well.",
+   "anchors": [
+    "minimal structure",
+    "P",
+    "implication arcs"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N5",
+   "name": "Greatest crystal excludes negative ancestors",
+   "kind": "key_property",
+   "statement": "The cells from which F is reachable along implication arcs must be empty. Their complement is the unique inclusion-maximal consistent crystal: it contains P, avoids F, and is closed under all implication arcs.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Equivalently propagates forced absence along reversed arcs. If an allowed cell implied a forbidden cell, it would itself be forbidden. Every consistent solution avoids the resulting forbidden set.",
+   "anchors": [
+    "maximal structure",
+    "F",
+    "reversed arcs"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N6",
+   "name": "Output the two implication closures",
+   "kind": "algorithm",
+   "statement": "Search forward from P and backward from F in the implication graph. Output the forward-reachable cells as the minimum crystal, then the complement of backward-reachable cells as the maximum crystal. Generate neighbors using the winds and their boundary-membership sets.",
+   "routes": [
+    [
+     "N4",
+     "N5"
+    ]
+   ],
+   "accept": "An implicit-graph BFS or DFS processes each cell at most once per search and tests k winds per cell, taking O(k·dx·dy + sum b) time. A reversed arc from u reaches q=u+w only when q is in-grid and q is not that wind's boundary.",
+   "anchors": [
+    "minimum crystal",
+    "maximum crystal",
+    "winds",
+    "boundary-membership sets"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N7",
+   "name": "Strong components share molecule occupancy",
+   "kind": "key_property",
+   "statement": "Every strongly connected component of the implication graph is entirely occupied or entirely empty in any consistent crystal. Contracting components gives a DAG whose implication constraints and aggregated forced-presence and forced-absence constraints preserve exactly the consistent structures.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Mutual reachability forces equality of occupancy. Components containing P or F inherit the corresponding fixed value. Edges between distinct components retain their implication meaning, and the quotient is acyclic.",
+   "anchors": [
+    "implication graph",
+    "occupied cells",
+    "strongly connected components",
+    "P",
+    "F"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N8",
+   "name": "Component DAG occupancy dynamic programs",
+   "kind": "algorithm",
+   "statement": "In topological component order, minimum occupancy is forced-presence OR any occupied predecessor component. In reverse topological order, maximum occupancy is NOT forced-absence AND every successor component occupied. Expand component values to cells and output the minimum and maximum structures.",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "Predecessor and successor refer to arcs of the condensation DAG, excluding edges within a component. Empty OR is false and empty AND is true. Consistency makes both assignments respect all fixed values. SCC decomposition and both sweeps can inspect O(k·dx·dy) implicit arcs.",
+   "anchors": [
+    "component DAG",
+    "minimum occupancy",
+    "maximum occupancy",
+    "structures"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N9",
+   "name": "Wind chains identify occupied run starts",
+   "kind": "reformulation",
+   "statement": "For each wind w, in-grid locations partition into chains p,p+w,... beginning where p-w is outside. Its observed boundaries are exactly the first occupied locations of the nonempty occupied runs on those chains.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Follows the actual displacement rather than the primitive direction. A nonzero wind gives finite chains with unique predecessors and successors; boundaries are precisely the empty-to-occupied transitions, including transitions from outside the grid.",
+   "anchors": [
+    "wind",
+    "locations",
+    "observed boundaries",
+    "occupied runs"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N10",
+   "name": "Boundary blocks admit precisely nonempty prefixes",
+   "kind": "key_property",
+   "statement": "Each observed boundary's permitted block extends forward along its wind chain, ending two steps before the next boundary or at the chain's end. A one-wind solution chooses a nonempty prefix of every block and leaves all other locations empty.",
+   "routes": [
+    [
+     "N9"
+    ]
+   ],
+   "accept": "The predecessor of the next boundary must be empty. Before the first boundary nothing may be occupied. After a run ends, occupancy cannot restart before another listed boundary. Consistency ensures consecutive listed boundaries leave room for a nonempty block.",
+   "anchors": [
+    "observed boundary",
+    "wind chain",
+    "permitted block",
+    "occupied prefix"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N11",
+   "name": "Propagate wind-block prefix frontiers",
+   "kind": "algorithm",
+   "statement": "Build the permitted wind-chain blocks. For the minimum, start from all boundaries and extend block prefixes through occupied cells. For the maximum, forbid cells missing a block for any wind and truncate block prefixes before forbidden cells. Propagate changes to stabilization and output both resulting grids.",
+   "routes": [
+    [
+     "N10"
+    ]
+   ],
+   "accept": "Maintain growing lower and shrinking upper prefix lengths per block. Queue each newly occupied or forbidden cell once and visit its k containing blocks. Each block position is traversed at most once per bound, giving O(k·dx·dy + sum b) time. Every update is mandatory in all consistent crystals; stabilization satisfies the prefix characterization for every wind, proving both extrema.",
+   "anchors": [
+    "minimum structure",
+    "maximum structure",
+    "block prefixes",
+    "wind-chain blocks"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 4
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N7",
+    "N8"
+   ],
+   [
+    "N1",
+    "N9",
+    "N10",
+    "N11"
+   ]
+  ],
+  "keys": [
+   "N6",
+   "N8",
+   "N11"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "The supplied wind displacement must not be normalized: wx and wy need not be relatively prime.",
+   "check": "All predecessor and successor calculations use the original wx and wy, not a primitive direction or intervening lattice points."
+  },
+  {
+   "id": "H2",
+   "statement": "A predecessor or successor is outside whenever either coordinate leaves its permitted range; flattened indices alone do not detect row wrapping.",
+   "check": "Validate x and y independently before accessing a cell or boundary-membership array."
+  },
+  {
+   "id": "H3",
+   "statement": "Print the minimum structure first, then one empty line, then the maximum; rows run from y=1 to dy and columns from x=1 to dx.",
+   "check": "Each grid has exactly dy lines of dx characters. The top-left output character represents (1,1); do not reverse the vertical axis."
+  },
+  {
+   "id": "H4",
+   "statement": "Implication paths can contain a number of cells proportional to the entire grid size; graph traversals must not overflow the call stack.",
+   "check": "Use iterative DFS/BFS, or otherwise provide sufficient stack space. A recursion depth proportional to dx·dy is not safe on a typical default C++ stack."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Represent every cell by a Boolean occupancy variable. Listed boundaries fix a cell present and its predecessor absent; every unlisted boundary position gives an implication from that cell to its predecessor. The minimum structure is the implication closure of forced-present cells, while the maximum is the complement of the reverse implication closure of forced-absent cells; both searches take O(k·dx·dy + sum b) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "key_node": "N6",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 29,
+    "n_tests": 29,
+    "max_time_s": 0.16,
+    "time_limit_s": 5.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Contract the cell implication graph into strongly connected components: all cells in one component must share their occupancy. The condensation is a DAG, so minimum occupancy is computed by a forward Boolean dynamic program and maximum occupancy by a backward Boolean dynamic program. Iterative Kosaraju traversal and implicit wind-generated edges keep the total work O(k·dx·dy + sum b).",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N7",
+    "N8"
+   ],
+   "key_node": "N8",
+   "new_nodes": [
+    "N7",
+    "N8"
+   ],
+   "new_hazards": [
+    "H4"
+   ],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 29,
+    "n_tests": 29,
+    "max_time_s": 0.33,
+    "time_limit_s": 5.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "For each wind, decompose the grid into exact-displacement chains. Every observed boundary begins an occupied run, so it owns a permitted block ending before the mandatory empty predecessor of the next boundary; a valid crystal chooses a nonempty prefix of each block. Compute the smallest compatible prefixes by extension and the largest by truncation, propagating only newly occupied or newly forbidden cells; monotone block frontiers give O(k·dx·dy + sum b) total work.",
+   "end_route": [
+    "N1",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "key_node": "N11",
+   "new_nodes": [
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 29,
+    "n_tests": 29,
+    "max_time_s": 0.274,
+    "time_limit_s": 5.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Three genuinely different accepted paths are established: cell-level implication reachability, strongly connected component DAG dynamic programming, and wind-chain block prefix propagation. I do not have another distinct approach that is both justified and fast enough for the full limits.",
+  "considered": [
+   "Intersecting the individual winds' maximum structures is insufficient: the intersection can introduce an unobserved boundary for another wind, so cross-wind propagation remains necessary.",
+   "Repeated whole-grid Boolean or morphological fixed-point sweeps are correct with suitable updates, but their convergence can require too many full-grid passes; the accepted worklist algorithms avoid this problem.",
+   "A generic 2-SAT formulation reduces to the same implication and component reasoning already represented. A zero-capacity-cut formulation likewise recovers the existing two reachability closures rather than a genuinely new algorithm.",
+   "Weighted minimum-cut formulations can optimize molecule count, but introduce a much heavier flow computation without a sufficiently convincing five-second worst-case performance argument here.",
+   "Enumerating occupied subsets or combinations of run endpoints is exponential. Treating implications as undirected connectivity, or merely deleting unforced zero-indegree cells, is incorrect because implications are directional and optional cycles can remain."
+  ],
+  "submissions": 3
+ },
+ "builder_notes": "",
+ "open_issues": [],
+ "advisories": [
+  "N2 (bundles claims a solver can have separately; split it): Boundary-induced fixed values and exterior-induced absence are separately recognizable: a solver can correctly handle listed boundaries yet miss non-boundaries whose predecessors are outside. Split that exterior-seeding rule from the fixed values supplied by listed boundaries.",
+  "N6 (comes with its prerequisite; merge it; bundles claims a solver can have separately; split it): The two output constructions are independently understandable and already stated by N4 and N5; given those nodes and N3's arc definition, this is routine integration rather than another substantive bottleneck. Retain it as a combined output-rule summary, or narrow the preceding nodes so it contributes a genuinely new claim.",
+  "N8 (bundles claims a solver can have separately; split it): The forward minimum DP and reverse maximum DP are separate constructions: knowing the first does not establish the second. Give them separate diagnostic nodes while retaining their combined output rule as the path summary.",
+  "N11 (bundles claims a solver can have separately; split it): Growing mandatory prefixes and shrinking permitted prefixes are independently discoverable algorithms, with different initialization and propagation rules. Split their diagnostic claims into minimum-extension and maximum-truncation nodes, retaining the combined construction as the path's output summary.",
+  "order: Improve diagnostic granularity by separating N2's exterior non-boundary seeding rule and separating the minimum and maximum constructions within N8 and N11. N6 repeats the substantive constructions in N4 and N5, so treat it as output integration rather than an additional reasoning barrier, or narrow N4/N5 to distinct supporting proof obligations."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 4,
+  "submissions": 3,
+  "review_rounds": 1,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 41403,
+    "output_tokens": 15914,
+    "cached_tokens": 24595,
+    "reasoning_tokens": 9783
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 7198,
+    "output_tokens": 7304,
+    "reasoning_tokens": 6381
+   },
+   "total": {
+    "input_tokens": 48601,
+    "output_tokens": 23218,
+    "cached_tokens": 24595,
+    "reasoning_tokens": 16164
+   }
+  },
+  "inputs": {
+   "statement": "748a8708b839512216cf7ff72a2201814d65998b559b9e37f1ded800f6d5dc53",
+   "editorial": "5cd017ce0e102b18e77692a78f5615ac36df1d437f33b5f9b71bca4ab69ba74a",
+   "reference": "8b116b4b95cf88e44279dc161eda7a341450ee0a87d1c5e000aa061d64262df3"
+  },
+  "created": "2026-11-03 01:08:59"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

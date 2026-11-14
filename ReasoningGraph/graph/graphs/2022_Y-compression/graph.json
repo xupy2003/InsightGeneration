@@ -1,0 +1,319 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2022/Y-compression",
+ "title": "Compression",
+ "status": "accepted",
+ "version": "82e04f44b965c3de",
+ "solution_outline": "P1: Deleting a repeated block preserves the first symbol, last symbol, and set of symbols present. P2: Binary DRY has a unique irreducible result: its only irreducible strings are 0, 1, 01, 10, 010, and 101, and the preserved endpoints and symbol set distinguish them.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "First and last symbols are invariant",
+   "kind": "key_property",
+   "statement": "Every DRY deletion preserves the first and last symbols of the nonempty string, including when the repeated substring touches an endpoint.",
+   "routes": [
+    []
+   ],
+   "accept": "For an internal deletion neither endpoint changes. At the beginning or end, the retained copy has the same first or last symbol as the deleted copy. This applies to every deletion in a sequence.",
+   "anchors": [
+    "DRY",
+    "first symbol",
+    "last symbol"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Present symbols are invariant",
+   "kind": "key_property",
+   "statement": "Every DRY deletion preserves the set of symbols occurring in the string: each symbol in the removed copy still occurs in the retained identical copy.",
+   "routes": [
+    []
+   ],
+   "accept": "Establishes that a string containing both zero and one can never become a constant string, while a constant string never gains another symbol. A direct argument using the two identical copies suffices.",
+   "anchors": [
+    "DRY",
+    "zeroes and ones",
+    "repeated substring"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N3",
+   "name": "Contract runs into an alternating string",
+   "kind": "construction",
+   "statement": "Replacing each maximal run of equal symbols by one symbol is achievable using DRY deletions of repeated single symbols. The resulting binary string alternates between zero and one.",
+   "routes": [
+    []
+   ],
+   "accept": "Repeatedly applies 00→0 and 11→1 within every run. Adjacent surviving run representatives differ, so the remaining binary string is alternating.",
+   "anchors": [
+    "binary string",
+    "consecutive instances",
+    "equal-symbol runs"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N4",
+   "name": "Shorten alternating strings by two",
+   "kind": "key_property",
+   "statement": "An alternating binary string of length at least four begins with xyxy, where x≠y. Replacing xyxy by xy leaves an alternating string two symbols shorter. Repeating this reaches length two for even lengths and length three for odd lengths greater than one.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Recognizes that deleting either initial copy of xy is legal and preserves alternation at the boundary with the suffix. Length one stays unchanged; larger lengths decrease by two until reaching two or three.",
+   "anchors": [
+    "alternating binary string",
+    "repeated substring",
+    "DRY"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N5",
+   "name": "Construct the endpoint-determined shortest string",
+   "kind": "construction",
+   "statement": "If only one symbol occurs, output it. Otherwise, output first–last when the endpoints differ, and first–opposite–first when they agree. These strings are reachable and attain the minimum lengths allowed by the endpoint and symbol-set invariants.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N4"
+    ]
+   ],
+   "accept": "Uses a scan to detect both symbols and reads the endpoints. N3–N4 establish reachability; N1–N2 force respectively length at least one, two, or three. Any equivalent O(n) implementation of this output rule qualifies.",
+   "anchors": [
+    "shortest possible result",
+    "first symbol",
+    "last symbol",
+    "zeroes and ones"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N6",
+   "name": "Exactly six irreducible binary strings",
+   "kind": "key_property",
+   "statement": "The binary strings admitting no DRY deletion are exactly 0, 1, 01, 10, 010, and 101. Every other nonempty binary string contains either equal adjacent symbols or an alternating block of length four.",
+   "routes": [
+    []
+   ],
+   "accept": "If adjacent symbols are always unequal, the string alternates, so any four consecutive symbols form abab. Checking lengths one through three leaves precisely the six listed strings. Longer repeated blocks need not be tested to detect reducibility.",
+   "anchors": [
+    "binary strings",
+    "DRY deletion",
+    "repeating consecutive substrings"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N7",
+   "name": "Every complete reduction reaches one optimum",
+   "kind": "key_property",
+   "statement": "For binary strings, every DRY sequence continued until no deletion remains reaches the same string, which is shortest reachable. The six irreducible strings have distinct combinations of first symbol, last symbol, and set of present symbols.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N6"
+    ]
+   ],
+   "accept": "Each operation shortens the string, so any sequence terminates. N1–N2 fix the invariant combination, and N6 gives only one terminal string per combination. Any shorter reachable result would itself reduce to that same terminal string, which is impossible.",
+   "anchors": [
+    "shortest possible result",
+    "binary strings",
+    "DRY",
+    "irreducible strings"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N8",
+   "name": "Reduce each appended symbol greedily",
+   "kind": "algorithm",
+   "statement": "Scan the input, appending each symbol to a reduced buffer. Repeatedly delete one copy whenever its suffix is aa or abab. Output the final buffer. Each prefix buffer is reachable and irreducible, hence the output is shortest; the buffer never exceeds four symbols before reduction.",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "Inductively, appending to an irreducible buffer can introduce a short square only at its suffix. Deleting the second copy leaves a prefix of the previous buffer, again irreducible. N6 makes short-square absence sufficient; N7 proves optimality. A stack or short string implements this in O(n) time.",
+   "anchors": [
+    "input string",
+    "repeated substring",
+    "shortest possible result",
+    "reduced buffer"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   [
+    "N1",
+    "N2",
+    "N6",
+    "N7",
+    "N8"
+   ]
+  ],
+  "keys": [
+   "N5",
+   "N8"
+  ]
+ },
+ "hazards": [],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Deleting a repeated block preserves the first symbol, last symbol, and set of symbols present. Contract equal-symbol runs to obtain an alternating string, then repeatedly shorten its initial xyxy to xy; this reaches the shortest string permitted by those invariants. The resulting answer depends only on the endpoints and whether both symbols occur, so a single linear scan suffices.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "key_node": "N5",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "new_hazards": [],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 33,
+    "n_tests": 33,
+    "max_time_s": 0.007,
+    "time_limit_s": 1.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Binary DRY has a unique irreducible result: its only irreducible strings are 0, 1, 01, 10, 010, and 101, and the preserved endpoints and symbol set distinguish them. Consequently arbitrary local reductions are safe, unlike in the general-alphabet example. Maintain an irreducible prefix buffer and reduce suffixes aa and abab after each appended symbol; the buffer has at most four symbols, giving linear time and constant auxiliary space.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N6",
+    "N7",
+    "N8"
+   ],
+   "key_node": "N8",
+   "new_nodes": [
+    "N6",
+    "N7",
+    "N8"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 33,
+    "n_tests": 33,
+    "max_time_s": 0.01,
+    "time_limit_s": 1.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "The accepted paths cover both direct construction from preserved information and online greedy reduction justified by the unique binary normal form. Other efficient ideas considered reduce to these same claims or change only their implementation; no further genuinely different approach remains.",
+  "considered": [
+   "Counting runs and using their parity yields exactly the alternating-string contraction already established by N3–N5, so it is not a new path.",
+   "A six-state transition table implements the same reduced-prefix algorithm as N8; it changes representation rather than the underlying approach.",
+   "Proving local confluence by checking overlaps would be another proof of N7, not a different algorithm or characterization.",
+   "Searching all deletion sequences or using unrestricted interval dynamic programming is unnecessary and cannot meet the input limit without collapsing to the established binary normal-form properties."
+  ],
+  "submissions": 2
+ },
+ "builder_notes": "",
+ "open_issues": [],
+ "advisories": [],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 3,
+  "submissions": 2,
+  "review_rounds": 1,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 14979,
+    "output_tokens": 3556,
+    "cached_tokens": 9496,
+    "reasoning_tokens": 1658
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 4234,
+    "output_tokens": 4661,
+    "reasoning_tokens": 4142
+   },
+   "total": {
+    "input_tokens": 19213,
+    "output_tokens": 8217,
+    "cached_tokens": 9496,
+    "reasoning_tokens": 5800
+   }
+  },
+  "inputs": {
+   "statement": "3d24e8aa1542980c49be3b7dbbe976d903a946a4dcfcf7f418b01356b116da1f",
+   "editorial": "d1556d53088dffd84c67ec239a7d8f0f47303244686309dc154b1ae9e845cf33",
+   "reference": "9a75525abe6edf5065c0e36d549c203b0ead6bd17c244afc57acd493cde06287"
+  },
+  "created": "2026-11-03 01:17:24"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

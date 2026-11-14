@@ -1,0 +1,555 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2025/F-herding-cats",
+ "title": "Herding Cats",
+ "status": "accepted",
+ "version": "c9858e9b88e3bdbe",
+ "solution_outline": "P1: Translate every liked incidence into a lower bound on that plant's position. P2: Construct the ordering from left to right while maintaining the cats that have not yet reached their requested pot. P3: Reserve one valid representative for every requested pot, using the disjoint candidate sets and the established swap property. P4: Reserve one candidate at each requested pot, then treat the unrequested pots as a successor set.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Exact stopping constraints",
+   "kind": "modeling",
+   "statement": "For a permutation with plant positions q(x), a cat requesting pot p and liking set S stops correctly exactly when q(x)≥p for every x in S and the plant occupying pot p belongs to S.",
+   "routes": [
+    []
+   ],
+   "accept": "Expresses that the first liked plant occurs exactly at p: no liked plant occurs earlier, and the plant at p is liked. Equivalent minimum-position formulations count.",
+   "anchors": [
+    "cats",
+    "pot p",
+    "plants the cat likes"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Maximum requested pot bounds each plant",
+   "kind": "reformulation",
+   "statement": "Define r(x)=max({p_i: cat i likes plant x}∪{1}). All no-early-stop constraints are equivalent to requiring q(x)≥r(x) for every plant x.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Takes the maximum requested pot over all cats liking each plant. An unliked plant can instead receive release bound zero, provided the availability computation treats it as available from pot 1.",
+   "anchors": [
+    "plant x",
+    "requested pots",
+    "r(x)"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Candidates for requested pots",
+   "kind": "key_property",
+   "statement": "For every requested pot p, its plant must belong to C_p={x:r(x)=p and every cat requesting p likes x}. Conversely, placing a member of C_p at p satisfies those cats' at-pot requirements. Candidate sets for distinct pots are disjoint.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "Combines the intersection of likes at pot p with exclusion by any cat requesting a later pot. Membership can be tested by counting how many cats at r(x) like x and comparing with the total number requesting that pot.",
+   "anchors": [
+    "C_p",
+    "requested pot p",
+    "r(x)"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Prefix availability characterizes release feasibility",
+   "kind": "key_property",
+   "statement": "A permutation satisfying q(x)≥r(x) exists exactly when |{x:r(x)≤p}|≥p for every p from 1 to m.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Necessity follows because the first p pots require p available plants. Sufficiency follows by sorting plants by r and placing them in that order, or by repeatedly taking an available unused plant.",
+   "anchors": [
+    "r(x)",
+    "first p pots",
+    "permutation"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N5",
+   "name": "Representative reservations preserve feasibility",
+   "kind": "key_property",
+   "statement": "For any choice of one representative x_p∈C_p at each requested pot p, a permutation respecting all release bounds exists if and only if such a permutation exists with every x_p fixed at p.",
+   "routes": [
+    [
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Any selections from disjoint C_p work. Exchange proof: move each representative into p; its previous position is at least p, so the displaced plant remains valid and other representatives stay fixed. Alternatively, for every prefix t, reservation removes exactly one available plant and one pot for each requested p≤t; residual prefix supply inequalities are unchanged and suffice for filling the remaining pots in release order.",
+   "anchors": [
+    "C_p",
+    "representatives",
+    "requested pots",
+    "release feasibility"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N6",
+   "name": "Release and candidate feasibility test",
+   "kind": "algorithm",
+   "statement": "Output yes exactly when every requested pot p has C_p nonempty and |{x:r(x)≤p}|≥p for all p from 1 to m; otherwise output no.",
+   "routes": [
+    [
+     "N3",
+     "N4",
+     "N5"
+    ]
+   ],
+   "accept": "Determine candidates by comparing each plant's number of liking cats at its maximum requested pot with the total number requesting that pot. Streaming maxima/counts and release-frequency prefix sums yield O(n+m+sum k) time and O(m) auxiliary memory. Alternatively, sorting all releases and checking that the i-th smallest is at most i evaluates the same prefix condition within the limits.",
+   "anchors": [
+    "yes",
+    "no",
+    "C_p",
+    "prefix availability"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N7",
+   "name": "Legal next plants from remaining cats",
+   "kind": "reformulation",
+   "statement": "After a valid prefix through pot p−1, a plant eligible for pot p must be unused, liked by every cat requesting p, and liked by no cat requesting a later pot. These conditions exactly characterize locally legal next plants.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Uses current-group intersection and exclusion by all future cats. When no cat requests p, only being unused and disliked by all future cats is required.",
+   "anchors": [
+    "pot p",
+    "unused plants",
+    "cats requesting a later pot"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N8",
+   "name": "Every locally legal choice is safe",
+   "kind": "key_property",
+   "statement": "If a valid prefix has a feasible completion, placing any locally legal next plant at the next pot leaves a feasible completion.",
+   "routes": [
+    [
+     "N1",
+     "N7"
+    ]
+   ],
+   "accept": "In a feasible completion, swap the chosen plant into the next pot. Both it and the displaced plant are disliked by every later-requesting cat; the chosen plant satisfies all current cats, and earlier stops remain unchanged.",
+   "anchors": [
+    "valid prefix",
+    "locally legal next plant",
+    "feasible completion"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N9",
+   "name": "Forward locally legal greedy",
+   "kind": "algorithm",
+   "statement": "At each pot p in increasing order, choose any unused plant liked by all cats requesting p and by no cat requesting a later pot. Output yes if all pots are filled, and no if no such choice exists.",
+   "routes": [
+    [
+     "N7",
+     "N8"
+    ]
+   ],
+   "accept": "Any implementation of the locally legal choices counts. For example, group cats by requested pot, maintain each plant's number of active liking cats, remove the current group, and use a zero-count availability collection plus current-group intersection tests. Alternatively, release buckets and candidate lists implement the same choices. Sparse incidences permit O(n+m+sum k) time; logarithmic-time availability containers also fit.",
+   "anchors": [
+    "pot p",
+    "locally legal plants",
+    "yes",
+    "no"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N10",
+   "name": "Maximum-release plant fits the last free pot",
+   "kind": "key_property",
+   "statement": "With representatives fixed at their requested pots, suppose the remaining plants have a feasible assignment to the remaining free pots. There is also such an assignment placing a maximum-release remaining plant in the largest remaining free pot.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N5"
+    ]
+   ],
+   "accept": "Let that plant x occupy q and let the largest free pot s contain y in some residual completion. Since r(y)≤r(x)≤q≤s, exchanging them respects both release bounds and changes no already fixed assignment. Applies again after each pairing.",
+   "anchors": [
+    "representatives",
+    "remaining plants",
+    "maximum release",
+    "largest remaining free pot"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N11",
+   "name": "Rank matching after reserving representatives",
+   "kind": "algorithm",
+   "statement": "Reject if any requested pot p has C_p empty. Otherwise reserve one representative from each C_p. Let a and b be the remaining releases and unrequested pot indices, respectively, in nondecreasing order. Output yes exactly when a_i≤b_i for every rank i; otherwise output no.",
+   "routes": [
+    [
+     "N3",
+     "N10"
+    ]
+   ],
+   "accept": "Computes releases and candidates, reserves distinct representatives, and compares sorted remaining releases with sorted free positions. Either scan direction is valid. Sorting with a reverse scan realizes the maximum-release exchange argument; a heap can also generate the ranks. O(n+sum k+m log m) time suffices.",
+   "anchors": [
+    "representatives",
+    "sorted releases",
+    "sorted unrequested pots",
+    "yes",
+    "no"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N12",
+   "name": "Earliest available placement of arbitrary plants",
+   "kind": "key_property",
+   "statement": "After reserving one member of each C_p, select any remaining plant x. Assigning x to the earliest unrequested, unoccupied pot at least r(x) preserves feasibility. If no such pot exists, the current partial assignment has no feasible completion.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N5"
+    ]
+   ],
+   "accept": "In any residual completion x occupies q no earlier than its earliest available legal pot s. Swap x with the plant at s: that plant's release is at most s≤q. Thus arbitrary plant processing order is safe, unlike arbitrary placement into later available pots.",
+   "anchors": [
+    "remaining plant x",
+    "earliest unrequested pot",
+    "r(x)",
+    "feasible completion"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N13",
+   "name": "Successor-set placement after reserving candidates",
+   "kind": "algorithm",
+   "statement": "Reject if any requested pot has C_p empty. Otherwise reserve one member of each C_p at p, then process remaining plants in any order, assigning each to the earliest free pot at least r(x). Output no if none exists, and yes if all plants are assigned.",
+   "routes": [
+    [
+     "N3",
+     "N12"
+    ]
+   ],
+   "accept": "Maintains free pots with a successor-after-deletions structure. One realization unions each occupied pot with its next index, storing the rightmost component index; union by size and path compression give O(n+sum k+m alpha(m)) time. A balanced search tree also fits.",
+   "anchors": [
+    "C_p",
+    "earliest free pot",
+    "remaining plants",
+    "yes",
+    "no"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 6
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   [
+    "N1",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N10",
+    "N11"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N12",
+    "N13"
+   ]
+  ],
+  "keys": [
+   "N6",
+   "N9",
+   "N11",
+   "N13"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "All m plants must be assigned, including plants liked by no cats. Such plants have no release restriction but cannot satisfy a requested pot.",
+   "check": "Retains unliked plants as available for unrequested pots; for example, includes them in release frequencies with release 1 or another initially available sentinel."
+  },
+  {
+   "id": "H2",
+   "statement": "Cat records may appear in arbitrary order and need not be grouped by requested pot.",
+   "check": "Groups records explicitly or uses order-independent aggregation. If streaming per-plant maximum/count pairs, reset the count on a larger requested pot, increment on equality, and ignore smaller pots. A two-pass maximum/count computation also works."
+  },
+  {
+   "id": "H3",
+   "statement": "The bounds permit 200000 cats and plants and 500000 liked incidences, so dense cat-plant or plant-pot tables are not viable.",
+   "check": "Storage and processing use sparse liked incidences or their aggregates rather than a quadratic table."
+  },
+  {
+   "id": "H4",
+   "statement": "Every plant must be assigned to at most one pot, including plants selected directly to satisfy a requested pot.",
+   "check": "Any availability structure must exclude already selected plants from subsequent choices. For example, mark plants used and lazily skip their queue entries, remove them immediately, or maintain disjoint collections."
+  },
+  {
+   "id": "H5",
+   "statement": "A placement must fail if no free pot at or after the plant's release remains; never assign a plant to a pot outside 1..m.",
+   "check": "Detects an absent successor, for example by testing a returned m+1 sentinel or a balanced-tree end iterator, before recording an assignment."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Translate every liked incidence into a lower bound on that plant's position. Each requested pot needs a universally liked plant whose lower bound equals that pot; these candidate sets are disjoint. Prefix availability characterizes feasibility of the lower bounds, and a swapping argument shows that fixing one candidate at every requested pot preserves feasibility, yielding a linear-time test.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "key_node": "N6",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 48,
+    "n_tests": 48,
+    "max_time_s": 0.033,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Construct the ordering from left to right while maintaining the cats that have not yet reached their requested pot. A legal next plant must be liked by all cats stopping now and by no cat stopping later; any such choice is safe by an exchange argument. Removing each cat's incidences at its requested pot exposes available plants, so the entire greedy simulation takes linear time in the input size.",
+   "end_route": [
+    "N1",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   "key_node": "N9",
+   "new_nodes": [
+    "N7",
+    "N8",
+    "N9"
+   ],
+   "new_hazards": [
+    "H4"
+   ],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 48,
+    "n_tests": 48,
+    "max_time_s": 0.087,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Reserve one valid representative for every requested pot, using the disjoint candidate sets and the established swap property. Schedule the remaining plants backwards into the unrequested pots, always choosing the greatest remaining release bound. A largest-release exchange argument proves this reverse greedy algorithm complete; sorting implements it in O(sum k+n+m log m) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N10",
+    "N11"
+   ],
+   "key_node": "N11",
+   "new_nodes": [
+    "N10",
+    "N11"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 48,
+    "n_tests": 48,
+    "max_time_s": 0.031,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Reserve one candidate at each requested pot, then treat the unrequested pots as a successor set. The remaining plants may be processed in any order: assign each to the earliest free pot at or after its release bound. An exchange argument makes every such assignment safe, and a disjoint-set successor structure gives O(n+sum k+m alpha(m)) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N12",
+    "N13"
+   ],
+   "key_node": "N13",
+   "new_nodes": [
+    "N12",
+    "N13"
+   ],
+   "new_hazards": [
+    "H5"
+   ],
+   "program": "paths/P4.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 48,
+    "n_tests": 48,
+    "max_time_s": 0.03,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Four accepted paths cover the static feasibility characterization, active-cat forward construction, reverse release-order matching, and arbitrary-order successor placement. I do not have another genuinely different approach with a justified running time for these limits.",
+  "considered": [
+   "General bipartite matching or max flow on plant-pot compatibility: the explicit graph can be quadratic, and I cannot justify a compressed generic-flow implementation within the two-second limit.",
+   "Suffix-union bounds and Hall's theorem: these give equivalent formulations or proofs of the existing release-prefix feasibility condition, not a new path.",
+   "Earliest-deadline scheduling after reserving representatives: in this instance it reduces to the already captured forward release-bound greedy choices.",
+   "Counting valid permutations: positivity reduces to the same candidate-existence and prefix-availability conditions, so it does not provide a distinct decision algorithm.",
+   "Backward greedy without reserving candidates: it can consume the only plant capable of satisfying an earlier requested pot. Reserving representatives yields the accepted reverse-matching path.",
+   "Alternative balanced-tree, heap, bucket, and disjoint-set implementations of the existing greedy rules: these do not introduce new claims or algorithms."
+  ],
+  "submissions": 4
+ },
+ "builder_notes": "Generalized N9 to the forward locally legal choice rule, leaving active-count maintenance and release buckets as implementation examples. N11 now states the rank-wise matching criterion without prescribing traversal direction. H2 now covers arbitrary cat-record order for every approach, with maximum/count updates only a conditional example.",
+ "open_issues": [],
+ "advisories": [],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 5,
+  "submissions": 4,
+  "review_rounds": 3,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 102542,
+    "output_tokens": 19055,
+    "cached_tokens": 58931,
+    "reasoning_tokens": 9549
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 18945,
+    "output_tokens": 21946,
+    "reasoning_tokens": 19290
+   },
+   "total": {
+    "input_tokens": 121487,
+    "output_tokens": 41001,
+    "cached_tokens": 58931,
+    "reasoning_tokens": 28839
+   }
+  },
+  "inputs": {
+   "statement": "24eee41ba1f6535f04a1973600bceee2cc2ba9d1a7c1c8cc0f0bdd71e16f7e2c",
+   "editorial": "4d50ea266a47f0137fe24eca6e2966038347992183fd99d45f3e23ca058b086c",
+   "reference": "82488f6d226b7e9b0b560591932dd78014f7c26abbd6b1d44435644164c64853"
+  },
+  "created": "2026-11-03 01:29:24"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

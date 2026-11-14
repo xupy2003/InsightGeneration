@@ -1,0 +1,473 @@
+[
+ {
+  "round": 1,
+  "version": "58e22c9c1f7371ea",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "A solver can propagate an anchored assignment and detect contradictory equations without recognizing that all solutions are described by one free component shift. Separate the propagation/consistency claim from the characterization of the remaining freedom."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "N4 already gives propagation and consistency checking, N5 gives feasibility, and N6 gives both treasure-answer cases; N7 adds only routine assembly. Consolidate N6 and N7 into one treasure output-rule node, retaining the shared optimization result needed by P2."
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All three routes supply the map characterization, complete feasibility checks, and an attainable treasure optimum, together with algorithms fast enough for the limits. P3's distance-attainment argument also checks out: the source reaches the hub, every column, and every nonisolated row, leaving only isolated rows to extend.",
+   "key_ok": true,
+   "key_note": "N7, N9, and N13 each state their approach's complete output rule, including rejection of infeasible instances and computation of the minimum depth.",
+   "hazards_ok": false,
+   "hazards_note": "The underlying concerns are valid, but H1 and H2 prescribe implementations rather than only necessary constraints. H1 should require sufficiently wide, exact arithmetic and safe handling of unbounded endpoints, with signed 64-bit arithmetic as an example rather than a requirement. H2 should prohibit worst-case dense-grid work/storage and require traversal safe on long components; its instruction to store only row/column vertices and known-depth edges excludes P3's legitimate hub and auxiliary edges. H3 and H4 correctly cover global feasibility, the impossible output convention, and isolated coordinates.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial and reference solution: propagate component potentials, reject inconsistent equations or negative sums of component minima, then use the fixed treasure sum within a component or the two endpoint offsets from their respective minima across components. N3 supplies the normalization justification for choosing component shifts independently.",
+   "order": "Split N4's propagation/consistency claim from its one-free-shift characterization. Consolidate N6 and N7 so the treasure output rule is not represented once as a lemma and again as a node adding only routine assembly; preserve that shared rule for P2 and update dependencies accordingly.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "hazards: The underlying concerns are valid, but H1 and H2 prescribe implementations rather than only necessary constraints. H1 should require sufficiently wide, exact arithmetic and safe handling of unbounded endpoints, with signed 64-bit arithmetic as an example rather than a requirement. H2 should prohibit worst-case dense-grid work/storage and require traversal safe on long components; its instruction to store only row/column vertices and known-depth edges excludes P3's legitimate hub and auxiliary edges. H3 and H4 correctly cover global feasibility, the impossible output convention, and isolated coordinates."
+  ],
+  "advisory": [
+   "N4 (bundles claims a solver can have separately; split it): A solver can propagate an anchored assignment and detect contradictory equations without recognizing that all solutions are described by one free component shift. Separate the propagation/consistency claim from the characterization of the remaining freedom.",
+   "N7 (comes with its prerequisite; merge it): N4 already gives propagation and consistency checking, N5 gives feasibility, and N6 gives both treasure-answer cases; N7 adds only routine assembly. Consolidate N6 and N7 into one treasure output-rule node, retaining the shared optimization result needed by P2.",
+   "order: Split N4's propagation/consistency claim from its one-free-shift characterization. Consolidate N6 and N7 so the treasure output rule is not represented once as a lemma and again as a node adding only routine assembly; preserve that shared rule for P2 and update dependencies accordingly."
+  ],
+  "time": "2026-11-03 00:24:20"
+ },
+ {
+  "round": 2,
+  "version": "5b54c55db2ccfdff",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "Given N4's affine parameterization and N5's admissible interval, these minima follow immediately by evaluating the appropriate interval endpoint; independence across components is also already established in N5. Fold this corollary into N5's accept or the optimization explanations in N7 and N9."
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "This combines establishing nonnegative reduced edge weights with converting a reduced shortest-path distance back into the treasure optimum; a solver can establish the former while getting the latter's sign or offset wrong. Keep the reweighting property here and place the objective conversion in N13, where it is already stated, or separate the two claims."
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each END route supplies a complete, sufficiently efficient algorithm, including consistency detection, global nonnegative extendability, isolated coordinates, and the treasure objective. The propagation formulas agree with the reference solution, and the weighted-union and reweighted-shortest-path formulas have the correct signs.",
+   "key_ok": true,
+   "key_note": "N7, N9, and N13 each specify their path's complete output algorithm, including when to output impossible; none is merely a feasibility, complexity, or proof claim.",
+   "hazards_ok": false,
+   "hazards_note": "H1's overflow and infinity-handling requirements are appropriate, but requiring all intermediate arithmetic to remain exact is stronger than necessary: bounded-error arithmetic with justified comparisons and rounding can also produce a correct program. Require sufficient range and precision for reliable feasibility decisions and the exact integer output, rather than mandating exact intermediate representations; H2-H4 otherwise cover the essential resource, global-feasibility, and isolation issues.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial and reference solution: propagate row/column potentials, reject inconsistent components or negative sums of component minima, and use the fixed sum or independently normalized endpoint values according to component membership. N3 supplies a valid explicit justification for the global nonnegativity normalization.",
+   "order": "Fold N6's immediate interval-endpoint corollary into N5's accept or N7/N9's optimization explanations. Separate N12's nonnegative-reweighting fact from objective recovery, preferably leaving the latter in N13 rather than duplicating it as part of N12.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "hazards: H1's overflow and infinity-handling requirements are appropriate, but requiring all intermediate arithmetic to remain exact is stronger than necessary: bounded-error arithmetic with justified comparisons and rounding can also produce a correct program. Require sufficient range and precision for reliable feasibility decisions and the exact integer output, rather than mandating exact intermediate representations; H2-H4 otherwise cover the essential resource, global-feasibility, and isolation issues."
+  ],
+  "advisory": [
+   "N6 (comes with its prerequisite; merge it): Given N4's affine parameterization and N5's admissible interval, these minima follow immediately by evaluating the appropriate interval endpoint; independence across components is also already established in N5. Fold this corollary into N5's accept or the optimization explanations in N7 and N9.",
+   "N12 (bundles claims a solver can have separately; split it): This combines establishing nonnegative reduced edge weights with converting a reduced shortest-path distance back into the treasure optimum; a solver can establish the former while getting the latter's sign or offset wrong. Keep the reweighting property here and place the objective conversion in N13, where it is already stated, or separate the two claims.",
+   "order: Fold N6's immediate interval-endpoint corollary into N5's accept or N7/N9's optimization explanations. Separate N12's nonnegative-reweighting fact from objective recovery, preferably leaving the latter in N13 rather than duplicating it as part of N12."
+  ],
+  "time": "2026-11-03 00:28:41"
+ },
+ {
+  "round": 3,
+  "version": "ff9b6255e28bf488",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "The minima and their attainability follow immediately by evaluating a_x+s and b_y-s at the endpoints of the interval established in N5; independence across components is also already established there. Fold this observation into N5's accept, rather than making it a separate stopping point."
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Every END route supplies a complete feasibility test and treasure-minimization algorithm with suitable complexity. The weighted-union interval translations and the shortest-path reweighting and objective recovery are correct.",
+   "key_ok": true,
+   "key_note": "N7, N9, and N13 each state their path's complete output algorithm, including impossible instances.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover numerical range and precision, safe unbounded endpoints, sparse resource usage and traversal depth, validation outside the treasure component, isolated coordinates, and the required output convention.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial and reference solution: propagate component potentials, reject contradictions or a negative sum of component minima, and output either the fixed treasure sum or the sum of endpoint offsets from their respective minima. N3 explicitly justifies the nonnegative-factor normalization underlying those shifts.",
+   "order": "Merge N6 into N5's accept and redirect dependencies on N6 to N5. The endpoint-minimization observation can also be referenced in N7 and N9; keeping existing node IDs and routes is not a substantive reason to retain this redundant step.",
+   "verdict": "revise"
+  },
+  "blocking": [],
+  "advisory": [
+   "N6 (comes with its prerequisite; merge it): The minima and their attainability follow immediately by evaluating a_x+s and b_y-s at the endpoints of the interval established in N5; independence across components is also already established there. Fold this observation into N5's accept, rather than making it a separate stopping point.",
+   "order: Merge N6 into N5's accept and redirect dependencies on N6 to N5. The endpoint-minimization observation can also be referenced in N7 and N9; keeping existing node IDs and routes is not a substantive reason to retain this redundant step."
+  ],
+  "time": "2026-11-03 00:31:41"
+ }
+]

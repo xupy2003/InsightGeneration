@@ -1,0 +1,616 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2021/E-hand-of-the-free-marked",
+ "title": "Hand of the Free Marked",
+ "status": "accepted",
+ "version": "ccf37f7991dae64f",
+ "solution_outline": "P1: Model successful hands as a matching between k-card subsets and observable ordered rows together with the hidden card's mark. P2: Keep the matching characterization, but avoid enumerating complete mark-count vectors. P3: Use an adaptive recursion instead of enumerating every complete vector or joining two halves. P4: Compute the weighted distribution of the additive score with a sparse dynamic program over marks and selected-card counts.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Successful hands form an observation matching",
+   "kind": "modeling",
+   "statement": "Create a bipartite graph between k-card hands and observations consisting of an ordered visible row and the hidden card's mark. Edges represent possible displays. The optimal success probability equals the maximum matching size divided by binomial(n,k).",
+   "routes": [
+    []
+   ],
+   "accept": "Each observation and announced identity determine at most one successful hand, so successful hands admit distinct observations. Conversely, a matching supplies an assistant's display and magician's answer for every matched hand. Randomization cannot improve the best deterministic strategy.",
+   "anchors": [
+    "selected cards",
+    "face-down card",
+    "marking",
+    "probability"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Observations separate mark-count vectors",
+   "kind": "reformulation",
+   "statement": "An observation determines the complete hand's mark-count vector a: count the visible marks and add one for the hidden mark. Thus the matching graph separates into independent subgraphs indexed by vectors with sum a_j=k and 0<=a_j<=n_j.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "The visible identities determine their marks. No observation can connect hands having different mark multiplicities, so maximum matching sizes can be added over the vectors.",
+   "anchors": [
+    "marking",
+    "selected cards",
+    "visible cards"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Count hands and marked observations",
+   "kind": "key_property",
+   "statement": "For a feasible vector a, the hand count is L=product_j binomial(n_j,a_j). With F=(k-1)!, the observation count hiding mark j is R_j=F*binomial(n_j,a_j-1)*product_{i!=j} binomial(n_i,a_i) when a_j>0, and zero otherwise.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Choose the identities separately within each mark to count hands. For observations hiding mark j, instead choose a_j-1 identities of that mark and order all k-1 visible cards. Equivalently, R_j/L=F*a_j/(n_j-a_j+1). The observation parts for different hidden marks are disjoint.",
+   "anchors": [
+    "marking",
+    "ordered visible cards",
+    "hands"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Uniform degrees within each hidden mark",
+   "kind": "key_property",
+   "statement": "Within a fixed feasible mark-count vector, each hand has a_j*(k-1)! adjacent observations hiding mark j. Every such observation has exactly n_j-a_j+1 adjacent hands.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "For the hand-side degree, choose one of its a_j cards to hide and permute the others. For the observation-side degree, complete the visible cards with any card of the hidden mark except the a_j-1 already visible cards.",
+   "anchors": [
+    "face-down card",
+    "rearrange",
+    "marking"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N5",
+   "name": "Each vector matches its smaller side",
+   "kind": "key_property",
+   "statement": "For every feasible mark-count vector, the maximum matching size is min(L,R), where R=sum_j R_j is its total observation count.",
+   "routes": [
+    [
+     "N3",
+     "N4"
+    ]
+   ],
+   "accept": "Weight every edge hiding mark j by 1/(n_j-a_j+1). Each observation receives weight one and each hand receives R/L. If R<=L this saturates all observations; otherwise scale by L/R to saturate all hands. Bipartite matching integrality gives a matching attaining the smaller-side upper bound.",
+   "anchors": [
+    "matching",
+    "mark-count vector",
+    "hands",
+    "observations"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N6",
+   "name": "Enumerate and sum optimal hand counts",
+   "kind": "algorithm",
+   "statement": "Output sum_a min(L(a),sum_j R_j(a))/binomial(n,k), enumerating integer vectors with sum a_j=k and 0<=a_j<=n_j. Equivalently, each vector contributes L(a)*min(1,(k-1)!*sum_j a_j/(n_j-a_j+1)) to the numerator.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N3",
+     "N5"
+    ]
+   ],
+   "accept": "Precompute binomial(n_j,t) for 0<=t<=k by a multiplicative recurrence, enumerate compositions of k, and accumulate the stated numerator using floating-point arithmetic. There are at most binomial(19,9)=92,378 vectors, so O(m*binomial(k+m-1,m-1)+mk) arithmetic operations suffice.",
+   "anchors": [
+    "highest possible probability",
+    "mark-count vector",
+    "binomial coefficients"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N7",
+   "name": "Factor contributions across two mark groups",
+   "kind": "reformulation",
+   "statement": "Split the marks into two groups. A partial selection has count t, weight w=product_j binomial(n_j,a_j), and score s=(k-1)!*sum_j a_j/(n_j-a_j+1). Pairing records whose counts total k contributes w_L*w_R*min(1,s_L+s_R) successful hands.",
+   "routes": [
+    [
+     "N3",
+     "N5"
+    ]
+   ],
+   "accept": "Each partial record's count, product, and sum range over its own group of marks. The full hand count factors as the product of the two partial weights, while R/L is the sum of their scores. Each full mark-count vector corresponds uniquely to one compatible pair of partial records.",
+   "anchors": [
+    "marking",
+    "mark-count vector",
+    "successful hands"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N8",
+   "name": "Aggregate partners by a score threshold",
+   "kind": "key_property",
+   "statement": "For a left record with weight w and score x, partition compatible right records at score y=1-x. Let W_< and Y_< sum weights and weighted scores below that threshold, and W_>= sum remaining weights. The combined successful-hand contribution is w*(x*W_<+Y_<+W_>=).",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "Below the threshold, min(1,x+y)=x+y; at or above it, the value is one. The identity does not require sorting. One evaluation method sorts right records and uses weight and weighted-score prefix sums, suffix weights, and a binary search. Records at equality may be placed on either side.",
+   "anchors": [
+    "partial selections",
+    "successful hands",
+    "score threshold"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N9",
+   "name": "Meet-in-the-middle probability with weighted queries",
+   "kind": "algorithm",
+   "statement": "Partition marks into two groups and enumerate partial-selection records by selected-card count. For each record, aggregate opposite-group records using the weighted threshold formula, restricted to complementary card counts totaling k. Sum these contributions and divide by binomial(n,k) to obtain the optimal probability.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N7",
+     "N8"
+    ]
+   ],
+   "accept": "Each compatible pair contributes exactly once, but pairs need not be enumerated. Weighted threshold aggregates can be evaluated by sorted prefix sums and binary searches, an offline sweep, or an ordered aggregate structure. A balanced partition gives at most binomial(k+ceil(m/2),ceil(m/2))<=3003 records per side; sorting and logarithmic queries readily fit the limits.",
+   "anchors": [
+    "highest possible probability",
+    "marking",
+    "partial selections",
+    "weighted threshold queries"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 7
+  },
+  {
+   "id": "N10",
+   "name": "Suffix weight and score moment recurrence",
+   "kind": "key_property",
+   "statement": "For suffix marks, let W_j(r) sum r-card selection weights and M_j(r) sum weight times score. Set c_j(a)=binomial(n_j,a), d_j(a)=(k-1)!*a/(n_j-a+1). Then W_j(r)=sum_a c_j(a)W_{j+1}(r-a) and M_j(r)=sum_a c_j(a)[M_{j+1}(r-a)+d_j(a)W_{j+1}(r-a)].",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "Index marks from zero. Use W_m(0)=1 and M_m(0)=0 for the empty suffix, with zero mass at other counts. Sum only valid counts a. Weight multiplication yields the W recurrence; score addition yields the extra d_j(a)W term in the M recurrence. Also W_j(r)=binomial(sum_{i>=j} n_i,r).",
+   "anchors": [
+    "marking",
+    "partial selections",
+    "binomial weights",
+    "additive score"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N11",
+   "name": "Extremal suffix scores by card count",
+   "kind": "key_property",
+   "statement": "Let lo_j(r) and hi_j(r) be the minimum and maximum scores attainable by selecting r cards from suffix marks. Over counts a admitting a completion, lo_j(r)=min_a[d_j(a)+lo_{j+1}(r-a)], with the corresponding maximum recurrence for hi_j(r).",
+   "routes": [
+    [
+     "N10"
+    ]
+   ],
+   "accept": "The empty suffix has score zero only at count zero. Impossible counts are excluded, or represented by positive/negative infinity. Enumerating the next mark's count proves both extrema recurrences; all suffix tables take O(mk^2) operations.",
+   "anchors": [
+    "marking",
+    "remaining cards",
+    "minimum score",
+    "maximum score"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 7
+  },
+  {
+   "id": "N12",
+   "name": "Collapse uniformly linear or saturated suffixes",
+   "kind": "key_property",
+   "statement": "Given accumulated score x and r remaining cards, a suffix contributes W_j(r) if x+lo_j(r)>=1. If x+hi_j(r)<=1, it contributes x*W_j(r)+M_j(r). These contributions exclude the already-selected marks' multiplicative weight.",
+   "routes": [
+    [
+     "N7",
+     "N10",
+     "N11"
+    ]
+   ],
+   "accept": "In the first case every completion is saturated, so summing its weight gives W_j(r). In the second case every completion is in the linear part of min(1,score), so summing weight times x plus suffix score gives xW_j(r)+M_j(r). Equality permits either formula.",
+   "anchors": [
+    "successful hands",
+    "remaining cards",
+    "score threshold",
+    "suffix weights"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 8
+  },
+  {
+   "id": "N13",
+   "name": "Adaptive suffix aggregation outputs the probability",
+   "kind": "algorithm",
+   "statement": "Starting with score zero, recursively assign mark counts totaling k. Return zero for impossible remaining counts and collapse subtrees using the suffix formulas whenever applicable. Otherwise sum child results multiplied by binomial(n_j,a_j). Output the root result divided by binomial(n,k).",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N7",
+     "N10",
+     "N11",
+     "N12"
+    ]
+   ],
+   "accept": "Precompute suffix weights, moments and extrema. At an ambiguous state, branch over the next mark's count and add its score. A terminal state is always collapsible. This evaluates precisely the sum of optimal composition contributions, with at most the composition-recursion tree and O(mk^2) preprocessing.",
+   "anchors": [
+    "highest possible probability",
+    "mark-count vector",
+    "suffix aggregation"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 9
+  },
+  {
+   "id": "N14",
+   "name": "Saturated partial scores are absorbing",
+   "kind": "key_property",
+   "statement": "Observation-to-hand score increments are nonnegative. Therefore a partial score may be capped at one without changing any completion's success factor: min(1,x+y)=min(1,min(1,x)+y) for x,y>=0.",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "If x<1, capping changes nothing. If x>=1, every nonnegative future increment leaves the final success factor equal to one. Applying this identity repeatedly permits capping after every processed mark.",
+   "anchors": [
+    "partial selections",
+    "additive score",
+    "successful hands"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N15",
+   "name": "Sparse capped-score distribution dynamic program",
+   "kind": "algorithm",
+   "statement": "Initialize D_0(0,0)=1. For each mark j and allowed count a, add D_j(t,s)*binomial(n_j,a) into D_{j+1}(t+a,min(1,s+d_j(a))), where d_j(a)=(k-1)!*a/(n_j-a+1), retaining t+a<=k. Output sum_s s*D_m(k,s)/binomial(n,k).",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N7",
+     "N14"
+    ]
+   ],
+   "accept": "D_j(t,s) sums binomial weights after the first j marks. Equal count-and-score states can be merged because they admit identical future choices and success factors. Use a sparse score-to-weight dictionary per count. Layer j has at most binomial(k+j,j)<=184,756 states, so ordered dictionaries suffice. Maintain sufficient precision for scores, weights, and the final weighted sum.",
+   "anchors": [
+    "highest possible probability",
+    "marking",
+    "selected-card count",
+    "score distribution"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 7
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N10",
+    "N11",
+    "N12",
+    "N13"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N14",
+    "N15"
+   ]
+  ],
+  "keys": [
+   "N6",
+   "N9",
+   "N13",
+   "N15"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Hand and observation counts can exceed all standard integer types: binomial(n,k) can be about 10^83. Intermediate products must not overflow integer arithmetic.",
+   "check": "Use floating-point binomial recurrences and floating-point products, or arbitrary-precision integers. Cast before multiplication if integer operands could overflow."
+  },
+  {
+   "id": "H2",
+   "statement": "Vectors selecting more cards of a mark than exist are invalid; the ratio formula is only evaluated on feasible vectors.",
+   "check": "Bound each selected count by its mark's population, or explicitly skip invalid vectors before using n_j-a_j+1 as a denominator."
+  },
+  {
+   "id": "H3",
+   "statement": "The printed probability must have absolute error at most 10^-9, including accumulation and formatting error.",
+   "check": "Use sufficient floating-point precision and print enough decimal places; avoid integer division and severe cancellation."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Model successful hands as a matching between k-card subsets and observable ordered rows together with the hidden card's mark. The graph separates by the numbers of cards of each mark; within each part, regular incidence counts give a fractional matching saturating the smaller side, hence an integral matching of that size. Enumerating all at most 92,378 mark-count vectors and summing their optimal contributions gives the answer.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "key_node": "N6",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 66,
+    "n_tests": 66,
+    "max_time_s": 0.014,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Keep the matching characterization, but avoid enumerating complete mark-count vectors. Split the marks into two halves and represent each partial selection by its card count, binomial weight, and additive observation-to-hand score. Sorted weighted-prefix queries combine all compatible records from the other half at once, evaluating the same optimal probability in a meet-in-the-middle algorithm.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   "key_node": "N9",
+   "new_nodes": [
+    "N7",
+    "N8",
+    "N9"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 66,
+    "n_tests": 66,
+    "max_time_s": 0.011,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Use an adaptive recursion instead of enumerating every complete vector or joining two halves. A small suffix dynamic program computes binomial weight sums, weighted score sums, and minimum/maximum attainable scores for every remaining card count. Any subtree entirely in the linear or saturated part of min(1,score) is evaluated in constant time; only subtrees straddling the threshold are expanded, so the worst case remains the small composition enumeration.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N10",
+    "N11",
+    "N12",
+    "N13"
+   ],
+   "key_node": "N13",
+   "new_nodes": [
+    "N10",
+    "N11",
+    "N12",
+    "N13"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 66,
+    "n_tests": 66,
+    "max_time_s": 0.013,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Compute the weighted distribution of the additive score with a sparse dynamic program over marks and selected-card counts. Since all score increments are nonnegative, a partial score can be capped at one without changing any eventual success contribution, and states sharing a count and capped score can be merged. The state count is bounded by the number of partial count vectors, at most 184,756, so dictionary-based transitions fit easily.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N14",
+    "N15"
+   ],
+   "key_node": "N15",
+   "new_nodes": [
+    "N14",
+    "N15"
+   ],
+   "new_hazards": [],
+   "program": "paths/P4.cpp",
+   "submission": 5,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 66,
+    "n_tests": 66,
+    "max_time_s": 0.028,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Four accepted paths cover direct composition enumeration, meet-in-the-middle weighted threshold queries, adaptive suffix-moment aggregation, and sparse capped-score dynamic programming. I have no further genuinely different approach that I believe meets the limits; remaining ideas either reproduce existing claims, are implementation variations, or lack the required guarantees.",
+  "considered": [
+   "Explicit maximum matching or maximum flow on individual hands and observations: the graph can contain about 10^83 hands, so it cannot be constructed.",
+   "Hall-theorem and symmetry-based proofs of the smaller-side matching property: these are alternative proofs of N5, not new approaches.",
+   "Generating functions for the complete weighted score distribution: their sparse convolution is the capped-score dynamic program already submitted.",
+   "Grouping equal-sized mark classes, changing enumeration order, or using exact rational arithmetic: these are optimizations or numeric implementation changes rather than distinct solution paths.",
+   "Replacing the composition-dependent minimum by a single global hand/observation ratio: different mark-count subgraphs cannot share observations, so excess capacity in one cannot compensate for a shortage in another.",
+   "Monte Carlo estimation or discretizing scores coarsely: neither provides the required 10^-9 absolute-error guarantee within the limits."
+  ],
+  "submissions": 5
+ },
+ "builder_notes": "N9 now states only the complementary-count weighted threshold join. Sorting, prefixes, balancing, and alternative query implementations appear only as acceptance examples. All node and hazard IDs are preserved, with no changes to routes or END routes.",
+ "open_issues": [],
+ "advisories": [
+  "N3 (bundles claims a solver can have separately; split it): Counting hands and counting observations are independently recognizable achievements: a solver can obtain the product of binomial coefficients without correctly counting hidden-mark observations and visible orders. Split these into a hand-count claim and an observation-count claim.",
+  "N4 (bundles claims a solver can have separately; split it): The hand-side degree and observation-side degree require different counts; a solver can know how many displays a hand permits without recognizing how many hands complete an observation. Separate the two degree claims.",
+  "N10 (bundles claims a solver can have separately; split it): The suffix mass and the weighted score moment are separate quantities with separate derivations; knowing W, even through its closed-form binomial expression, does not establish the additional d_j(a)W term in M. Split the suffix-weight claim from the score-moment recurrence.",
+  "N12 (bundles claims a solver can have separately; split it): The all-saturated collapse uses only total weight and a lower bound, whereas the all-linear collapse uses the score moment and an upper bound. A solver can establish the former without the latter, so expose them as separate collapse claims.",
+  "N14 (comes with its prerequisite; merge it): This is an immediate consequence of N7's nonnegative additive scores and clipped success factor, rather than a substantial additional inference. Fold the saturation identity into N15's invariant or acceptance explanation.",
+  "order: For finer trace localization, split N3 into hand and observation counts, N4 into the two side-degree claims, N10 into suffix mass and score moment, and N12 into saturated and linear collapse rules. Fold N14 into N15's acceptance explanation. The dependency order and key-node choices otherwise work."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 6,
+  "submissions": 5,
+  "review_rounds": 3,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 123610,
+    "output_tokens": 20727,
+    "cached_tokens": 72099,
+    "reasoning_tokens": 7388
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 24175,
+    "output_tokens": 24809,
+    "reasoning_tokens": 21501
+   },
+   "total": {
+    "input_tokens": 147785,
+    "output_tokens": 45536,
+    "cached_tokens": 72099,
+    "reasoning_tokens": 28889
+   }
+  },
+  "inputs": {
+   "statement": "27fe168c04d0d4b9bddc6b0f8e0df6555a18a7179e23d0715f1b592b0cef2b6b",
+   "editorial": "fbf3cb13eccf64dc47aa09343a7e1c0747bdba930820831206a8b86f894833ff",
+   "reference": "40aadf72990633b02987c8006908330b0947d444ebee8c23fbcec6fb24aa30df"
+  },
+  "created": "2026-11-02 23:44:50"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

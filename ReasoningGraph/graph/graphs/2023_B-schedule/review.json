@@ -1,0 +1,84 @@
+[
+ {
+  "round": 1,
+  "version": "c067e3e8297e0fd9",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "The END route supplies the meeting-pattern model, the isolation-to-block equivalence, the exact block capacity, an attaining construction, and the periodic output rule. The stated t<=17 bound is correct for n<=10000, so the proposed enumeration and output fit the limits.",
+   "key_ok": true,
+   "key_note": "N6 determines both the infinity case and the complete optimal schedule for every feasible input; it is the appropriate construction key.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover endpoint gaps, schedule dimensions and alphabet, the infinity output convention, and safe capacity arithmetic. The overflow check appropriately allows early stopping rather than mandating 64-bit arithmetic.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "The editorial and reference solution use the same upper-middle-layer construction and periodic extension. Their ceil(t/2) support size equals floor((t-1)/2)+1. N4 states the intersecting-antichain bound precisely, including the parity where ordinary Sperner alone is insufficient.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-02 22:13:58"
+ }
+]

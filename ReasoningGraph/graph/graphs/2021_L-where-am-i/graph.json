@@ -1,0 +1,774 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2021/L-where-am-i",
+ "title": "Where Am I?",
+ "status": "accepted",
+ "version": "962617bdb95c53f7",
+ "solution_outline": "P1: Encode each possible start by its sorted spiral visit times of the markers. P2: Compare every pair of possible starts directly using their sorted marker-time lists. P3: Simulate the refinement of indistinguishable-start classes, but process only candidates that see a marker at each spiral step. P4: Use a direct dense simulation of observation-prefix classes rather than sparse marker events. P5: Build a trie of the sorted marker-time lists rather than sorting candidates or simulating time. P6: Answer exact prefix-uniqueness queries with a marker-time trie, then binary-search each start's stopping time. P7: Retain the geometric symmetric-difference comparison, but eliminate nearly all pairs using their first-marker times. P8: Run time backward on the marker-time trie.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Identification through first distinguishing observations",
+   "kind": "modeling",
+   "statement": "Possible starts are exactly the input rectangle's cells. Two starts remain indistinguishable through step t iff their observations at spiral indices 0 through t agree. Each start's identification time is its latest first differing index against another start; a single possible start needs zero steps.",
+   "routes": [
+    []
+   ],
+   "accept": "Tracks equivalence of complete observed prefixes among rectangle starts, including the initial cell. Equivalently, eliminates each alternative at its first differing observation and waits for the last elimination.",
+   "anchors": [
+    "starting position",
+    "steps",
+    "observed sequence"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Distinct starts have distinct observations",
+   "kind": "key_property",
+   "statement": "Distinct starts have different complete observation sequences: equality would make the finite, nonempty marker set invariant under their nonzero displacement. Consequently every start is distinguishable after finitely many observations.",
+   "routes": [
+    []
+   ],
+   "accept": "Establishes that a finite nonempty marker set cannot equal a nonzero translation of itself, for example using an extremal marker in the translation direction. Equivalently, shows that observing the complete translated marker pattern uniquely determines the start. No particular representation or construction of marker-time lists is required.",
+   "anchors": [
+    "markers",
+    "starting position",
+    "observed sequence"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N3",
+   "name": "First difference of marker observations",
+   "kind": "key_property",
+   "statement": "For each start, let its marker-index set contain the spiral visit index of every marker relative to that start. Two starts first differ at the smallest index belonging to exactly one of their marker-index sets.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "May compare binary observation strings directly, find the first set bit of their XOR, or compare sorted marker-index lists. For two such lists, skip equal entries; the minimum of the first unequal entries is the first differing observation index. Constructing sparse lists is not required.",
+   "anchors": [
+    "markers",
+    "spiral",
+    "observed sequence"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N4",
+   "name": "Neighbors attain the longest ambiguity",
+   "kind": "key_property",
+   "statement": "In lexicographic order of complete candidate observation sequences, a start's latest first differing observation against another candidate is attained by its predecessor or successor, when present.",
+   "routes": [
+    [
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Uses the contiguous-interval property of a fixed observation prefix: any nonneighbor sharing a prefix forces the intervening neighbor to share it. Binary strings may be sorted directly. Alternatively, lexicographically sorting the equal-length marker-index lists reverses binary-string order, because the smaller first unequal marker index produces the earlier 1; reversal preserves neighbor pairs.",
+   "anchors": [
+    "possible starting position",
+    "observed sequence"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N5",
+   "name": "Sort observation sequences and inspect neighbors",
+   "kind": "algorithm",
+   "statement": "Sort candidates lexicographically by their observation sequences. For each adjacent pair, maximize both candidates' stopping times with their first differing index, initializing at zero. Output the mean, maximum, and sorted maximizers. Observations through all possible marker offsets suffice; every later observation is empty.",
+   "routes": [
+    [
+     "N1",
+     "N4"
+    ]
+   ],
+   "accept": "All marker offsets lie in [-R,R]^2 for R=max(dx-1,dy-1). The first L=(2R+1)^2 observations cover this square, so finite binary strings of length L suffice. These may be stored explicitly or packed into words. Sorting sparse marker-time lists gives the same neighbor pairs in reverse order. Missing neighbors contribute nothing; a singleton has time zero.",
+   "anchors": [
+    "observed sequence",
+    "expected number of steps",
+    "maximum number of steps",
+    "starting coordinates"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N6",
+   "name": "Compare every pair of sparse observations",
+   "kind": "algorithm",
+   "statement": "Construct each candidate's sorted marker-time list. For every unordered pair, find the first unequal entries and update both candidates' times with their minimum. Initialize times to zero, then output their mean, their maximum, and all maximizing starts in increasing y then x order.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Enumerates all pairs rather than only lexicographic neighbors. Each comparison skips equal list entries, then maximizes the two answers with the first differing observation index. A singleton remains at time zero.",
+   "anchors": [
+    "starting position",
+    "markers",
+    "maximum number of steps"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N7",
+   "name": "Refine observation-prefix equivalence classes",
+   "kind": "key_property",
+   "statement": "Partition starts by observation prefixes. Each step splits every class into marked and empty observers. A start's stopping time is the first step when its class becomes a singleton, with a lone initial candidate stopping at zero.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Maintains exact equivalence classes after each observation, never merging previously separated starts. Records the first singleton time, not the time of a later marker or the final exploration step.",
+   "anchors": [
+    "observed sequence",
+    "possible starting position",
+    "steps"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N8",
+   "name": "Invert marker observations to candidate starts",
+   "kind": "reformulation",
+   "statement": "For a spiral offset v, the starts whose current cell is marked are exactly the positions p-v inside the input rectangle, where p ranges over markers. Across the entire spiral, there are exactly dx*dy times the number of markers such marked observations.",
+   "routes": [
+    []
+   ],
+   "accept": "Subtracts the visited offset from each marker and tests rectangle membership, or equivalently precomputes the visit-time event for each start-marker pair. The event count concerns complete exploration, whether or not simulation stops earlier.",
+   "anchors": [
+    "markers",
+    "grid cells",
+    "starting position"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N9",
+   "name": "Sparse event-driven partition refinement",
+   "kind": "algorithm",
+   "statement": "Maintain prefix-equivalence classes while traversing spiral offsets. Generate only marked observers, split touched classes by moving their marked members, and record singleton creation times. Untouched classes do not change. Stop when all classes are singletons, then output the mean, maximum, and sorted maximizing starts.",
+   "routes": [
+    [
+     "N2",
+     "N7",
+     "N8"
+    ]
+   ],
+   "accept": "Collects simultaneous marked candidates by their old class before splitting, or performs equivalent atomic refinement. A class splits only when both marked and empty members exist; an entirely marked class stays intact. Moving only marked members gives work proportional to marker events, plus spiral generation. Singleton classes need no further updates; an initially lone candidate gets time zero.",
+   "anchors": [
+    "spiral",
+    "markers",
+    "expected number of steps",
+    "starting coordinates"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N10",
+   "name": "Dense simulation of observation classes",
+   "kind": "algorithm",
+   "statement": "Traverse the spiral, explicitly compute the next marked or empty observation for every still-ambiguous start, and replace its class label by the pair (old label, observation). Record first singleton times and output their mean, maximum, and sorted maximizing starts.",
+   "routes": [
+    [
+     "N2",
+     "N7"
+    ]
+   ],
+   "accept": "Scans starts at each step and canonicalizes pairs of old class and observed bit. Class sizes determine newly unique candidates. It may retain already identified candidates or safely remove them. Stops when all starts are identified, with an initially lone candidate assigned zero. No marker-time lists are needed.",
+   "anchors": [
+    "grid cells",
+    "spiral",
+    "observed sequence",
+    "expected number of steps"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N11",
+   "name": "Sparse-prefix branching determines cross-group ambiguity",
+   "kind": "key_property",
+   "statement": "Within starts sharing a marker-time prefix, group by the next marker time. Different groups labeled a and b first differ at min(a,b). A group's latest distinction from other groups is min(its label, largest other label); distinctions inside a nonsingleton group occur strictly later.",
+   "routes": [
+    [
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Applies the first-unequal-event rule at a trie node. Earlier diverging prefixes were already distinguished before these child labels, so they cannot dominate distinctions inside this node. A node with one child simply continues the common prefix; the largest-other-label formula applies when another group exists.",
+   "anchors": [
+    "markers",
+    "observed sequence",
+    "starting position"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N12",
+   "name": "Marker-time trie singleton transitions",
+   "kind": "algorithm",
+   "statement": "Build a trie of all marker-time lists, storing subtree candidate counts. Recurse through nonsingleton children. For each singleton child of a nonsingleton node, assign its start the minimum of its edge label and the largest sibling label. Output the resulting statistics and sorted maximizers; a singleton root gives zero.",
+   "routes": [
+    [
+     "N1",
+     "N11"
+    ]
+   ],
+   "accept": "The first edge into a singleton subtree determines that start's time; its siblings determine when it separates, possibly before its own next marker. Nodes with one child are traversed without assigning times. Trie size is at most one plus the number of start-marker pairs.",
+   "anchors": [
+    "markers",
+    "expected number of steps",
+    "maximum number of steps"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N13",
+   "name": "Exact uniqueness queries in marker trie",
+   "kind": "key_property",
+   "statement": "At time t, follow a start's marker-time trie path through all entries at most t. Compatible candidates terminate at that node or enter child edges labeled above t. Their count is nonincreasing in t, and identification occurs when it first equals one.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "A matching observation prefix must have exactly the same marked times through t. Counts candidates terminating at the current node and all candidates in qualifying child subtrees. Adding observations can only remove compatible candidates.",
+   "anchors": [
+    "observed sequence",
+    "markers",
+    "possible starting position"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N14",
+   "name": "Binary search exact prefix uniqueness",
+   "kind": "algorithm",
+   "statement": "Build the marker-time trie with subtree counts and ordered child labels. For each start, binary-search the earliest spiral index whose compatible-candidate count is one, using its observed-event prefix and sums of child counts with later labels. Output the mean, maximum, and sorted maximizing starts.",
+   "routes": [
+    [
+     "N13"
+    ]
+   ],
+   "accept": "Uses upper bounds in the candidate's marker-time list and at the corresponding trie node. Prefix sums of child subtree sizes provide exact counts. A valid search interval is zero through (2R+1)^2-1, where R=max(dx-1,dy-1): by then every possible marker offset has been visited. This also handles initial identification.",
+   "anchors": [
+    "expected number of steps",
+    "maximum number of steps",
+    "starting coordinates"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N15",
+   "name": "Translated marker symmetric differences",
+   "kind": "reformulation",
+   "statement": "For starts s and s+d and marker set M, the offsets where observations differ are (M symmetric-difference (M-d))-s. Their first distinguishing step is the minimum spiral index among those offsets. This difference is nonempty for every nonzero d.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "At offset v the two observations are membership of s+v and s+d+v in M, so exactly one is marked precisely at the stated symmetric-difference points. Nonempty finite marker sets cannot be invariant under a nonzero translation.",
+   "anchors": [
+    "markers",
+    "starting position",
+    "grid cells",
+    "spiral"
+   ],
+   "source": "exploration",
+   "path": "P7",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N16",
+   "name": "First-marker groups and geometric pair comparisons",
+   "kind": "algorithm",
+   "statement": "Group starts by first-marker time. Handle singleton groups using the latest distinction from other groups. For each nonsingleton group, compare its pairs through translated-marker symmetric differences and maximize each start's time; cross-group comparisons cannot increase these times. Output the mean, maximum, and sorted maximizers; one start takes zero.",
+   "routes": [
+    [
+     "N1",
+     "N11",
+     "N15"
+    ]
+   ],
+   "accept": "A singleton at time f gets min(f, largest other first-marker time). A nonsingleton group's internal comparisons dominate all cross-group comparisons. At most as many starts share a first-marker time as there are markers, because its fixed offset maps starts injectively to markers. Symmetric differences may be cached by displacement.",
+   "anchors": [
+    "markers",
+    "starting position",
+    "expected number of steps",
+    "maximum number of steps"
+   ],
+   "source": "exploration",
+   "path": "P7",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N17",
+   "name": "Reverse time contracts marker-trie edges",
+   "kind": "reformulation",
+   "statement": "In the marker-time trie, contract every edge whose label exceeds t. Two candidate leaves belong to the same resulting component exactly when their observations through step t agree. Deleting the observation at step t corresponds to additionally contracting edges labeled t.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "Along every trie path the edge labels strictly increase. After contraction, each candidate's component is anchored at the node for its marker-time prefix through t, so nonempty candidate components are precisely compatible-prefix classes. Some other components may contain no candidate.",
+   "anchors": [
+    "markers",
+    "observed sequence",
+    "steps"
+   ],
+   "source": "exploration",
+   "path": "P8",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N18",
+   "name": "Reverse-time union of candidate components",
+   "kind": "algorithm",
+   "statement": "Build the marker-time trie and contract edges in decreasing label order. Store candidate counts in disjoint-set components. If a merge produces at least two candidates, assign its label to candidates from one-candidate input components. Output the mean, maximum, and sorted maximizers; a lone start takes zero.",
+   "routes": [
+    [
+     "N1",
+     "N17"
+    ]
+   ],
+   "accept": "Initially each start occupies its leaf. DSU components store candidate counts and the owner when the count is one. Merges with empty components assign nothing. When a merged component has at least two candidates, every participating one-candidate component loses uniqueness at that edge's label. Labels increase strictly down each trie path.",
+   "anchors": [
+    "starting position",
+    "expected number of steps",
+    "maximum number of steps"
+   ],
+   "source": "exploration",
+   "path": "P8",
+   "traps": [],
+   "depth": 3
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N6"
+   ],
+   [
+    "N1",
+    "N2",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   [
+    "N1",
+    "N2",
+    "N7",
+    "N10"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N11",
+    "N12"
+   ],
+   [
+    "N1",
+    "N2",
+    "N13",
+    "N14"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N11",
+    "N15",
+    "N16"
+   ],
+   [
+    "N1",
+    "N2",
+    "N17",
+    "N18"
+   ]
+  ],
+  "keys": [
+   "N5",
+   "N6",
+   "N9",
+   "N10",
+   "N12",
+   "N14",
+   "N16",
+   "N18"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Input rows run from largest y to smallest y. The spiral travels north, east, south, west in legs of lengths 1,1,2,2,3,3,... . Cells outside the described rectangle are empty; exploration is not confined to that rectangle.",
+   "check": "Maps zero-based input row j to y=dy-j. Verifies the direction cycle and repeated, increasing leg lengths. Occupancy checks return empty outside the input rectangle, or use equivalent zero padding covering every visited coordinate; they do not truncate the spiral at the rectangle boundary."
+  },
+  {
+   "id": "H2",
+   "statement": "The starting cell is observed at step zero; stopping times count moves, not observations. A single possible starting position requires zero steps.",
+   "check": "Uses the index of the distinguishing cell without adding one, and initializes a singleton candidate's stopping time to zero."
+  },
+  {
+   "id": "H3",
+   "statement": "Output all maximizers sorted by increasing y then x, formatted as (x,y). The average must have absolute error at most 0.001.",
+   "check": "Enumerates maximizing coordinates in the required order and prints the mean with sufficient decimal places; maximum and coordinates are exact integers."
+  },
+  {
+   "id": "H4",
+   "statement": "A claimed distinction at step t must be justified by observations at indices at most t. Equal complete observation prefixes must remain indistinguishable, regardless of representation or processing order.",
+   "check": "For every claimed distinction at t, some observation index at most t differs. Algorithms using complete future sequences still derive stopping times from the first differing observation, rather than treating future observations as already known. Exact prefix equality is preserved by the chosen representation."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Encode each possible start by its sorted spiral visit times of the markers. Lexicographic order of these sparse lists reverses the order of the full binary observation strings, so only neighboring lists can determine a start's longest ambiguity. Computing adjacent first differences yields all stopping times using at most one million stored marker times.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "key_node": "N5",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 148,
+    "n_tests": 148,
+    "max_time_s": 0.03,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Compare every pair of possible starts directly using their sorted marker-time lists. The first unequal list entries give the pair's distinguishing step, and the maximum over all opponents is each start's answer. This avoids the lexicographic-neighbor theorem; there are fewer than fifty million pairs, with most comparisons ending at the first marker time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N6"
+   ],
+   "key_node": "N6",
+   "new_nodes": [
+    "N6"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 148,
+    "n_tests": 148,
+    "max_time_s": 0.171,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Simulate the refinement of indistinguishable-start classes, but process only candidates that see a marker at each spiral step. A marker at p is seen from start p minus the current offset, so at most 100 candidates need to be moved per step; all other candidates stay in their old classes. A candidate's answer is exactly the time its class first becomes a singleton.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   "key_node": "N9",
+   "new_nodes": [
+    "N7",
+    "N8",
+    "N9"
+   ],
+   "new_hazards": [
+    "H4"
+   ],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 148,
+    "n_tests": 148,
+    "max_time_s": 0.02,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Use a direct dense simulation of observation-prefix classes rather than sparse marker events. At each visited offset, every start's new class is determined by its old class and the marked status of the visited cell; the first singleton class gives its stopping time. The worst-case simulation has about 400 million start-step observations, so I leave the runtime decision to the judge.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N7",
+    "N10"
+   ],
+   "key_node": "N10",
+   "new_nodes": [
+    "N10"
+   ],
+   "new_hazards": [],
+   "program": "paths/P4.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 148,
+    "n_tests": 148,
+    "max_time_s": 1.56,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P5",
+   "approach": "Build a trie of the sorted marker-time lists rather than sorting candidates or simulating time. At a trie branching point, two different children first disagree at the smaller child label; a singleton child therefore becomes identifiable at the smaller of its own label and the largest sibling label. Recursing only through nonsingleton subtrees gives every answer and uses at most one million trie edges.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N11",
+    "N12"
+   ],
+   "key_node": "N12",
+   "new_nodes": [
+    "N11",
+    "N12"
+   ],
+   "new_hazards": [],
+   "program": "paths/P5.cpp",
+   "submission": 5,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 148,
+    "n_tests": 148,
+    "max_time_s": 0.102,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P6",
+   "approach": "Answer exact prefix-uniqueness queries with a marker-time trie, then binary-search each start's stopping time. At time t, follow that start's marker events up to t; compatible candidates are precisely those below the resulting node whose next event is later than t. Subtree counts and sorted child labels make this predicate efficient without hashing.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N13",
+    "N14"
+   ],
+   "key_node": "N14",
+   "new_nodes": [
+    "N13",
+    "N14"
+   ],
+   "new_hazards": [],
+   "program": "paths/P6.cpp",
+   "submission": 6,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 148,
+    "n_tests": 148,
+    "max_time_s": 0.129,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P7",
+   "approach": "Retain the geometric symmetric-difference comparison, but eliminate nearly all pairs using their first-marker times. Distinct first-marker groups separate no later than that first marker, whereas pairs within a group separate strictly later; singleton groups have a direct answer from the largest other first-marker time. Each group has at most 100 starts, so the remaining geometric comparisons are far fewer than in the TLE version.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N11",
+    "N15",
+    "N16"
+   ],
+   "key_node": "N16",
+   "new_nodes": [
+    "N15",
+    "N16"
+   ],
+   "new_hazards": [],
+   "program": "paths/P7.cpp",
+   "submission": 8,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 148,
+    "n_tests": 148,
+    "max_time_s": 0.042,
+    "time_limit_s": 2.0
+   },
+   "notes": "This is the single optimization retry after the all-displacements geometric scan received TLE. The pair comparison remains geometric; first-marker grouping removes cross-group work exactly."
+  },
+  {
+   "id": "P8",
+   "approach": "Run time backward on the marker-time trie. Contracting every edge labeled later than t groups candidate leaves exactly by their observations through t, so decreasing t only merges components. A singleton candidate's stopping time is the label of the contraction where its component first merges with another candidate, which can be processed using disjoint-set union.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N17",
+    "N18"
+   ],
+   "key_node": "N18",
+   "new_nodes": [
+    "N17",
+    "N18"
+   ],
+   "new_hazards": [],
+   "program": "paths/P8.cpp",
+   "submission": 9,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 148,
+    "n_tests": 148,
+    "max_time_s": 0.199,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Eight genuinely different paths were accepted: sparse lexicographic neighbors, all-pairs sparse comparisons, sparse partition refinement, dense prefix simulation, marker-trie branching, binary-searched trie uniqueness, translated-marker geometric comparisons, and reverse-time trie contraction. The remaining ideas I considered either reproduce these claims, lack exact correctness, or are astronomically larger direct enumerations.",
+  "considered": [
+   "Scanning translated-marker symmetric differences for all candidate displacements received TLE on secret-61-random. Its single optimization retry, restricting comparisons to common first-marker groups, was accepted as P7.",
+   "Packed binary observation strings would change the representation used by lexicographic or pairwise comparisons, but not supply a genuinely different characterization or output algorithm beyond P1 and P2.",
+   "Maintaining individual candidate sets or constructing a dense binary observation trie reproduces observation-prefix refinement already covered by P3 and P4; using different containers would not add a reasoning path.",
+   "Grouping only by the first observed marker is insufficient: multiple starts can share that time and remain ambiguous afterward. First-marker grouping is used only as a proved reduction in P7, not as a complete stopping rule.",
+   "Hash-only prefix grouping or spatial fingerprinting can collide. I did not use probabilistic equality in place of the exact class labels and trie queries already accepted.",
+   "Chebyshev nearest-marker distance alone is insufficient: clockwise order within a ring matters, and distinguishing cells may belong to either side of a translated symmetric difference.",
+   "Uncompressed step-by-step comparison for every candidate pair can require hundreds of billions of cell comparisons on a 100-by-100 grid with one corner marker. This is over a hundred times beyond a reasonable two-second operation budget; the genuinely simpler sparse all-pairs version was submitted and accepted as P2."
+  ],
+  "submissions": 9
+ },
+ "builder_notes": "With ids and routes fixed, the former N2 bundle is separated by making N2 solely representation-independent distinctness and placing conceptual marker-index encoding with the first-difference rule in N3. N3 no longer requires list construction or sparse-order reversal. That ordering equivalence is now an acceptance example for N4. N5 is generalized to the same neighbor algorithm on binary observation strings or sparse lists, with the finite horizon stated explicitly in its accept. Thus the fixed P1 route also covers direct finite-binary-string sorting. H4 is now representation-neutral, its partition-specific checks are in N9, and H1 explicitly checks spiral leg lengths and empty cells outside the rectangle.",
+ "open_issues": [],
+ "advisories": [],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 10,
+  "submissions": 9,
+  "review_rounds": 2,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 213308,
+    "output_tokens": 28502,
+    "reasoning_tokens": 13693,
+    "cached_tokens": 140592
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 18754,
+    "output_tokens": 21062,
+    "reasoning_tokens": 18912
+   },
+   "total": {
+    "input_tokens": 232062,
+    "output_tokens": 49564,
+    "reasoning_tokens": 32605,
+    "cached_tokens": 140592
+   }
+  },
+  "inputs": {
+   "statement": "ae46959eda3b4c27ac0beffe317cf5c11445a35fbdaeddfdd0058ce6fe6dadfb",
+   "editorial": "67ce701fd9c05f066e359e4c12297f705ae7144b111bb980dac7ff4739afee3c",
+   "reference": "f82807fe1d12b2c88f7eb053e653d9357a064871e919d452cab8a0ed57f15826"
+  },
+  "created": "2026-11-03 13:07:39"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

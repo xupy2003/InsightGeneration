@@ -1,0 +1,140 @@
+[
+ {
+  "round": 1,
+  "version": "c87e7fca21f66ea8",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Boundary-induced fixed values and exterior-induced absence are separately recognizable: a solver can correctly handle listed boundaries yet miss non-boundaries whose predecessors are outside. Split that exterior-seeding rule from the fixed values supplied by listed boundaries."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": false,
+     "note": "The two output constructions are independently understandable and already stated by N4 and N5; given those nodes and N3's arc definition, this is routine integration rather than another substantive bottleneck. Retain it as a combined output-rule summary, or narrow the preceding nodes so it contributes a genuinely new claim."
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The forward minimum DP and reverse maximum DP are separate constructions: knowing the first does not establish the second. Give them separate diagnostic nodes while retaining their combined output rule as the path summary."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Growing mandatory prefixes and shrinking permitted prefixes are independently discoverable algorithms, with different initialization and propagation rules. Split their diagnostic claims into minimum-extension and maximum-truncation nodes, retaining the combined construction as the path's output summary."
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All three END routes provide complete constructions. The implication route supplies both seed sets and propagation directions; the SCC route supplies the quotient constraints and both DP recurrences; the chain route supplies the exact permitted blocks and monotone prefix propagation. Their accepts describe implementations with sufficient time and memory bounds.",
+   "key_ok": true,
+   "key_note": "N6, N8, and N11 each determine both output grids for their respective paths; none is merely a feasibility, complexity, or proof-only claim.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover exact nonprimitive displacements, two-dimensional bounds and row wrapping, output order and orientation, and traversal-stack safety. No additional essential overflow or precision constraint is needed at the stated coordinate and grid limits.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 is the editorial and reference-solution approach: N2 supplies the same positive and negative seeds, N3 supplies the same implications, and N4–N6 supply forward presence closure and reverse absence closure. The reference's additional forced-false check during minimum propagation is redundant under the consistency guarantee, as N4 correctly states.",
+   "order": "Improve diagnostic granularity by separating N2's exterior non-boundary seeding rule and separating the minimum and maximum constructions within N8 and N11. N6 repeats the substantive constructions in N4 and N5, so treat it as output integration rather than an additional reasoning barrier, or narrow N4/N5 to distinct supporting proof obligations.",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [
+   "N2 (bundles claims a solver can have separately; split it): Boundary-induced fixed values and exterior-induced absence are separately recognizable: a solver can correctly handle listed boundaries yet miss non-boundaries whose predecessors are outside. Split that exterior-seeding rule from the fixed values supplied by listed boundaries.",
+   "N6 (comes with its prerequisite; merge it; bundles claims a solver can have separately; split it): The two output constructions are independently understandable and already stated by N4 and N5; given those nodes and N3's arc definition, this is routine integration rather than another substantive bottleneck. Retain it as a combined output-rule summary, or narrow the preceding nodes so it contributes a genuinely new claim.",
+   "N8 (bundles claims a solver can have separately; split it): The forward minimum DP and reverse maximum DP are separate constructions: knowing the first does not establish the second. Give them separate diagnostic nodes while retaining their combined output rule as the path summary.",
+   "N11 (bundles claims a solver can have separately; split it): Growing mandatory prefixes and shrinking permitted prefixes are independently discoverable algorithms, with different initialization and propagation rules. Split their diagnostic claims into minimum-extension and maximum-truncation nodes, retaining the combined construction as the path's output summary.",
+   "order: Improve diagnostic granularity by separating N2's exterior non-boundary seeding rule and separating the minimum and maximum constructions within N8 and N11. N6 repeats the substantive constructions in N4 and N5, so treat it as output integration rather than an additional reasoning barrier, or narrow N4/N5 to distinct supporting proof obligations."
+  ],
+  "time": "2026-11-03 01:12:17"
+ }
+]

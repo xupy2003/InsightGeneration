@@ -1,0 +1,278 @@
+[
+ {
+  "round": 1,
+  "version": "e0585e4779107d39",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Curve parity and straight parity are independently discoverable: knowing that curves occur an even number of times does not establish straight parity without the grid-cycle length argument. Split these checkpoints, and keep the stronger signed-turn identity as a proof example unless it needs its own checkpoint."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Divisibility by four and impossibility of length eight are separate restrictions requiring different arguments. Split them so a solver who obtains the divisibility condition but misses the eight-piece obstruction can be localized accurately."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "This combines the staircase construction with exactly two straights and the operation supplying arbitrary additional pairs of straights. A solver can discover the first without the second; separate the base family from the straight-extension lemma."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The alternating-tooth base construction and the elongation of an isolated tooth are separately discoverable steps. Split the two-straight comb family from the operation adding arbitrary pairs of straights."
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each END route supplies the attainable maximum counts, a realizing construction, and enough boundary-traversal information for a linear or expected-linear implementation.",
+   "key_ok": true,
+   "key_note": "N6, N8, and N10 specify the respective constructions and output rules, rather than merely giving optimal lengths.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover cyclic encoding, separate inventory limits, and the relevant small all-curved degeneracy. These constructions need no floating-point arithmetic, and their lengths and coordinates remain within ordinary signed 32-bit range.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "The reference's all-curved construction agrees with N5 up to symmetry, but its positive-straight constructions are not the west-tail staircase of N4, the cross-bud construction, or the comb. The graph lacks construction/count/simplicity claims for the two absolute-direction families selected by C modulo four: N^a W (SW)^q S^a E (NE)^q and N^2 (WN)^p W^b (SE)^(p+1) S E^(b-1). In particular, lengthening their opposite runs need not produce N4's polyomino, so a solver following the reference does not establish a complete existing END route.",
+   "order": "Split N2 into curve-parity and straight-parity checkpoints; split N3 into divisibility-by-four and the eight-curve obstruction. Split N4 and N9 into their two-straight base families and their respective straight-extension steps, then update dependent routes. Keep N6, N8, and N10 as the final construction/output-rule nodes.",
+   "verdict": "revise"
+  },
+  "blocking": [],
+  "advisory": [
+   "N2 (bundles claims a solver can have separately; split it): Curve parity and straight parity are independently discoverable: knowing that curves occur an even number of times does not establish straight parity without the grid-cycle length argument. Split these checkpoints, and keep the stronger signed-turn identity as a proof example unless it needs its own checkpoint.",
+   "N3 (bundles claims a solver can have separately; split it): Divisibility by four and impossibility of length eight are separate restrictions requiring different arguments. Split them so a solver who obtains the divisibility condition but misses the eight-piece obstruction can be localized accurately.",
+   "N4 (bundles claims a solver can have separately; split it): This combines the staircase construction with exactly two straights and the operation supplying arbitrary additional pairs of straights. A solver can discover the first without the second; separate the base family from the straight-extension lemma.",
+   "N9 (bundles claims a solver can have separately; split it): The alternating-tooth base construction and the elongation of an isolated tooth are separately discoverable steps. Split the two-straight comb family from the operation adding arbitrary pairs of straights.",
+   "the editorial's approach is not among the paths: The reference's all-curved construction agrees with N5 up to symmetry, but its positive-straight constructions are not the west-tail staircase of N4, the cross-bud construction, or the comb. The graph lacks construction/count/simplicity claims for the two absolute-direction families selected by C modulo four: N^a W (SW)^q S^a E (NE)^q and N^2 (WN)^p W^b (SE)^(p+1) S E^(b-1). In particular, lengthening their opposite runs need not produce N4's polyomino, so a solver following the reference does not establish a complete existing END route.",
+   "order: Split N2 into curve-parity and straight-parity checkpoints; split N3 into divisibility-by-four and the eight-curve obstruction. Split N4 and N9 into their two-straight base families and their respective straight-extension steps, then update dependent routes. Keep N6, N8, and N10 as the final construction/output-rule nodes."
+  ],
+  "time": "2026-11-02 20:33:24"
+ },
+ {
+  "round": 2,
+  "version": "455c3b5dbcaaa086",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "A solver can establish even curve count without establishing even straight count, which additionally uses the parity of the cycle length. Split these two parity claims, keeping the signed-turn and bipartiteness arguments as supporting evidence."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Divisibility by four and impossibility of length eight are distinct obstructions: the former leaves eight entirely unresolved. Split them so a solver who proves divisibility but gets stuck on the exceptional case can be located accurately."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The balanced and offset staircase families are separate construction insights; finding the family for curves divisible by four does not supply the other even residue class. Split the two families into construction nodes feeding N12."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Every END route supplies the inventory upper bounds, constructions attaining them in every case, and a boundary or direction encoding that can be implemented within the limits.",
+   "key_ok": true,
+   "key_note": "N6, N8, N10, and N12 each specify the target counts and the construction determining the actual output, rather than merely its length.",
+   "hazards_ok": true,
+   "hazards_note": "The cyclic output convention and separate inventory limits are covered, including the small all-curved exception. These constructions require no delicate precision handling, and their counts and coordinates fit ordinary signed 32-bit integers under the stated bounds.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P4 covers the editorial and reference implementation: N11's two direction families match build_mod0 and build_mod2, and N5/N12's all-curved family matches build_all_curves up to reflection and translation. N3 also states the divisibility-by-four restriction needed to complete the editorial's abbreviated all-curved optimality argument.",
+   "order": "For finer stuck-point localization, split N2 into curve parity and straight parity, split N3 into all-curved divisibility and the eight-curve obstruction, and split N11 into its two residue-class constructions. Retain the existing output-rule keys.",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [
+   "N2 (bundles claims a solver can have separately; split it): A solver can establish even curve count without establishing even straight count, which additionally uses the parity of the cycle length. Split these two parity claims, keeping the signed-turn and bipartiteness arguments as supporting evidence.",
+   "N3 (bundles claims a solver can have separately; split it): Divisibility by four and impossibility of length eight are distinct obstructions: the former leaves eight entirely unresolved. Split them so a solver who proves divisibility but gets stuck on the exceptional case can be located accurately.",
+   "N11 (bundles claims a solver can have separately; split it): The balanced and offset staircase families are separate construction insights; finding the family for curves divisible by four does not supply the other even residue class. Split the two families into construction nodes feeding N12.",
+   "order: For finer stuck-point localization, split N2 into curve parity and straight parity, split N3 into all-curved divisibility and the eight-curve obstruction, and split N11 into its two residue-class constructions. Retain the existing output-rule keys."
+  ],
+  "time": "2026-11-02 20:39:35"
+ }
+]

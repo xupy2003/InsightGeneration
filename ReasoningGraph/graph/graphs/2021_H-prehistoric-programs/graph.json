@@ -1,0 +1,352 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2021/H-prehistoric-programs",
+ "title": "Prehistoric Programs",
+ "status": "accepted",
+ "version": "23181259bbf53e98",
+ "solution_outline": "P1: Summarize each tablet by the unmatched closing parentheses it needs and the unmatched opening parentheses it leaves. P2: Use monotone resource closure rather than the canonical sorting rule.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Valid concatenation is a nonnegative balanced walk",
+   "kind": "modeling",
+   "statement": "Give '(' weight +1 and ')' weight -1. A concatenation of the nonempty tablets is properly nested exactly when every prefix has nonnegative weight sum and its total weight sum is zero.",
+   "routes": [
+    []
+   ],
+   "accept": "Recognizes the standard prefix-balance characterization of balanced parentheses. The input guarantees that the concatenation is nonempty, so the grammar's exclusion of the empty structure causes no extra case.",
+   "anchors": [
+    "properly nested structure",
+    "concatenating the strings",
+    "prefix balance"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Each tablet needs and leaves unmatched parentheses",
+   "kind": "reformulation",
+   "statement": "For a tablet with net balance d and minimum prefix balance m including the empty prefix, define a=-m and b=a+d. Starting at balance h, the tablet is safe exactly when h>=a, and finishes at h-a+b.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Computes the minimum prefix and net sum, or cancels matched parentheses to obtain a unmatched ')' followed by b unmatched '('. Both a and b are nonnegative. No other information about the tablet is needed to test a concatenation.",
+   "anchors": [
+    "tablet",
+    "minimum prefix balance",
+    "unmatched closing parentheses",
+    "unmatched opening parentheses"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Nonnegative-net tablets may precede negative-net tablets",
+   "kind": "key_property",
+   "statement": "If a feasible permutation exists, there is one with every tablet satisfying b>=a before every tablet satisfying b<a. Swapping an adjacent negative-net tablet followed by a nonnegative-net tablet never invalidates a feasible sequence.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "For an adjacent negative tablet X and nonnegative tablet Y, feasibility gives h+dX>=aY and h>=aX. Hence Y is safe at h and X is safe after Y; the pair's final balance is unchanged. Repeating swaps groups the signs.",
+   "anchors": [
+    "permutation",
+    "nonnegative-net tablets",
+    "negative-net tablets"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Safe sorting inside both net-sign groups",
+   "kind": "key_property",
+   "statement": "Within the nonnegative-net group, exchanging inversions of increasing a preserves feasibility. Within the negative-net group, exchanging inversions of decreasing b preserves feasibility. Thus a feasible permutation exists only if the sign-grouped order with these two sorting rules is feasible.",
+   "routes": [
+    [
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Uses adjacent exchanges. For gains, starting with the smaller need cannot hurt the following tablet. For losses, swapping X,Y when bX<bY is safe because h>=aX+aY-bX implies h>=aY and h-aY+bY>=aX. Equal keys may be ordered arbitrarily.",
+   "anchors": [
+    "nonnegative-net group",
+    "negative-net group",
+    "increasing need",
+    "decreasing remainder"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N5",
+   "name": "Sort summaries and validate the resulting permutation",
+   "kind": "construction",
+   "statement": "Order tablets with b>=a first by increasing a, then tablets with b<a by decreasing b. Starting with h=0, reject if any a exceeds h; otherwise update h by b-a. Output the ordered original indices if the final h is zero, and impossible otherwise.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N4"
+    ]
+   ],
+   "accept": "Stores summaries and original 1-based indices, sorts by the stated group and key, then checks all transitions and the total balance. An early total-balance rejection is equivalent. O(L+n log n) time and O(n) stored summaries fit the limits.",
+   "anchors": [
+    "permutation of the numbers",
+    "impossible",
+    "tablet summaries"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N6",
+   "name": "Reverse complement swaps need and remainder",
+   "kind": "reformulation",
+   "statement": "Reverse a tablet and exchange '(' with ')'. Its summary (a,b) becomes (b,a). Reversing the tablet order and applying this transformation preserves proper nesting of the complete concatenation.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "Uses reversed suffix balances, or reverses the unmatched form ')' repeated a then '(' repeated b. For a balanced concatenation, transformed prefix balances equal original suffix-complement balances and remain nonnegative.",
+   "anchors": [
+    "tablet",
+    "opening and closing parentheses",
+    "reverse order",
+    "need and remainder"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N7",
+   "name": "Affordable nonnegative-net choices preserve feasibility",
+   "kind": "key_property",
+   "statement": "For a collection of tablets with b>=a, any tablet affordable at the current balance can be executed next without destroying a feasible completion. Repeated arbitrary affordable choices finish all tablets exactly when some feasible ordering exists.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Moves the chosen affordable tablet to the front of any feasible completion. It adds a nonnegative balance, so all tablets it passes remain safe; the balance after the moved block is unchanged. If no tablet is affordable, no completion can start.",
+   "anchors": [
+    "nonnegative-net tablets",
+    "current balance",
+    "feasible ordering"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N8",
+   "name": "Join two independently grown feasible sides",
+   "kind": "construction",
+   "statement": "Require total net balance zero. From balance zero, process all b>=a tablets by arbitrary affordable choices. Independently process transformed b<a tablets likewise. If either process gets stuck, output impossible; otherwise output the first order followed by the reverse of the second order, using original indices.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N3",
+     "N6",
+     "N7"
+    ]
+   ],
+   "accept": "The sign-grouping lemma makes both independent processes necessary. Reverse-complement symmetry and equal total gain/loss make their join sufficient. Maintain requirement-indexed buckets and an arbitrary active stack, activating newly affordable tablets as balance increases. Each tablet and requirement threshold is visited once, giving O(L+n) time and space.",
+   "anchors": [
+    "permutation",
+    "left prefix",
+    "right suffix",
+    "affordable tablets",
+    "impossible"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N6",
+    "N7",
+    "N8"
+   ]
+  ],
+  "keys": [
+   "N5",
+   "N8"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Prefix balances, net changes, and the total balance may be negative; all balance arithmetic must support signed values with magnitude up to 10^7.",
+   "check": "Use signed integer types for prefix, minimum, and total balances, or an equivalent representation that never wraps. A 32-bit signed integer suffices for the stated total input size."
+  },
+  {
+   "id": "H2",
+   "statement": "A successful output must contain each original 1-based tablet index exactly once; an unsuccessful output must be impossible, without a partial permutation.",
+   "check": "Retain input indices through sorting, validate before emitting them, and print the lowercase failure token. Separate output indices by whitespace."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Summarize each tablet by the unmatched closing parentheses it needs and the unmatched opening parentheses it leaves. Exchange arguments put all nonnegative-net tablets first, ordered by increasing need, followed by negative-net tablets ordered by decreasing remainder; this canonical order is feasible whenever any order is. Simulate that order and print its indices exactly when every tablet can be entered and the final balance is zero; the running time is O(L+n log n), where L is the total input length.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "key_node": "N5",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 79,
+    "n_tests": 79,
+    "max_time_s": 0.162,
+    "time_limit_s": 6.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Use monotone resource closure rather than the canonical sorting rule. Build the nonnegative-net tablets from the left by repeatedly taking any currently affordable tablet; independently build the negative-net tablets from the right after reversing and complementing parentheses, which swaps their needs and remainders. Every chosen tablet increases or preserves its side's balance, so arbitrary affordable choices cannot destroy feasibility; bucket activation implements the two closures in O(L+n) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N6",
+    "N7",
+    "N8"
+   ],
+   "key_node": "N8",
+   "new_nodes": [
+    "N6",
+    "N7",
+    "N8"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 79,
+    "n_tests": 79,
+    "max_time_s": 0.137,
+    "time_limit_s": 6.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "The accepted paths cover a canonical exchange-sorted construction and an independent, arbitrary-choice resource-closure construction from both ends. I do not have another genuinely different approach that is both correct and fast enough for the input limits.",
+  "considered": [
+   "Sorting only by net balance ignores the minimum balance inside each tablet, so it cannot determine feasibility.",
+   "Taking any currently affordable tablet is unsafe when it loses balance: from balance 6, summaries (5,1) and (2,0) work in that order, but taking (2,0) first makes completion impossible.",
+   "Rotating an arbitrary tablet permutation at a minimum prefix is insufficient because that minimum may lie inside a tablet, where a cut is forbidden.",
+   "Johnson-style minimum-key placement and reversing/complementing the negative group followed by sorting reproduce the canonical order already represented by the first path.",
+   "Counting-sort implementations and alternative queues for affordable tablets do not introduce new mathematical claims beyond the accepted paths.",
+   "Subset dynamic programming or unrestricted search over permutations cannot handle up to one million tablets."
+  ],
+  "submissions": 2
+ },
+ "builder_notes": "",
+ "open_issues": [],
+ "advisories": [
+  "N4 (bundles claims a solver can have separately; split it): The positive-group and negative-group sorting rules are distinct deductions: a solver can establish increasing a for nonnegative-net tablets while remaining stuck on decreasing b for negative-net tablets. Split these exchange lemmas into separate nodes so that this important failure point can be identified.",
+  "order: Split N4 into separate nonnegative-group and negative-group sorting lemmas. Make N5 depend on both; the canonical-order consequence can remain in N5's justification rather than requiring another node."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 3,
+  "submissions": 2,
+  "review_rounds": 1,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 16081,
+    "output_tokens": 8237,
+    "cached_tokens": 9219,
+    "reasoning_tokens": 5242
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 5405,
+    "output_tokens": 5980,
+    "reasoning_tokens": 5382
+   },
+   "total": {
+    "input_tokens": 21486,
+    "output_tokens": 14217,
+    "cached_tokens": 9219,
+    "reasoning_tokens": 10624
+   }
+  },
+  "inputs": {
+   "statement": "f9a51ad499839b46e90e5cbb9954982e5c3c51d79b3c70a77be6cb75d1a11bf2",
+   "editorial": "ce47360f6a0bd40c977d2fb32844648c075a2cd878d40aeb88871d887ef96442",
+   "reference": "9b2a69988e431c2b085140e730157ba6ba5b1a10e364ecaf14ea5a1a32759b06"
+  },
+  "created": "2026-11-03 00:47:40"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

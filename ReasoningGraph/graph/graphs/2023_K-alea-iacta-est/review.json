@@ -1,0 +1,378 @@
+[
+ {
+  "round": 1,
+  "version": "21e8fc6b66da1bb9",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Anagram recognition and the probability/cost model for rerolling are independently knowable claims. Separate the successful-state characterization from the labeled-dice transition model."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The impossibility criterion and the uniform 6d expected-time bound are distinct steps: recognizing that a successful assignment exists does not establish the bound. Split them, keeping the target-following strategy and its proof with the bound."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The continuation Bellman equations and the conversion to the requested answer by counting the initial full roll can be understood or missed separately. Separate that output-accounting claim, and leave the dominated empty action as an acceptance clarification."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "This bundles the shared partial-assignment model with a full-lattice averaging algorithm, and its accept requires the latter even on P2, which uses settled-outcome counts and sums instead. Split the shared uniform-completion semantics from the averaging transform, requiring that transform only on P1 and P3."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Monotone convergence of zero-initialized Bellman iteration and the quantitative residual certificate are separate reasoning steps. A solver can establish convergence without knowing how to certify the required accuracy; split those claims."
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Requiring all complete states to be settled and then explicitly averaging their values excludes the equivalent editorial formulation, which finalizes partial states and returns the all-star distance. State the label-setting construction in terms of determining the initial expected cost, and accept both formulations, including stopping when the initial state is finalized."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": false,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "As written, this is a generic stochastic-shortest-path supersolution theorem; specialize it explicitly to the retained-face reroll operator. It also combines greedy-policy properness with preservation of the supersolution invariant during partial evaluation, which are independently establishable claims."
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each listed accepted approach has enough mathematical information to implement its stated algorithm. The issues concern decomposition and acceptance of equivalent implementations, rather than an essential missing step in those approaches.",
+   "key_ok": true,
+   "key_note": "N7, N11, and N16 each state an algorithm determining the requested output. N11 needs broader acceptance of equivalent label-setting formulations, but it is the appropriate kind of key node.",
+   "hazards_ok": false,
+   "hazards_note": "H3's constraint is valid, but its check is overprescriptive: correct programs may detect an unreachable all-star start state rather than perform a separate feasibility precheck, and may include the initial roll in that state's value rather than explicitly add one. Allow both checks. H4 should explicitly state the required 10^-6 absolute-or-relative output accuracy, with residual certificates presented as conditional examples for numerical iteration rather than requirements on label-setting implementations.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "The editorial's mathematical label-setting idea is present in P2, but the literal acceptance requirements prevent a solver following the reference from satisfying its whole END route: the reference does not perform N4's full-lattice averaging transform, and it returns the all-star partial-state distance rather than N11's explicit complete-state average. Separate the shared partial-state semantics and accept the editorial's zero-cost action selection, one-roll uniform completion, and all-star output formulation; then P2 covers the editorial.",
+   "order": "Split N1 into success recognition and transition mechanics; N2 into reachability and the completion-time bound; N3 into continuation equations and initial-roll accounting; N6 into convergence and residual certification; and N13 into properness and preservation under evaluation. Split N4 into shared partial-assignment semantics and an averaging algorithm used only by P1/P3. Broaden N11 rather than adding a separate path for the equivalent editorial implementation.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N4 (a reader of a solver's work cannot decide whether the solver has it; bundles claims a solver can have separately; split it): This bundles the shared partial-assignment model with a full-lattice averaging algorithm, and its accept requires the latter even on P2, which uses settled-outcome counts and sums instead. Split the shared uniform-completion semantics from the averaging transform, requiring that transform only on P1 and P3.",
+   "N11 (a reader of a solver's work cannot decide whether the solver has it; it states one implementation's choice, not what every correct solution through this step gets right): Requiring all complete states to be settled and then explicitly averaging their values excludes the equivalent editorial formulation, which finalizes partial states and returns the all-star distance. State the label-setting construction in terms of determining the initial expected cost, and accept both formulations, including stopping when the initial state is finalized.",
+   "N13 (not specific to this problem; bundles claims a solver can have separately; split it): As written, this is a generic stochastic-shortest-path supersolution theorem; specialize it explicitly to the retained-face reroll operator. It also combines greedy-policy properness with preservation of the supersolution invariant during partial evaluation, which are independently establishable claims.",
+   "hazards: H3's constraint is valid, but its check is overprescriptive: correct programs may detect an unreachable all-star start state rather than perform a separate feasibility precheck, and may include the initial roll in that state's value rather than explicitly add one. Allow both checks. H4 should explicitly state the required 10^-6 absolute-or-relative output accuracy, with residual certificates presented as conditional examples for numerical iteration rather than requirements on label-setting implementations."
+  ],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): Anagram recognition and the probability/cost model for rerolling are independently knowable claims. Separate the successful-state characterization from the labeled-dice transition model.",
+   "N2 (bundles claims a solver can have separately; split it): The impossibility criterion and the uniform 6d expected-time bound are distinct steps: recognizing that a successful assignment exists does not establish the bound. Split them, keeping the target-following strategy and its proof with the bound.",
+   "N3 (bundles claims a solver can have separately; split it): The continuation Bellman equations and the conversion to the requested answer by counting the initial full roll can be understood or missed separately. Separate that output-accounting claim, and leave the dominated empty action as an acceptance clarification.",
+   "N6 (bundles claims a solver can have separately; split it): Monotone convergence of zero-initialized Bellman iteration and the quantitative residual certificate are separate reasoning steps. A solver can establish convergence without knowing how to certify the required accuracy; split those claims.",
+   "the editorial's approach is not among the paths: The editorial's mathematical label-setting idea is present in P2, but the literal acceptance requirements prevent a solver following the reference from satisfying its whole END route: the reference does not perform N4's full-lattice averaging transform, and it returns the all-star partial-state distance rather than N11's explicit complete-state average. Separate the shared partial-state semantics and accept the editorial's zero-cost action selection, one-roll uniform completion, and all-star output formulation; then P2 covers the editorial.",
+   "order: Split N1 into success recognition and transition mechanics; N2 into reachability and the completion-time bound; N3 into continuation equations and initial-roll accounting; N6 into convergence and residual certification; and N13 into properness and preservation under evaluation. Split N4 into shared partial-assignment semantics and an averaging algorithm used only by P1/P3. Broaden N11 rather than adding a separate path for the equivalent editorial implementation."
+  ],
+  "time": "2026-11-03 00:32:12"
+ },
+ {
+  "round": 2,
+  "version": "9bd9e636889fa301",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All three routes supply the outcome model, an implementable evaluation algorithm, and the initial-roll output rule. The numerical routes also supply valid residual certificates; the label-setting route supplies the repeat-value formula and finalization argument.",
+   "key_ok": true,
+   "key_note": "N7, N11, and N16 state their respective algorithms and determine the required output, including impossibility and the mandatory initial roll.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover face multiplicities, multiset-based success, impossibility, initial-roll accounting, and numerical accuracy. No additional problem-wide overflow or degeneracy constraint is needed for the stated state-space sizes.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P2 covers the editorial and reference implementation: successful fixed outcomes start at zero, partial assignments receive candidates (6^k+S)/c, finalized partial states propagate their values to compatible fixed outcomes, and the all-wildcard state's cost is the answer. N9 also covers c=n, which permits finalizing partial states after all their completions are settled.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-03 00:37:45"
+ }
+]

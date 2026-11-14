@@ -1,0 +1,937 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2025/J-stacking-cups",
+ "title": "Stacking Cups",
+ "status": "accepted",
+ "version": "0a84c9a262195833",
+ "solution_outline": "P1: Most heights can be obtained by placing a chosen subset of cups in increasing order, then the largest cup, then all unused cups in decreasing order. P2: A different construction builds the permutation recursively by placing the largest cup at one end. P3: This construction solves the additive part by cardinality rather than by odd-number subset-sum recursion. P4: Localize the entire height deficit d=n^2-h to the smallest prefix of cup sizes that can absorb it: m=ceil(sqrt(d))+1. P5: Use a small, nearly fully extended inner tower, surrounded by a decreasing prefix of all larger cups. P6: Search for a core size b whose odd cup heights admit a subset summing to h−n+b, testing feasibility through the largest eligible cardinality.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Cup placement and tower height",
+   "kind": "modeling",
+   "statement": "For an ordering a_1,...,a_n of cup indices, let b_t be cup a_t's bottom elevation. Then b_1=0 and b_t=max_{s<t}(b_s+(a_s<a_t ? 2a_s-1 : 1)). The tower height is max_t(b_t+2a_t-1).",
+   "routes": [
+    []
+   ],
+   "accept": "A larger incoming cup must sit above every earlier narrower cup's rim; an incoming narrower cup must sit at least one centimeter above every earlier wider cup's bottom. These constraints are sufficient. Equivalent geometric or recursive formulations count.",
+   "anchors": [
+    "cup indices",
+    "base",
+    "height of the tower"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Universal tower height bounds",
+   "kind": "key_property",
+   "statement": "Every tower using all n cups has height between 2n-1 and n^2, inclusive.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "The largest cup alone requires 2n-1 centimeters. Each incoming cup's bottom is at most the current tower height, so its height increase is at most its own height. Summing the first n odd heights gives n^2.",
+   "anchors": [
+    "all n cups",
+    "height",
+    "largest cup"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Two centimeters below maximum is impossible",
+   "kind": "key_property",
+   "statement": "No ordering of all n cups has height n^2-2.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Delete cup 1 from the ordering. A descent i>j>=2 between consecutive remaining cups puts j entirely inside i: their bottoms differ by one or two centimeters. This loses at least three centimeters from the sum of cup heights. If no such descent exists, cups 2,...,n ascend, and cup 1 makes the height either n^2 or n^2-1.",
+   "anchors": [
+    "cup 1",
+    "descending pair",
+    "n^2-2"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N4",
+   "name": "Subset cups determine additive height",
+   "kind": "construction",
+   "statement": "Choose any subset S of indices 1,...,n-1. Place S increasingly, then cup n, then all remaining indices decreasingly. This tower has height 2n-1+sum_{i in S}(2i-1).",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "The increasing prefix places each cup above all previous rims, contributing its whole height. Cup n contributes 2n-1. The decreasing suffix nests with bottom increments of one and stays below cup n's rim.",
+   "anchors": [
+    "increasing prefix",
+    "cup n",
+    "decreasing suffix"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N5",
+   "name": "Subset sums of consecutive odd heights",
+   "kind": "key_property",
+   "statement": "For m>=0, the subset sums of {1,3,...,2m-1} are exactly the integers in [0,m^2] other than 2 and m^2-2, ignoring excluded values outside that interval.",
+   "routes": [
+    []
+   ],
+   "accept": "Induct on m, using sums without 2m-1 and sums with it; check m=0,1,2 separately. For extraction, test whether a remaining target belongs to the feasible set for m-1: omit 2m-1 if it does, otherwise include it and subtract. This gives an O(m) witness.",
+   "anchors": [
+    "odd cup heights",
+    "subset sums"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N6",
+   "name": "Construction two above minimum",
+   "kind": "construction",
+   "statement": "For n>=4, the ordering n,2,n-1 followed by all unused cup indices decreasingly has height 2n+1.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Cup n starts at zero, cup 2 at one, and cup n-1 at four, so their top elevations are 2n-1,4,2n+1. The remaining decreasing cups have lower top elevations and do not increase the height.",
+   "anchors": [
+    "cup n",
+    "cup 2",
+    "cup n-1",
+    "2n+1"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N7",
+   "name": "Construct by odd subset extraction",
+   "kind": "construction",
+   "statement": "Reject h outside [2n-1,n^2] or equal to n^2-2. Otherwise set x=h-(2n-1). If x=2, use ordering N6; otherwise extract an odd-height subset summing to x and use ordering N4. Output each chosen index i as height 2i-1.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N4",
+     "N5",
+     "N6"
+    ]
+   ],
+   "accept": "Subset extraction uses the exact attainable-sum test for successively smaller odd-number sets and runs in O(n) time. The forbidden high subset sum corresponds exactly to h=n^2-2. Any nonrejected x=2 has n>=4. The program prints every cup once.",
+   "anchors": [
+    "favorite number",
+    "subset extraction",
+    "output ordering"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N8",
+   "name": "Largest cup at either end",
+   "kind": "key_property",
+   "statement": "For m>=2, given an ordering of cups 1,...,m-1 with height H, appending cup m produces height H+2m-1. Prepending cup m produces height max(2m-1,H+1).",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "At the end, the largest cup must sit above every previous rim. At the beginning, its base raises the entire smaller-cup tower by one centimeter, and its own rim may remain the highest point.",
+   "anchors": [
+    "largest cup",
+    "first cup",
+    "last cup",
+    "tower height"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N9",
+   "name": "Endpoint operations cover admissible targets",
+   "kind": "key_property",
+   "statement": "For m>=6, every integer h in [2m-1,m^2] other than m^2-2 admits an integer H in [2m-3,(m-1)^2] other than (m-1)^2-2 such that h=H+2m-1 or h=max(2m-1,H+1).",
+   "routes": [
+    [
+     "N8"
+    ]
+   ],
+   "accept": "One witness takes H=h-(2m-1) when h>=4m-4, and H=h-1 otherwise. In the first case, the threshold ensures the lower bound and the excluded residual corresponds to the excluded original target. In the second case, H lies between 2m-2 and 4m-6, below (m-1)^2-2. Any valid choice of endpoint and admissible residual establishes the claim.",
+   "anchors": [
+    "target height",
+    "admissible smaller target",
+    "endpoint coverage"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N10",
+   "name": "Construct by feasible endpoint reductions",
+   "kind": "construction",
+   "statement": "Reject h outside [2n-1,n^2] or equal to n^2-2. Recursively choose an admissible smaller target and a compatible endpoint placement of the largest cup. Solve the bounded exceptional sizes directly, reconstruct the permutation, and output the cup heights.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N8",
+     "N9"
+    ]
+   ],
+   "accept": "For m>=6, one implementation appends m when h>=4m-4 and prepends it otherwise, using N9's residuals. For 1<=m<=5, exhaustive enumeration attains exactly the allowed interval minus m^2-2; precomputed orders or other correct bounded constructions also count. Recording endpoint decisions and reconstructing the answer takes O(n) time, with constant work for the bounded bases.",
+   "anchors": [
+    "feasible endpoint reductions",
+    "bounded base cases",
+    "output ordering"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N11",
+   "name": "Fixed-cardinality odd-height sums",
+   "kind": "key_property",
+   "statement": "For 0<=k<=m, sums of exactly k distinct members of {1,3,...,2m-1} are precisely the integers x satisfying k^2<=x<=k(2m-k) and x congruent to k modulo 2.",
+   "routes": [
+    []
+   ],
+   "accept": "Write increasing selected indices as i_j=j+d_j, where 0<=d_1<=...<=d_k<=m-k. Their height sum is k^2+2*sum(d_j). Every integer between zero and k(m-k) is a possible offset sum, by saturating the largest offsets and using at most one partial offset.",
+   "anchors": [
+    "selected cup count",
+    "odd heights",
+    "index offsets"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N12",
+   "name": "Largest eligible cardinality suffices",
+   "kind": "key_property",
+   "statement": "For x>=0, let k be the largest integer with 0<=k<=m, k^2<=x, and k congruent to x modulo 2. An odd-height subset totaling x exists exactly when such k exists and x<=k(2m-k).",
+   "routes": [
+    [
+     "N11"
+    ]
+   ],
+   "accept": "Every valid cardinality has the target's parity and square at most x. The largest such cardinality maximizes k(2m-k), since this upper bound increases for 0<=k<=m. Thus failure at the largest candidate rules out every smaller candidate.",
+   "anchors": [
+    "target subset sum",
+    "cardinality",
+    "upper sum bound"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N13",
+   "name": "Construct using bounded index offsets",
+   "kind": "construction",
+   "statement": "Reject heights excluded by N2 or N3. Set x=h-(2n-1); handle x=2 by N6. Otherwise choose any cardinality k satisfying N11 for m=n-1 and x, construct nondecreasing offsets d_j in [0,m-k] totaling (x-k^2)/2, and use indices j+d_j as N4's subset.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N4",
+     "N5",
+     "N6",
+     "N11",
+     "N12"
+    ]
+   ],
+   "accept": "N5 guarantees a subset exists for every remaining x. Any cardinality satisfying N11 works; for example, obtain N12's largest eligible k by integer square-root search and parity adjustment. Allocate the required offset sum to the largest offsets first, each with capacity m-k, obtaining distinct increasing indices. This takes O(n) time overall and outputs actual cup heights.",
+   "anchors": [
+    "bounded offsets",
+    "selected indices",
+    "cup ordering"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N14",
+   "name": "Localize deficit to square-root core",
+   "kind": "reformulation",
+   "statement": "Let d=n^2-h satisfy 0<=d<=(n-1)^2 and m=ceil(sqrt(d))+1. A tower of cups 1,...,m with height m^2-d, followed by cups m+1,...,n increasingly, has height h. For m>=2, its required height lies in [2m-1,4m-5].",
+   "routes": [
+    [
+     "N2",
+     "N8"
+    ]
+   ],
+   "accept": "The appended cups add n^2-m^2. For m>=2, (m-2)^2<d<=(m-1)^2 gives the claimed core-height interval. For d=0 the core is the single smallest cup. The original lower height bound ensures m<=n.",
+   "anchors": [
+    "height deficit",
+    "core cups",
+    "square root",
+    "increasing tail"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N15",
+   "name": "Low core heights from four cups",
+   "kind": "construction",
+   "statement": "For every m>=4, all heights in [2m-1,4m-6] are attainable using cups 1,...,m, with at most four initial cups followed by all unused indices decreasingly.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Height 2m-1 uses the decreasing ordering; 2m uses cup 1 followed by decreasing cups. For 2<=k<=m-2, begin with m,k,m-1 to obtain 2m+2k-3. Prepending cup 1 to that prefix obtains 2m+2k-2, with all other unused cups decreasing afterward.",
+   "anchors": [
+    "low core height",
+    "four initial cups",
+    "decreasing suffix"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N16",
+   "name": "Top low-core height from five cups",
+   "kind": "construction",
+   "statement": "For m>=6, ordering m,1,2,m-3,m-1 followed by all unused indices from 1,...,m decreasingly has height 4m-5.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "The first five bottom elevations are 0,1,2,5,2m-2. Cup m-1 reaches 4m-5, higher than all preceding cups. The decreasing suffix starts with cup m-2, whose top is 4m-6, and subsequent tops decrease.",
+   "anchors": [
+    "five initial cups",
+    "4m-5",
+    "decreasing suffix"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N17",
+   "name": "Construct core and ascending tail",
+   "kind": "construction",
+   "statement": "Reject heights excluded by N2 or N3. Choose the core size and target from N14. Enumerate core permutations if m<=5; otherwise use N15 or N16 according to the target. Append indices m+1,...,n increasingly and output their cup heights.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N14",
+     "N15",
+     "N16"
+    ]
+   ],
+   "accept": "The core deficit remains d, so its forbidden height m^2-2 would require the already rejected d=2. Exhaustive enumeration covers all feasible cores of size at most five. N15 and N16 cover the entire low-height interval for larger cores. Integer square-root search and output take O(n) time overall.",
+   "anchors": [
+    "core construction",
+    "ascending tail",
+    "output cup heights"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N18",
+   "name": "Decreasing outer cups pad inner tower",
+   "kind": "key_property",
+   "statement": "For 1<=m<=n, given a tower of cups 1,...,m with height H, prefixing the indices n,n-1,...,m+1 yields total height max(2n-1,n-m+H).",
+   "routes": [
+    [
+     "N8"
+    ]
+   ],
+   "accept": "Repeatedly prepend the new largest cup. Every inner bottom rises by n-m centimeters. If outer cups exist, their highest top is cup n's at 2n-1; their subsequent tops decrease by one. If m=n, the prefix is empty and H>=2n-1.",
+   "anchors": [
+    "outer decreasing cups",
+    "inner tower",
+    "nesting depth"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N19",
+   "name": "Choose a nearly extended inner core",
+   "kind": "reformulation",
+   "statement": "For 2n-1<=h<=n^2, choose the least positive m with m(m-1)>=h-n. Then m<=n, and the required inner height is h-n+m=m^2-d, where d=m(m-1)-(h-n). If m>=2, 0<=d<=2m-3; otherwise d=0.",
+   "routes": [
+    [
+     "N2",
+     "N18"
+    ]
+   ],
+   "accept": "For m>=2, minimality gives (m-1)(m-2)<h-n, establishing the deficit bound and inner height at least m^2-2m+3>=2m-1. For m=1, the inner height is one. The upper input bound ensures m<=n. The padding identity then gives exactly h because h>=2n-1.",
+   "anchors": [
+    "inner core size",
+    "small height deficit",
+    "target height"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N20",
+   "name": "Small deficits need two buried cups",
+   "kind": "key_property",
+   "statement": "For m>=1, zero and every integer d in [1,2m-3] other than 2 are sums of at most two distinct heights among cups 1,...,m-1.",
+   "routes": [
+    []
+   ],
+   "accept": "Use no cups for d=0, including when m=1. For odd d, use the single cup of height d. For even d>=4, use heights 1 and d-1, which are distinct and within the allowed range.",
+   "anchors": [
+    "small deficit",
+    "one or two cups",
+    "odd heights"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N21",
+   "name": "Repair deficit two by enlarging core",
+   "kind": "construction",
+   "statement": "If N19 gives d=2 and h!=n^2-2, then m<n and m>=3. Enlarge the core to M=m+1. Its new deficit is 2M, realized by placing all other core cups increasingly, then cups M-1 and 2.",
+   "routes": [
+    [
+     "N4",
+     "N19"
+    ]
+   ],
+   "accept": "If m=n, d=2 would be the excluded original target. Minimality rules out m<=2. Increasing m changes the deficit from 2 to 2+2m=2M. The two buried cups have heights 2M-3 and 3, summing to 2M, and are distinct because M>=4.",
+   "anchors": [
+    "deficit two",
+    "enlarged inner core",
+    "buried cups"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N22",
+   "name": "Construct padded core with two omissions",
+   "kind": "construction",
+   "statement": "Reject heights excluded by N2 or N3. Choose m,d by N19 and repair d=2 by N21. Otherwise choose the buried set from N20. Output n,...,m+1, then all unburied core indices increasingly, then buried indices decreasingly, converting indices to cup heights.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N4",
+     "N18",
+     "N19",
+     "N20",
+     "N21"
+    ]
+   ],
+   "accept": "After an enlargement, use the updated core size and its corresponding deficit. The inner ordering is N4 applied to the complement of the buried set and has height m^2-d. N18 raises it to h. Binary search finds the initial m; at most two cups are omitted from the ascending inner run. The complete construction is O(n) time.",
+   "anchors": [
+    "decreasing outer prefix",
+    "ascending inner core",
+    "buried suffix",
+    "output ordering"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N23",
+   "name": "Padded increasing subset height",
+   "kind": "construction",
+   "statement": "For 1<=b<=n and a subset S of {1,...,b} containing b, place n,...,b+1, then S increasingly, then unused core indices decreasingly. The resulting height is max(2n−1,n−b+sum_{i in S}(2i−1)).",
+   "routes": [
+    [
+     "N4",
+     "N18"
+    ]
+   ],
+   "accept": "Apply N4 to the inner cups, since the increasing subset includes their largest cup b. Its height is the sum of the selected odd heights. N18 accounts for the outer decreasing prefix. The outer maximum cannot generally be omitted, and the identity does not apply to arbitrary subsets missing b.",
+   "anchors": [
+    "increasing subset",
+    "largest core cup",
+    "decreasing outer cups",
+    "height of the tower"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N24",
+   "name": "First feasible core includes its largest cup",
+   "kind": "key_property",
+   "statement": "For heights within the universal bounds, the least b in [1,n] admitting a subset sum t=h−n+b of {1,3,...,2b−1} exists exactly when h≠n²−2. At that size, the largest feasible cardinality admits a subset containing cup b.",
+   "routes": [
+    [
+     "N5",
+     "N11",
+     "N12",
+     "N19"
+    ]
+   ],
+   "accept": "Let m,d be N19's values. Capacities exclude b<m. If d≠2, N5 permits b=m; its target exceeds (m−1)², forcing m into every subset. If d=2, no size works when m=n; otherwise the first feasible size is B=m+1≥4, with target B(B−2). N12 chooses B−2 cups; saturating largest offsets, with capacity two and total B−2, includes B. Thus exhaustion occurs precisely for n²−2.",
+   "anchors": [
+    "core size",
+    "target subset sum",
+    "selected cup count",
+    "largest core cup"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N25",
+   "name": "Construct by padded cardinality search",
+   "kind": "construction",
+   "statement": "Reject heights outside N2's bounds. Otherwise choose a core b and subset S containing b with odd-height sum h−n+b. Output n,...,b+1, then S increasingly, then unused indices decreasingly, converting indices to heights. If no such pair exists, output impossible.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N11",
+     "N12",
+     "N23",
+     "N24"
+    ]
+   ],
+   "accept": "Test core sizes increasingly. For t=h−n+b, take a=floor(sqrt(t)), adjust parity, and require a²≤t≤a(2b−a). Passing implies a≤b; N12 makes the test complete. Start with indices 1,...,a and raise the largest first to reach sum (t+a)/2. N24 ensures inclusion of b at first success. N23 proves height h; N2,N3,N24 justify rejection. Constant-time tests and one linear reconstruction give O(n) time.",
+   "anchors": [
+    "favorite number",
+    "selected cup count",
+    "padded ordering",
+    "output cup heights"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 6
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N8",
+    "N9",
+    "N10"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N11",
+    "N12",
+    "N13"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N8",
+    "N14",
+    "N15",
+    "N16",
+    "N17"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N8",
+    "N18",
+    "N19",
+    "N20",
+    "N21",
+    "N22"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N8",
+    "N11",
+    "N12",
+    "N18",
+    "N19",
+    "N23",
+    "N24",
+    "N25"
+   ]
+  ],
+  "keys": [
+   "N7",
+   "N10",
+   "N13",
+   "N17",
+   "N22",
+   "N25"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Height arithmetic must exactly handle values up to 4*10^10 without overflow. If roots or quadratic boundaries are used, rounded results must satisfy their defining inequalities, including zero and perfect-square cases.",
+   "check": "Verify exact, overflow-safe representation and evaluation of heights, squares, products, and residuals; 64-bit integers suffice but are not required. For computed roots or core sizes, verify their defining integer inequalities and correct approximate results at boundaries. Check zero, perfect squares, and adjacent integers."
+  },
+  {
+   "id": "H2",
+   "statement": "Output cup heights, not indices, using every cup exactly once; print lowercase impossible when no ordering exists.",
+   "check": "Convert each permutation entry i to 2*i-1 and ensure special constructions exclude their already-used indices from the suffix."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Most heights can be obtained by placing a chosen subset of cups in increasing order, then the largest cup, then all unused cups in decreasing order. The resulting height is 2n-1 plus a subset sum of the first n-1 odd numbers; these sums omit only 2 and (n-1)^2-2. A separate ordering realizes the first omission for n>=4, while a nesting argument proves that the second omission, corresponding to n^2-2, is genuinely impossible; the construction takes O(n) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7"
+   ],
+   "key_node": "N7",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 136,
+    "n_tests": 136,
+    "max_time_s": 0.031,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "A different construction builds the permutation recursively by placing the largest cup at one end. Appending cup m adds 2m-1 to the height, while prepending it changes height H to max(2m-1,H+1); for m>=6 these two operations cover every admissible target using an admissible target for m-1 cups. Exhaustive enumeration of at most five cups supplies the base cases, giving an O(n) construction without subset sums.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N8",
+    "N9",
+    "N10"
+   ],
+   "key_node": "N10",
+   "new_nodes": [
+    "N8",
+    "N9",
+    "N10"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 136,
+    "n_tests": 136,
+    "max_time_s": 0.026,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "This construction solves the additive part by cardinality rather than by odd-number subset-sum recursion. Sums of exactly k distinct odd heights form a parity interval, and it suffices to try the largest k with k^2<=x and the same parity as x. Starting from indices 1,...,k, distribute the required index increases from the largest index downward; the resulting subset has at most three intervals and yields the tower through N4, with N6 still handling the exceptional residual 2.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N11",
+    "N12",
+    "N13"
+   ],
+   "key_node": "N13",
+   "new_nodes": [
+    "N11",
+    "N12",
+    "N13"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 136,
+    "n_tests": 136,
+    "max_time_s": 0.032,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Localize the entire height deficit d=n^2-h to the smallest prefix of cup sizes that can absorb it: m=ceil(sqrt(d))+1. Its required height m^2-d is only between 2m-1 and 4m-5, so explicit orderings involving at most five specially positioned cups and a decreasing suffix cover every large core; cores of size at most five are enumerated. Append cups m+1,...,n increasingly to restore the desired total height, in O(n) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N8",
+    "N14",
+    "N15",
+    "N16",
+    "N17"
+   ],
+   "key_node": "N17",
+   "new_nodes": [
+    "N14",
+    "N15",
+    "N16",
+    "N17"
+   ],
+   "new_hazards": [],
+   "program": "paths/P4.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 136,
+    "n_tests": 136,
+    "max_time_s": 0.031,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P5",
+   "approach": "Use a small, nearly fully extended inner tower, surrounded by a decreasing prefix of all larger cups. Choosing the least m with m(m-1)>=h-n makes the inner tower's deficit at most 2m-3, which can be realized by burying at most two cups instead of solving a general subset sum. If that deficit is 2, enlarge the inner tower once and bury cups 2 and m-1; all steps and output take O(n) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N8",
+    "N18",
+    "N19",
+    "N20",
+    "N21",
+    "N22"
+   ],
+   "key_node": "N22",
+   "new_nodes": [
+    "N18",
+    "N19",
+    "N20",
+    "N21",
+    "N22"
+   ],
+   "new_hazards": [],
+   "program": "paths/P5.cpp",
+   "submission": 5,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 136,
+    "n_tests": 136,
+    "max_time_s": 0.036,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P6",
+   "source": "editorial",
+   "approach": "Search for a core size b whose odd cup heights admit a subset summing to h−n+b, testing feasibility through the largest eligible cardinality. At the first feasible size, the fixed-cardinality greedy construction includes cup b, so surrounding the increasing subset with a decreasing outer prefix and decreasing unused suffix gives exactly h. The search succeeds precisely for attainable heights and takes O(n) time, including reconstruction.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N8",
+    "N11",
+    "N12",
+    "N18",
+    "N19",
+    "N23",
+    "N24",
+    "N25"
+   ],
+   "key_node": "N25",
+   "new_nodes": [
+    "N23",
+    "N24",
+    "N25"
+   ],
+   "new_hazards": [],
+   "program": "paths/P6.cpp",
+   "submission": null,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 136,
+    "n_tests": 136,
+    "max_time_s": 0.028,
+    "time_limit_s": 2.0
+   },
+   "notes": "The editorial's unrestricted canonical-height identity is false: it omits the outer maximum and does not require the selected subset to contain b. This path uses the corrected identity and proves that the reference's first feasible core and greedy selection satisfy that requirement. The reference detects the forbidden height by exhausting the search, not through an explicit special-case rejection."
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Five distinct constructions have been accepted: recursive odd-subset extraction, largest-cup endpoint recursion, fixed-cardinality offset construction, a square-root deficit core with an ascending tail, and a nearly extended inner core padded by decreasing outer cups. I have no further genuinely different approach that I can justify as correct and fast enough.",
+  "considered": [
+   "Dynamic programming over all possible tower heights would require states up to n^2=4*10^10 and is not viable.",
+   "General permutation enumeration or backtracking is factorial; it is useful only for the constant-sized base cases already included.",
+   "Reversing a single consecutive block of the ascending ordering only creates differences-of-squares deficits and cannot cover every feasible target.",
+   "Using only largest-cup endpoint insertions from a one-cup base misses attainable small cases; the accepted endpoint approach resolves this with exhaustive small bases.",
+   "Further greedy subset variants, descending-block partitions, and alternate offset distributions reproduce claims or constructions already represented in the graph rather than providing genuinely new paths."
+  ],
+  "submissions": 5
+ },
+ "builder_notes": "N13 now permits any cardinality satisfying N11; N12's largest-candidate method remains only an example in accept. N23 and N24 explicitly state the core-size domain. The suggested structural splits and merges remain unapplied because this revision must preserve every node, id, route, and END route.",
+ "open_issues": [],
+ "advisories": [
+  "N2 (bundles claims a solver can have separately; split it): The largest-cup lower bound and the sum-of-heights upper bound are independently obtainable claims. Split them if partial progress on the feasibility bounds is to be represented.",
+  "N8 (bundles claims a solver can have separately; split it): Appending the largest cup and prepending it are independent transformations; a solver can establish the additive append rule without recognizing the prepend rule's maximum. Split these, particularly since later approaches reuse the two operations separately.",
+  "N18 (comes with its prerequisite; merge it): This is the repeated application of N8's prepend operation, with the outer maximum simplified to the largest cup's rim. Fold it into a generalized prepend/padding lemma rather than treating the iteration as a separate obstacle.",
+  "N23 (comes with its prerequisite; merge it): Once N4 and N18 are held, this formula follows directly by applying N4 to the core and N18 to its prefix. Fold the composition into the padded construction, preserving both the requirement that b is selected and the outer maximum.",
+  "N24 (bundles claims a solver can have separately; split it): The existence/first-feasible-core characterization and the largest-cardinality witness containing that core's largest cup are separate claims. A solver can prove search completeness while still missing the inclusion guarantee needed by the reference reconstruction; split those milestones.",
+  "order: Recommended structural changes: split N2's two bounds; split N8 into append and prepend claims and absorb N18 into the generalized prepend claim; fold N23's direct composition into the padded construction; split N24's search-completeness claim from its largest-cup inclusion guarantee. These granularity issues remain despite the explorer's node-preservation restriction, but the mathematical claims and required acceptance conditions are sound."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 6,
+  "submissions": 5,
+  "review_rounds": 4,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 139496,
+    "output_tokens": 28612,
+    "cached_tokens": 72026,
+    "reasoning_tokens": 17762
+   },
+   "integrator": {
+    "input_tokens": 42534,
+    "output_tokens": 11052,
+    "reasoning_tokens": 5136,
+    "cached_tokens": 9743
+   },
+   "reviewer": {
+    "input_tokens": 34943,
+    "output_tokens": 50809,
+    "reasoning_tokens": 44897
+   },
+   "total": {
+    "input_tokens": 216973,
+    "output_tokens": 90473,
+    "cached_tokens": 81769,
+    "reasoning_tokens": 67795
+   }
+  },
+  "inputs": {
+   "statement": "ac98c73fddf996cd54e73d157a5b60e4220b8c4b6ab552f323bc18a5dd502727",
+   "editorial": "71484432d89da5f84fc5ac2d1a07c5061b030a7586775ddadb706df84a574db8",
+   "reference": "0e9c2b1cdd7781d1157074faa4245b3c210664405ac649b9409c5346c79d952a"
+  },
+  "created": "2026-11-02 21:49:30"
+ },
+ "editorial": {
+  "covered": false,
+  "path": "P6",
+  "new_nodes": [
+   "N23",
+   "N24",
+   "N25"
+  ]
+ }
+}

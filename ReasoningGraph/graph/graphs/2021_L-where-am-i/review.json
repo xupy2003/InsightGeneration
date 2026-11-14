@@ -1,0 +1,413 @@
+[
+ {
+  "round": 1,
+  "version": "4560d03b695e2a6c",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Encoding observations by marker times and proving distinct starts have distinct observations are separate claims. The acceptance requirement to construct sorted lists excludes equivalent conceptual representations and is not established by the dense or event-driven refinement approaches; split out distinctness and remove mandatory list construction from the conceptual encoding claim."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The first-differing-observation rule and the relation between sparse-list and binary-string lexicographic orders are independently usable claims: P2 needs only the former. Keep the first-difference rule as the shared comparison node, and put the ordering relation with the neighbor-order argument."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each listed END route supplies a sufficient algorithm. The overrestrictive acceptance condition on N2 affects whether refinement traces can establish their listed route, rather than the sufficiency of holding that route's claims.",
+   "key_ok": true,
+   "key_note": "",
+   "hazards_ok": false,
+   "hazards_note": "H4 is a partition-refinement implementation constraint, not a requirement that every approach classify candidates against an old partition; its substantive check already belongs in N9's accept. Move it there, or replace it with the representation-neutral requirement that identical complete observation prefixes must remain indistinguishable. Add an explicit check that visited cells outside the input rectangle are empty, without restricting the walk to the rectangle. H1 should also check spiral leg lengths 1,1,2,2,3,3,..., not only the initial directions and first five offsets.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "The reference sorts finite binary observation strings directly and compares adjacent strings by their first differing bit. It neither constructs sorted marker-time lists as N2's accept requires nor establishes N3's sparse-order reversal, so it does not establish any complete END route as written. Add or generalize a neighbor-sorting route to cover binary strings directly, including the finite horizon: all marker offsets lie in [-R,R]^2 for R=max(dx-1,dy-1), so L=(2R+1)^2 observations suffice and every later bit is zero. Packed-word layout and bit-finding instructions can remain acceptance examples.",
+   "order": "Split N2 into the sparse observation encoding and the representation-independent distinctness of translated finite nonempty marker sets; refinement routes should not require constructing sparse lists. Separate N3's pairwise first-difference rule from its ordering consequence, folding the latter into N4 if a standalone corollary would be redundant. Generalize or supplement the neighbor-sorting branch so the editorial's direct binary-string route is represented.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N2 (a reader of a solver's work cannot decide whether the solver has it; bundles claims a solver can have separately; split it): Encoding observations by marker times and proving distinct starts have distinct observations are separate claims. The acceptance requirement to construct sorted lists excludes equivalent conceptual representations and is not established by the dense or event-driven refinement approaches; split out distinctness and remove mandatory list construction from the conceptual encoding claim.",
+   "hazards: H4 is a partition-refinement implementation constraint, not a requirement that every approach classify candidates against an old partition; its substantive check already belongs in N9's accept. Move it there, or replace it with the representation-neutral requirement that identical complete observation prefixes must remain indistinguishable. Add an explicit check that visited cells outside the input rectangle are empty, without restricting the walk to the rectangle. H1 should also check spiral leg lengths 1,1,2,2,3,3,..., not only the initial directions and first five offsets."
+  ],
+  "advisory": [
+   "N3 (bundles claims a solver can have separately; split it): The first-differing-observation rule and the relation between sparse-list and binary-string lexicographic orders are independently usable claims: P2 needs only the former. Keep the first-difference rule as the shared comparison node, and put the ordering relation with the neighbor-order argument.",
+   "the editorial's approach is not among the paths: The reference sorts finite binary observation strings directly and compares adjacent strings by their first differing bit. It neither constructs sorted marker-time lists as N2's accept requires nor establishes N3's sparse-order reversal, so it does not establish any complete END route as written. Add or generalize a neighbor-sorting route to cover binary strings directly, including the finite horizon: all marker offsets lie in [-R,R]^2 for R=max(dx-1,dy-1), so L=(2R+1)^2 observations suffice and every later bit is zero. Packed-word layout and bit-finding instructions can remain acceptance examples.",
+   "order: Split N2 into the sparse observation encoding and the representation-independent distinctness of translated finite nonempty marker sets; refinement routes should not require constructing sparse lists. Separate N3's pairwise first-difference rule from its ordering consequence, folding the latter into N4 if a standalone corollary would be redundant. Generalize or supplement the neighbor-sorting branch so the editorial's direct binary-string route is represented."
+  ],
+  "time": "2026-11-03 13:13:25"
+ },
+ {
+  "round": 2,
+  "version": "962617bdb95c53f7",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All eight routes determine every start's first unique observation-prefix index and the required aggregate outputs. The sparse comparisons are well-defined because lists have equal length and are distinct. The trie routes correctly account for singleton roots, terminal candidates, and distinctions occurring before a candidate's own next marker.",
+   "key_ok": true,
+   "key_note": "N5, N6, N9, N10, N12, N14, N16, and N18 each state their path's output-determining algorithm, rather than merely a feasibility bound or proof lemma.",
+   "hazards_ok": true,
+   "hazards_note": "H1–H4 cover coordinate orientation, the unbounded spiral and empty exterior, observation-zero indexing, singleton inputs, output ordering and precision, and exact prefix semantics. No additional overflow requirement is essential: stopping times are at most 39600 and their sum is at most 396000000, both within signed 32-bit range.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "The editorial and reference solution are covered by the P1 END route: N3 permits packed binary observations and XOR first differences, N4 supplies the lexicographic-neighbor property, and N5 explicitly accepts the finite square horizon and packed-string implementation.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-03 13:22:23"
+ }
+]

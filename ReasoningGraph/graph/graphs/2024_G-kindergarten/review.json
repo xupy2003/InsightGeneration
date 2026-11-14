@@ -1,0 +1,74 @@
+[
+ {
+  "round": 1,
+  "version": "bbafc04f587de62e",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "The sole END route includes the safety condition, the unique-cycle structure, completeness of the witness search, and the full permutation construction. In particular, N5 includes the incoming-stem postponement implemented by loop_prefix in the reference, rather than merely reversing and rotating the path.",
+   "key_ok": true,
+   "key_note": "P1 correctly identifies N5: it specifies the construction of the output permutation and the impossible outcome after exhaustive search failure.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover the relevant implementation risks: linear traversal depth, context-sensitive active-path search state, and duplicate or cyclic processing during subtree emission. The impossible output convention is already explicit in N5; the remaining operations use only indices and counts bounded linearly in n.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "The path matches the editorial and reference: start on the unique jealous cycle, perform guarded jealous-first DFS, reject like-only loops, materialize reversed jealous runs with loop and incoming-stem handling, and append untouched jealous descendants.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-02 21:53:35"
+ }
+]

@@ -1,0 +1,1068 @@
+[
+ {
+  "round": 1,
+  "version": "456dd3c3cd1fa5db",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The largest-cup lower bound and the sum-of-heights upper bound are independent observations; a solver can establish either without the other. Split them into separate bound claims."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Appending above all previous rims and prepending a cup that raises the smaller tower are separate geometric claims. Split the endpoint identities so that establishing only one does not establish both."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The fixed threshold prescribes an endpoint preference even where both endpoint reductions work. State that every admissible target for m>=6 has an admissible smaller target through at least one endpoint operation, and move this particular threshold and residual-selection rule to accept as a witness."
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The construction hard-codes N9's endpoint preference and enumeration of every size at most five, rather than the essential endpoint-recursion rule. State the algorithm as choosing a feasible endpoint reduction and solving the bounded exceptional bases; retain the concrete threshold and exhaustive-base implementation in accept."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "This is the direct repeated-prepending corollary of N8, without a further construction decision. Combine it with the prepend half of N8, preferably stating the general decreasing-prefix padding identity and treating one-cup prepending as its special case."
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N22",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All five supplied END routes contain sufficient mechanics, feasibility reasoning, and constructions for a correct program within the limits. Their bounded exhaustive bases and linear-size constructions leave no essential algorithmic gap.",
+   "key_ok": true,
+   "key_note": "N7, N10, N13, N17, and N22 are the respective output-construction algorithms, not merely feasibility or complexity claims.",
+   "hazards_ok": false,
+   "hazards_note": "H1 identifies the correct magnitude issue, but its check unnecessarily mandates 64-bit integer storage and arithmetic; require exact, overflow-safe representation of heights, products, and residuals, allowing other sufficiently precise representations. Add a conditional precision check for square-root/quadratic-boundary calculations: computed floor/ceil roots and candidate core sizes must satisfy their defining inequalities, including zero and perfect-square cases. H2 is appropriate.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "No END route follows the reference's scan over b, setting t=h-(n-b), selecting a cardinality with N11/N12, and greedily constructing the increasing block inside a decreasing outer prefix. The relevant ingredients exist separately, but their parameter search and correctness invariant are absent. In adding this route, do not copy the editorial's unrestricted canonical-height formula: an increasing subset omitting b leaves b to increase the height in the suffix, and the outer maximum must also be considered. The reference needs the additional fact that its first successful b makes the greedy subset contain b; together with h>=2n-1, this validates its target equation.",
+   "order": "Split N2 into lower and upper bounds. Split N8's endpoint identities, combining its prepend identity with N18's general padding identity. Generalize N9 to endpoint coverage and move the fixed branch preference and N10's particular base-handling choices into accept.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N9 (it states one implementation's choice, not what every correct solution through this step gets right): The fixed threshold prescribes an endpoint preference even where both endpoint reductions work. State that every admissible target for m>=6 has an admissible smaller target through at least one endpoint operation, and move this particular threshold and residual-selection rule to accept as a witness.",
+   "N10 (it states one implementation's choice, not what every correct solution through this step gets right): The construction hard-codes N9's endpoint preference and enumeration of every size at most five, rather than the essential endpoint-recursion rule. State the algorithm as choosing a feasible endpoint reduction and solving the bounded exceptional bases; retain the concrete threshold and exhaustive-base implementation in accept.",
+   "hazards: H1 identifies the correct magnitude issue, but its check unnecessarily mandates 64-bit integer storage and arithmetic; require exact, overflow-safe representation of heights, products, and residuals, allowing other sufficiently precise representations. Add a conditional precision check for square-root/quadratic-boundary calculations: computed floor/ceil roots and candidate core sizes must satisfy their defining inequalities, including zero and perfect-square cases. H2 is appropriate."
+  ],
+  "advisory": [
+   "N2 (bundles claims a solver can have separately; split it): The largest-cup lower bound and the sum-of-heights upper bound are independent observations; a solver can establish either without the other. Split them into separate bound claims.",
+   "N8 (bundles claims a solver can have separately; split it): Appending above all previous rims and prepending a cup that raises the smaller tower are separate geometric claims. Split the endpoint identities so that establishing only one does not establish both.",
+   "N18 (comes with its prerequisite; merge it): This is the direct repeated-prepending corollary of N8, without a further construction decision. Combine it with the prepend half of N8, preferably stating the general decreasing-prefix padding identity and treating one-cup prepending as its special case.",
+   "the editorial's approach is not among the paths: No END route follows the reference's scan over b, setting t=h-(n-b), selecting a cardinality with N11/N12, and greedily constructing the increasing block inside a decreasing outer prefix. The relevant ingredients exist separately, but their parameter search and correctness invariant are absent. In adding this route, do not copy the editorial's unrestricted canonical-height formula: an increasing subset omitting b leaves b to increase the height in the suffix, and the outer maximum must also be considered. The reference needs the additional fact that its first successful b makes the greedy subset contain b; together with h>=2n-1, this validates its target equation.",
+   "order: Split N2 into lower and upper bounds. Split N8's endpoint identities, combining its prepend identity with N18's general padding identity. Generalize N9 to endpoint coverage and move the fixed branch preference and N10's particular base-handling choices into accept."
+  ],
+  "time": "2026-11-02 21:55:20"
+ },
+ {
+  "round": 2,
+  "version": "d13f54cddba85529",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The largest-cup lower bound and sum-of-heights upper bound are independently discoverable claims. Split them into separate bound nodes."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The attainable-sum characterization and the linear-time witness extraction included in accept are distinct achievements: a solver can establish the former without identifying the latter. Keep the characterization here and move extraction to N7 or a separate extraction node."
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Appending the largest cup and prepending it have different height laws, and a solver can understand either without the other. Split the two endpoint-operation claims."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "This is the direct iteration of N8's prepending identity, with the outer maximum attained by cup n. Fold it into the generalized prepending-operation node rather than treating the iteration as a separate obstacle."
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N22",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All five existing END routes contain enough modeling, feasibility, construction, and extraction information to implement their respective algorithms within the limits. The bounded exhaustive searches in P2 and P4 are adequately specified.",
+   "key_ok": true,
+   "key_note": "N7, N10, N13, N17, and N22 each state the corresponding path's complete output construction, rather than merely its feasibility or complexity.",
+   "hazards_ok": true,
+   "hazards_note": "H1 covers the required numeric range and conditional root/quadratic-boundary accuracy checks without requiring a particular representation. H2 covers conversion to cup heights, using every cup exactly once, and the impossible output convention; no essential implementation hazard is missing.",
+   "missing": [
+    "The reference solution's varying-b construction/search: set t=h-(n-b), use the parity-compatible cardinality test and bounded-offset construction, then output the decreasing outer prefix, increasing selected set, and decreasing remainder. No existing algorithm node states this scan and its output rule.",
+    "The reference scan's first-success invariant: writing m for the least index with m(m-1)>=h-n, its first successful b is m unless the resulting deficit is 2, in which case it is m+1 when available. The successful right-to-left greedy subset contains b, which is necessary for the claimed canonical height; connect these facts to the cardinality test and failure condition."
+   ],
+   "editorial_found": false,
+   "editorial_note": "N11/N12 capture the editorial's fixed-cardinality subproblem, but none of the END routes follows its varying-b scan and canonical output construction. P3 fixes the additive construction around cup n, while P5 chooses and repairs the core directly rather than establishing the scan's invariants. Also, the editorial's unrestricted canonical height formula is false: when the selected set contains b, the correct height is max(2n-1,n-b+sum(2x-1)); if b is omitted, the descending remainder can create an additional maximum. The reference is safe because of its first successful b and its particular greedy witness, so those invariants—not the unrestricted editorial lemmas—should support the added route.",
+   "order": "Split N2's lower and upper bounds. Split N8's append and prepend laws, and merge N18 into the generalized prepend law. Separate N5's sum characterization from witness extraction, placing extraction in N7 or its own node. Add a reference-scan construction route supported by its first-success and selected-largest-cup invariants.",
+   "verdict": "revise"
+  },
+  "blocking": [],
+  "advisory": [
+   "N2 (bundles claims a solver can have separately; split it): The largest-cup lower bound and sum-of-heights upper bound are independently discoverable claims. Split them into separate bound nodes.",
+   "N5 (bundles claims a solver can have separately; split it): The attainable-sum characterization and the linear-time witness extraction included in accept are distinct achievements: a solver can establish the former without identifying the latter. Keep the characterization here and move extraction to N7 or a separate extraction node.",
+   "N8 (bundles claims a solver can have separately; split it): Appending the largest cup and prepending it have different height laws, and a solver can understand either without the other. Split the two endpoint-operation claims.",
+   "N18 (comes with its prerequisite; merge it): This is the direct iteration of N8's prepending identity, with the outer maximum attained by cup n. Fold it into the generalized prepending-operation node rather than treating the iteration as a separate obstacle.",
+   "missing (a claim the paths rest on that no node states): The reference solution's varying-b construction/search: set t=h-(n-b), use the parity-compatible cardinality test and bounded-offset construction, then output the decreasing outer prefix, increasing selected set, and decreasing remainder. No existing algorithm node states this scan and its output rule.",
+   "missing (a claim the paths rest on that no node states): The reference scan's first-success invariant: writing m for the least index with m(m-1)>=h-n, its first successful b is m unless the resulting deficit is 2, in which case it is m+1 when available. The successful right-to-left greedy subset contains b, which is necessary for the claimed canonical height; connect these facts to the cardinality test and failure condition.",
+   "the editorial's approach is not among the paths: N11/N12 capture the editorial's fixed-cardinality subproblem, but none of the END routes follows its varying-b scan and canonical output construction. P3 fixes the additive construction around cup n, while P5 chooses and repairs the core directly rather than establishing the scan's invariants. Also, the editorial's unrestricted canonical height formula is false: when the selected set contains b, the correct height is max(2n-1,n-b+sum(2x-1)); if b is omitted, the descending remainder can create an additional maximum. The reference is safe because of its first successful b and its particular greedy witness, so those invariants—not the unrestricted editorial lemmas—should support the added route.",
+   "order: Split N2's lower and upper bounds. Split N8's append and prepend laws, and merge N18 into the generalized prepend law. Separate N5's sum characterization from witness extraction, placing extraction in N7 or its own node. Add a reference-scan construction route supported by its first-success and selected-largest-cup invariants."
+  ],
+  "time": "2026-11-02 22:00:51"
+ },
+ {
+  "round": 3,
+  "version": "3d62b8d5d5b4ccdc",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The tallest-cup lower bound and sum-of-heights upper bound are independent claims with different justifications; a solver can establish either without the other. Split the two bounds."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Appending the largest cup and prepending it have separate effects that a solver can establish independently. Split the append rule from the prepend rule, incorporating N18 into the latter."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Requiring the largest cardinality selected by N12 makes an optional candidate-selection choice part of the construction claim: any cardinality satisfying N11 supports the same bounded-offset construction. State that a feasible cardinality is chosen, and retain N12's largest-candidate method in accept as an example."
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "This is the immediate repeated-prepending corollary of N8, rather than an independent obstacle once that recurrence is known. Fold the single-cup and decreasing-prefix padding identities into one prepend/padding node."
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N22",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N23",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "With b included in S, this is exactly N4 substituted into N18, including the outer maximum. Fold this application into N25's construction justification rather than treating it as another independent stopping point."
+    },
+    {
+     "id": "N24",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Existence of a feasible core precisely outside the forbidden height and inclusion of the largest core cup at the first feasible size are distinct claims. Split feasibility/completeness from the largest-cup inclusion guarantee, since knowing that a subset exists does not establish that the greedy subset supports the padded-height identity."
+    },
+    {
+     "id": "N25",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All six routes contain enough mechanics, feasibility information, and constructive detail to produce a correct program within the limits. In particular, N24's accept establishes that the reference's right-to-left adjustment includes b at first success; the numerical test also cannot pass with a>b.",
+   "key_ok": true,
+   "key_note": "N7, N10, N13, N17, N22, and N25 each specify an output construction, with their referenced nodes and accept text supplying the necessary subroutines and exceptional cases.",
+   "hazards_ok": true,
+   "hazards_note": "H1 covers the required numeric range and exact boundary decisions without mandating an arithmetic representation. H2 covers height-versus-index output, permutation validity, and the impossible convention; no essential additional problem-specific hazard is missing.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P6 matches the reference implementation and the editorial's core-search/cardinality/greedy-adjustment algorithm. The graph correctly repairs the editorial's overbroad height formula: N23 retains the outer maximum and requires b in the subset, while N24 proves the reference construction satisfies that requirement.",
+   "order": "Split N2's two bounds and N8's two endpoint operations; merge N18 into the resulting prepend/padding node. Fold N23's direct composition into N25's justification. Split N24's existence characterization from its first-feasible-core inclusion guarantee. The fixed-id revision limitation does not remove these diagnostic cutting issues.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N13 (it states one implementation's choice, not what every correct solution through this step gets right): Requiring the largest cardinality selected by N12 makes an optional candidate-selection choice part of the construction claim: any cardinality satisfying N11 supports the same bounded-offset construction. State that a feasible cardinality is chosen, and retain N12's largest-candidate method in accept as an example."
+  ],
+  "advisory": [
+   "N2 (bundles claims a solver can have separately; split it): The tallest-cup lower bound and sum-of-heights upper bound are independent claims with different justifications; a solver can establish either without the other. Split the two bounds.",
+   "N8 (bundles claims a solver can have separately; split it): Appending the largest cup and prepending it have separate effects that a solver can establish independently. Split the append rule from the prepend rule, incorporating N18 into the latter.",
+   "N18 (comes with its prerequisite; merge it): This is the immediate repeated-prepending corollary of N8, rather than an independent obstacle once that recurrence is known. Fold the single-cup and decreasing-prefix padding identities into one prepend/padding node.",
+   "N23 (comes with its prerequisite; merge it): With b included in S, this is exactly N4 substituted into N18, including the outer maximum. Fold this application into N25's construction justification rather than treating it as another independent stopping point.",
+   "N24 (bundles claims a solver can have separately; split it): Existence of a feasible core precisely outside the forbidden height and inclusion of the largest core cup at the first feasible size are distinct claims. Split feasibility/completeness from the largest-cup inclusion guarantee, since knowing that a subset exists does not establish that the greedy subset supports the padded-height identity.",
+   "order: Split N2's two bounds and N8's two endpoint operations; merge N18 into the resulting prepend/padding node. Fold N23's direct composition into N25's justification. Split N24's existence characterization from its first-feasible-core inclusion guarantee. The fixed-id revision limitation does not remove these diagnostic cutting issues."
+  ],
+  "time": "2026-11-02 22:08:24"
+ },
+ {
+  "round": 4,
+  "version": "0a84c9a262195833",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The largest-cup lower bound and the sum-of-heights upper bound are independently obtainable claims. Split them if partial progress on the feasibility bounds is to be represented."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Appending the largest cup and prepending it are independent transformations; a solver can establish the additive append rule without recognizing the prepend rule's maximum. Split these, particularly since later approaches reuse the two operations separately."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "This is the repeated application of N8's prepend operation, with the outer maximum simplified to the largest cup's rim. Fold it into a generalized prepend/padding lemma rather than treating the iteration as a separate obstacle."
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N22",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N23",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "Once N4 and N18 are held, this formula follows directly by applying N4 to the core and N18 to its prefix. Fold the composition into the padded construction, preserving both the requirement that b is selected and the outer maximum."
+    },
+    {
+     "id": "N24",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The existence/first-feasible-core characterization and the largest-cardinality witness containing that core's largest cup are separate claims. A solver can prove search completeness while still missing the inclusion guarantee needed by the reference reconstruction; split those milestones."
+    },
+    {
+     "id": "N25",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All six routes supply a complete construction, rejection criteria, and sufficiently efficient reconstruction. The bounded exhaustive base cases in P2 and P4 are routine once N1 is available.",
+   "key_ok": true,
+   "key_note": "N7, N10, N13, N17, N22, and N25 each specify their path's output construction, with efficient selection and reconstruction detailed in accept.",
+   "hazards_ok": true,
+   "hazards_note": "H1 covers overflow-safe intermediate arithmetic and exact boundary decisions for roots and quadratic searches; H2 covers actual cup heights, permutation validity, and the impossible output convention. No additional essential problem-specific hazard is missing.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P6 matches the editorial's intended algorithm and the reference implementation: search core sizes, test the maximal parity-compatible cardinality, and reconstruct selected indices right to left. The graph correctly repairs the editorial prose's overbroad height identity: an arbitrary subset does not justify that identity, and the outer maximum cannot generally be dropped. N23 and N24 provide the qualifications that make the reference implementation valid.",
+   "order": "Recommended structural changes: split N2's two bounds; split N8 into append and prepend claims and absorb N18 into the generalized prepend claim; fold N23's direct composition into the padded construction; split N24's search-completeness claim from its largest-cup inclusion guarantee. These granularity issues remain despite the explorer's node-preservation restriction, but the mathematical claims and required acceptance conditions are sound.",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [
+   "N2 (bundles claims a solver can have separately; split it): The largest-cup lower bound and the sum-of-heights upper bound are independently obtainable claims. Split them if partial progress on the feasibility bounds is to be represented.",
+   "N8 (bundles claims a solver can have separately; split it): Appending the largest cup and prepending it are independent transformations; a solver can establish the additive append rule without recognizing the prepend rule's maximum. Split these, particularly since later approaches reuse the two operations separately.",
+   "N18 (comes with its prerequisite; merge it): This is the repeated application of N8's prepend operation, with the outer maximum simplified to the largest cup's rim. Fold it into a generalized prepend/padding lemma rather than treating the iteration as a separate obstacle.",
+   "N23 (comes with its prerequisite; merge it): Once N4 and N18 are held, this formula follows directly by applying N4 to the core and N18 to its prefix. Fold the composition into the padded construction, preserving both the requirement that b is selected and the outer maximum.",
+   "N24 (bundles claims a solver can have separately; split it): The existence/first-feasible-core characterization and the largest-cardinality witness containing that core's largest cup are separate claims. A solver can prove search completeness while still missing the inclusion guarantee needed by the reference reconstruction; split those milestones.",
+   "order: Recommended structural changes: split N2's two bounds; split N8 into append and prepend claims and absorb N18 into the generalized prepend claim; fold N23's direct composition into the padded construction; split N24's search-completeness claim from its largest-cup inclusion guarantee. These granularity issues remain despite the explorer's node-preservation restriction, but the mathematical claims and required acceptance conditions are sound."
+  ],
+  "time": "2026-11-02 22:14:25"
+ }
+]

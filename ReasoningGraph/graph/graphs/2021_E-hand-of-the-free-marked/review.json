@@ -1,0 +1,543 @@
+[
+ {
+  "round": 1,
+  "version": "ba38c143bf442e29",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Counting hands and counting observations are separate claims: a solver can obtain the product of binomial coefficients for hands while missing the hidden-mark adjustment or the ordering factor for observations. Split this into hand-count and observation-count nodes."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The hand-side degree and observation-side degree require distinct counting arguments, and a solver can establish either without establishing the other. Split the two degree claims so that an error in counting possible hidden-card completions can be localized separately."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Sorting is not part of the threshold-sum identity; the same partitioned weighted contribution can be established or evaluated without sorting the partner records. Remove sorting from this property and leave sorted-prefix evaluation in accept or in the algorithm node N9."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Requiring balanced groups is an optional implementation choice rather than an essential part of the weighted-query algorithm under these limits. State the algorithm for a partition into two groups, and keep balancing and its 3003-record bound as an implementation example in accept."
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The suffix weight recurrence and the weighted-score moment recurrence are separate claims; a solver may compute completion weights without knowing how the additive score affects the first moment. Split the weight computation from the moment computation."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Saturated suffix aggregation needs only total weight, whereas linear suffix aggregation needs the first weighted moment, and a solver can establish or implement one rule without the other. Split the saturated and linear aggregation claims."
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Preserving completion values by capping scores and preserving them by merging equal states are distinct invariants; a solver can cap partial records without recognizing the sufficient state for merging. Separate the capping lemma from the weight-merging claim, or incorporate the latter into N15."
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All four END routes contain the matching characterization, the attainable per-pattern optimum, and a complete, sufficiently fast method for aggregating the successful-hand counts. No essential algorithmic claim is missing.",
+   "key_ok": true,
+   "key_note": "N6, N9, N13, and N15 each specify the algorithm and final normalization determining their path's output.",
+   "hazards_ok": true,
+   "hazards_note": "H1-H3 cover the large combinatorial counts, feasible population selections and ratio denominators, and the required numerical and output accuracy. No additional essential implementation constraint is missing.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial and reference solution: separate observable mark patterns, count hands and observations, attain the smaller-side matching bound, and sum the optimal contributions over feasible compositions. The graph's exchanged L/R naming is internally consistent.",
+   "order": "Split N3 into the two cardinality claims, N4 into the two degree claims, N10 into suffix weight and first-moment claims, and N12 into saturated and linear aggregation claims. Separate N14's capping and state-merging invariants, or fold state merging into N15. Move sorting out of N8's mathematical property and move the balanced-partition requirement in N9 into its implementation examples.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N8 (it states one implementation's choice, not what every correct solution through this step gets right): Sorting is not part of the threshold-sum identity; the same partitioned weighted contribution can be established or evaluated without sorting the partner records. Remove sorting from this property and leave sorted-prefix evaluation in accept or in the algorithm node N9.",
+   "N9 (it states one implementation's choice, not what every correct solution through this step gets right): Requiring balanced groups is an optional implementation choice rather than an essential part of the weighted-query algorithm under these limits. State the algorithm for a partition into two groups, and keep balancing and its 3003-record bound as an implementation example in accept."
+  ],
+  "advisory": [
+   "N3 (bundles claims a solver can have separately; split it): Counting hands and counting observations are separate claims: a solver can obtain the product of binomial coefficients for hands while missing the hidden-mark adjustment or the ordering factor for observations. Split this into hand-count and observation-count nodes.",
+   "N4 (bundles claims a solver can have separately; split it): The hand-side degree and observation-side degree require distinct counting arguments, and a solver can establish either without establishing the other. Split the two degree claims so that an error in counting possible hidden-card completions can be localized separately.",
+   "N10 (bundles claims a solver can have separately; split it): The suffix weight recurrence and the weighted-score moment recurrence are separate claims; a solver may compute completion weights without knowing how the additive score affects the first moment. Split the weight computation from the moment computation.",
+   "N12 (bundles claims a solver can have separately; split it): Saturated suffix aggregation needs only total weight, whereas linear suffix aggregation needs the first weighted moment, and a solver can establish or implement one rule without the other. Split the saturated and linear aggregation claims.",
+   "N14 (bundles claims a solver can have separately; split it): Preserving completion values by capping scores and preserving them by merging equal states are distinct invariants; a solver can cap partial records without recognizing the sufficient state for merging. Separate the capping lemma from the weight-merging claim, or incorporate the latter into N15.",
+   "order: Split N3 into the two cardinality claims, N4 into the two degree claims, N10 into suffix weight and first-moment claims, and N12 into saturated and linear aggregation claims. Separate N14's capping and state-merging invariants, or fold state merging into N15. Move sorting out of N8's mathematical property and move the balanced-partition requirement in N9 into its implementation examples."
+  ],
+  "time": "2026-11-02 23:48:01"
+ },
+ {
+  "round": 2,
+  "version": "4572fdef2eb8a6d8",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Counting hands and counting observations are distinct claims: a solver can obtain the product of binomial coefficients for hands while missing the hidden-mark adjustment or permutation factor for observations. Split these counts into separate nodes."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The hand-side degree and observation-side completion degree are independently discoverable incidence counts. Split them so that knowing how many displays a hand produces does not imply knowing how many hands can produce a display."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The invariant algorithm is the complementary-count weighted threshold join, but the statement additionally requires sorting one side and preparing prefixes. Move that query implementation into accept as an example, allowing equivalent offline sweeps or ordered aggregate structures."
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The suffix mass and its score-weighted first moment are separate claims; knowing the mass convolution or its binomial closed form does not establish the moment recurrence. Split the mass claim from the moment claim, with the latter depending on the former."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Collapsing a fully saturated suffix and aggregating a fully linear suffix are independently usable shortcuts, and only the latter needs the score moment. Separate the two threshold regimes so a trace can establish one without being credited with both."
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All four routes contain the observation model, attainable matching bound, and a complete evaluation algorithm. Their stated enumeration or state bounds suffice for the limits.",
+   "key_ok": true,
+   "key_note": "N6, N9, N13, and N15 each determine the output for every input; none is merely a proof or feasibility claim.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover the large intermediate counts, invalid mark selections and resulting denominator issues, and the required numerical and formatting accuracy. No additional essential constraint is missing.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 establishes the editorial's approach and the reference solution's calculation: separate feasible mark patterns, count hands and ordered observations, attain the smaller-side bound, and sum normalized contributions. N5 supplies a valid fractional-matching justification for the editorial's symmetry assertion.",
+   "order": "Split N3 into hand and observation counts, N4 into its two incidence-degree claims, N10 into suffix mass and score moment, and N12 into saturated and linear aggregation. Update downstream dependencies accordingly; the explorer's text-only revision restriction does not resolve these bundled reasoning steps. Keep N9's weighted threshold join as the algorithm claim and move its sorting/prefix implementation into accept examples.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N9 (it states one implementation's choice, not what every correct solution through this step gets right): The invariant algorithm is the complementary-count weighted threshold join, but the statement additionally requires sorting one side and preparing prefixes. Move that query implementation into accept as an example, allowing equivalent offline sweeps or ordered aggregate structures."
+  ],
+  "advisory": [
+   "N3 (bundles claims a solver can have separately; split it): Counting hands and counting observations are distinct claims: a solver can obtain the product of binomial coefficients for hands while missing the hidden-mark adjustment or permutation factor for observations. Split these counts into separate nodes.",
+   "N4 (bundles claims a solver can have separately; split it): The hand-side degree and observation-side completion degree are independently discoverable incidence counts. Split them so that knowing how many displays a hand produces does not imply knowing how many hands can produce a display.",
+   "N10 (bundles claims a solver can have separately; split it): The suffix mass and its score-weighted first moment are separate claims; knowing the mass convolution or its binomial closed form does not establish the moment recurrence. Split the mass claim from the moment claim, with the latter depending on the former.",
+   "N12 (bundles claims a solver can have separately; split it): Collapsing a fully saturated suffix and aggregating a fully linear suffix are independently usable shortcuts, and only the latter needs the score moment. Separate the two threshold regimes so a trace can establish one without being credited with both.",
+   "order: Split N3 into hand and observation counts, N4 into its two incidence-degree claims, N10 into suffix mass and score moment, and N12 into saturated and linear aggregation. Update downstream dependencies accordingly; the explorer's text-only revision restriction does not resolve these bundled reasoning steps. Keep N9's weighted threshold join as the algorithm claim and move its sorting/prefix implementation into accept examples."
+  ],
+  "time": "2026-11-02 23:51:42"
+ },
+ {
+  "round": 3,
+  "version": "ccf37f7991dae64f",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Counting hands and counting observations are independently recognizable achievements: a solver can obtain the product of binomial coefficients without correctly counting hidden-mark observations and visible orders. Split these into a hand-count claim and an observation-count claim."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The hand-side degree and observation-side degree require different counts; a solver can know how many displays a hand permits without recognizing how many hands complete an observation. Separate the two degree claims."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The suffix mass and the weighted score moment are separate quantities with separate derivations; knowing W, even through its closed-form binomial expression, does not establish the additional d_j(a)W term in M. Split the suffix-weight claim from the score-moment recurrence."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The all-saturated collapse uses only total weight and a lower bound, whereas the all-linear collapse uses the score moment and an upper bound. A solver can establish the former without the latter, so expose them as separate collapse claims."
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "This is an immediate consequence of N7's nonnegative additive scores and clipped success factor, rather than a substantial additional inference. Fold the saturation identity into N15's invariant or acceptance explanation."
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All four routes specify a complete output computation with sufficient counting and optimality claims. The enumeration, weighted complementary-count join, adaptive suffix aggregation, and sparse score-distribution DP all fit the stated limits; none requires constructing the enormous matching explicitly.",
+   "key_ok": true,
+   "key_note": "N6, N9, N13, and N15 each state their path's complete probability-computation rule, including normalization by binomial(n,k). They are algorithm/output nodes rather than feasibility or proof-only nodes.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover oversized combinatorial intermediates, infeasible mark counts and denominator validity, and the required numerical/output accuracy. Their checks permit floating-point or arbitrary-precision implementations without imposing an unnecessary arithmetic representation.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 contains the editorial approach: recover the mark-count vector, count hands and observations, prove smaller-side matching saturation, and sum the optimal contributions. The reference solution computes observation counts directly, which N3 and the first formula in N6 explicitly support; swapping the editorial's L/R naming does not change the mathematics.",
+   "order": "For finer trace localization, split N3 into hand and observation counts, N4 into the two side-degree claims, N10 into suffix mass and score moment, and N12 into saturated and linear collapse rules. Fold N14 into N15's acceptance explanation. The dependency order and key-node choices otherwise work.",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [
+   "N3 (bundles claims a solver can have separately; split it): Counting hands and counting observations are independently recognizable achievements: a solver can obtain the product of binomial coefficients without correctly counting hidden-mark observations and visible orders. Split these into a hand-count claim and an observation-count claim.",
+   "N4 (bundles claims a solver can have separately; split it): The hand-side degree and observation-side degree require different counts; a solver can know how many displays a hand permits without recognizing how many hands complete an observation. Separate the two degree claims.",
+   "N10 (bundles claims a solver can have separately; split it): The suffix mass and the weighted score moment are separate quantities with separate derivations; knowing W, even through its closed-form binomial expression, does not establish the additional d_j(a)W term in M. Split the suffix-weight claim from the score-moment recurrence.",
+   "N12 (bundles claims a solver can have separately; split it): The all-saturated collapse uses only total weight and a lower bound, whereas the all-linear collapse uses the score moment and an upper bound. A solver can establish the former without the latter, so expose them as separate collapse claims.",
+   "N14 (comes with its prerequisite; merge it): This is an immediate consequence of N7's nonnegative additive scores and clipped success factor, rather than a substantial additional inference. Fold the saturation identity into N15's invariant or acceptance explanation.",
+   "order: For finer trace localization, split N3 into hand and observation counts, N4 into the two side-degree claims, N10 into suffix mass and score moment, and N12 into saturated and linear collapse rules. Fold N14 into N15's acceptance explanation. The dependency order and key-node choices otherwise work."
+  ],
+  "time": "2026-11-02 23:56:25"
+ }
+]

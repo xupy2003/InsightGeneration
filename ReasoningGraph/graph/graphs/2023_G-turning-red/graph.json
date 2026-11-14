@@ -1,0 +1,703 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2023/G-turning-red",
+ "title": "Turning Red",
+ "status": "accepted",
+ "version": "2e0530399802b908",
+ "solution_outline": "P1: Reduce every button's number of presses modulo three. P2: Instead of traversing a component separately for each root value, propagate symbolic affine expressions over the field of three elements. P3: Maintain components online with an affine-potential disjoint-set structure, rather than building and traversing the button graph. P4: Expand every button into three literal vertices representing its possible press counts. P5: Replace each button by positive and negative copies so that every sum constraint becomes two ordinary modular difference constraints.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Press counts modulo three",
+   "kind": "modeling",
+   "statement": "Pressing any button three times leaves every light unchanged. Reducing each button's count modulo three therefore preserves final colors and never increases total presses. Thus an optimum, when one exists, uses only counts zero, one, and two.",
+   "routes": [
+    []
+   ],
+   "accept": "Establishes the three-press period of each button and removes complete periods from any solution. This node requires only the restriction on optimal counts, not yet the additive congruence model for individual lights.",
+   "anchors": [
+    "button presses",
+    "minimum number of button presses",
+    "lights"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Unary and binary light constraints",
+   "kind": "reformulation",
+   "statement": "Let x_u∈{0,1,2} be button counts and d_i be 0,2,1 for initial R,G,B. Light i becomes red exactly when its controlling counts sum to d_i modulo three: zero controllers require d_i=0, one fixes x_u=d_i, and two require x_u+x_v=d_i. Minimize ∑_u x_u as an integer.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Recognizes that each incident button press advances a light one step in the color cycle, so increments add modulo three regardless of press order. Extracts zero, one, or two controllers for every light and enforces the corresponding equation, including repeated button pairs. Residues 0,1,2 are ordinary integer costs in the objective.",
+   "anchors": [
+    "lights",
+    "buttons",
+    "initial color",
+    "minimum number of button presses"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "One root determines its component",
+   "kind": "key_property",
+   "statement": "In the graph whose vertices are buttons and whose edges are doubly controlled lights, a chosen value for one vertex forces every vertex in its connected component through x_v=d_i-x_u modulo three. Hence each component has at most three feasible assignments.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Any path-propagation, spanning-tree induction, or equivalent argument showing that a fixed root value has at most one completion establishes this node. It need not establish that a completion exists or implement consistency checks. The uniqueness statement also includes isolated button vertices.",
+   "anchors": [
+    "buttons",
+    "two buttons",
+    "connected component"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Independent component minima",
+   "kind": "key_property",
+   "statement": "Different button-graph components share no light constraints. If uncontrolled lights are already red, global feasibility is equivalent to feasibility of every component, and the global minimum number of presses is the sum of their separate minimum costs.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Observes that binary constraints stay within a component and unary constraints involve only one vertex. The objective separates as a sum; any infeasible component makes the whole input impossible.",
+   "anchors": [
+    "all lights red",
+    "minimum number of button presses",
+    "connected component"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N5",
+   "name": "Enumerate and propagate component roots",
+   "kind": "algorithm",
+   "statement": "Try each button component's three root values, propagate all button values, and discard trials violating any light constraint. Output the sum of the minimum remaining trial costs across components. Output impossible instead if a component has no remaining trial or an uncontrolled light is nonred.",
+   "routes": [
+    [
+     "N3",
+     "N4"
+    ]
+   ],
+   "accept": "A BFS or DFS realizes each trial in linear component size. Discovering components and running at most three traversals costs O(l+b) overall because total button-light incidences are at most 2l. Outputs the sum of integer press counts, not the assignments.",
+   "anchors": [
+    "button presses",
+    "impossible",
+    "connected component"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N6",
+   "name": "Compose signed affine button expressions",
+   "kind": "reformulation",
+   "statement": "Spanning-tree equations express each button as x_v=s_v t+a_v modulo three, with s_v in {1,-1}. Affine relations compose: x=s y+a and y=r z+c imply x=(sr)z+(sc+a). Thus signed affine expressions can be accumulated along tree or representative-parent paths.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Across a light of demand d, propagates s_v=-s_u and a_v=d-a_u from the root expression t. Equivalent representations use coefficients 1 and 2 or depth parity. More generally, composing signs and offsets along parent paths preserves the represented button values; path compression is one optional application of this composition law.",
+   "anchors": [
+    "buttons",
+    "connected component",
+    "required increment",
+    "affine expressions"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N7",
+   "name": "Scalar restrictions on the root",
+   "kind": "key_property",
+   "statement": "Substituting a component's affine button expressions into its light constraints gives equations At=B modulo three. With A=0 an equation is redundant or contradictory; with A nonzero it fixes t uniquely. The component's assignments satisfy all its light constraints exactly when t satisfies every scalar equation.",
+   "routes": [
+    [
+     "N6",
+     "N2"
+    ]
+   ],
+   "accept": "For a binary light, uses A=s_u+s_v and B=d-a_u-a_v; for a unary light, A=s_u and B=d-a_u. Detects contradictory constant equations or different forced root values. Nonzero residues are invertible modulo three.",
+   "anchors": [
+    "light constraints",
+    "root value",
+    "buttons"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N8",
+   "name": "Minimize affine component costs",
+   "kind": "algorithm",
+   "statement": "Compute each component's affine expressions and solve their scalar restrictions. For every surviving t, its cost is the sum of the representatives in {0,1,2} of s_v t+a_v. Output the sum of minimum component costs, or impossible for contradictory restrictions or a nonred uncontrolled light.",
+   "routes": [
+    [
+     "N7",
+     "N4"
+    ]
+   ],
+   "accept": "One graph traversal computes signs, offsets, root restrictions, and three cost totals in O(l+b) time. If a restriction fixes t, select its total; otherwise take the smallest total. Any equivalent evaluation of the affine costs and scalar equations establishes this node.",
+   "anchors": [
+    "minimum number of button presses",
+    "impossible",
+    "connected component"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N9",
+   "name": "Affine relations between component roots",
+   "kind": "key_property",
+   "statement": "For two components represented by signed affine button expressions, a binary light joining them determines an invertible affine relation between their representative values. Substituting this relation merges their representations without losing or adding assignments satisfying that light and the components' existing constraints.",
+   "routes": [
+    [
+     "N6",
+     "N7"
+    ]
+   ],
+   "accept": "If x_u=p r+a and x_v=q z+c, their light implies z=(-q^{-1}p)r+q^{-1}(d-a-c) modulo three. Any equivalent derivation counts, including the inverse relation for the opposite attachment direction. This node concerns the root relation, not a particular disjoint-set optimization. Constraints already inside one component are handled by the scalar restrictions of N7.",
+   "anchors": [
+    "buttons",
+    "light constraints",
+    "component representatives"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N10",
+   "name": "Merge conditional press costs",
+   "kind": "key_property",
+   "statement": "For each disjoint-set root r, retain allowed root values and the component's press cost C_r(t) conditional on x_r=t. If a merge imposes x_q=f(x_r), the new cost is C_r(t)+C_q(f(t)); t survives exactly when both corresponding old values survive.",
+   "routes": [
+    [
+     "N9",
+     "N4"
+    ]
+   ],
+   "accept": "Initial singleton tables have costs 0,1,2 and allow all three values. A merge permutes one three-entry table according to its root relation, adds costs, and intersects allowed-value masks. Internal and unary constraints only remove entries. Costs remain ordinary integer sums.",
+   "anchors": [
+    "minimum number of button presses",
+    "buttons",
+    "root values"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 7
+  },
+  {
+   "id": "N11",
+   "name": "Online affine union minimization",
+   "kind": "algorithm",
+   "statement": "Process every light with affine weighted disjoint sets and conditional cost tables. After all constraints, output the sum, over surviving representatives, of their smallest allowed table entry. Output impossible if any representative has no allowed value or any uncontrolled light is nonred.",
+   "routes": [
+    [
+     "N10"
+    ]
+   ],
+   "accept": "Weighted find composes affine parent relations, merges use the relation between roots, and internal or unary constraints restrict allowed values. Each light requires constant-size table operations. For example, union by size and path compression yield O((l+b) alpha(b)) time and O(l+b) memory; other implementations meeting the limits also count.",
+   "anchors": [
+    "minimum number of button presses",
+    "impossible",
+    "buttons"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 8
+  },
+  {
+   "id": "N12",
+   "name": "Literal classes cover button components",
+   "kind": "key_property",
+   "statement": "In the graph on literals (u,a), a∈{0,1,2}, each binary light x_u+x_v=d links (u,a) with (v,d-a modulo three). Every connected literal class contains at least one literal of every button in its underlying button-graph component.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Creates three undirected edges or unions for each binary light. Along any path of buttons, the edge bijections transport a starting literal to a literal of the ending button. This establishes coverage of all buttons, without yet asserting that a class has only one value per button or satisfies unary lights.",
+   "anchors": [
+    "buttons",
+    "button presses",
+    "two buttons",
+    "literal classes"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N13",
+   "name": "Literal classes encode complete assignments",
+   "kind": "key_property",
+   "statement": "For one button-graph component, its valid assignments correspond exactly to literal classes containing one state per button and no state forbidden by a unary light. A class containing two states of one button is unusable, without necessarily invalidating other classes. The assignment cost is its state-value sum.",
+   "routes": [
+    [
+     "N12"
+    ]
+   ],
+   "accept": "Each binary light makes its linked literals equivalent in any satisfying assignment. A selected class therefore forces all its states; duplicate values of one button invalidate that class only. Coverage plus one state per button gives a complete assignment obeying all binary lights. Unary lights forbid their two wrong values. The ordinary sum of the selected values is the press cost.",
+   "anchors": [
+    "all lights red",
+    "button presses",
+    "connected component",
+    "literal classes"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N14",
+   "name": "Minimum-weight literal classes",
+   "kind": "algorithm",
+   "statement": "Construct literal equivalence classes and their state-value sums. Discard classes containing two values of one button or any unary-forbidden state. Output the sum of the minimum remaining class weight for each button component, or impossible if a component has none or an uncontrolled light is nonred.",
+   "routes": [
+    [
+     "N13",
+     "N4"
+    ]
+   ],
+   "accept": "Union-find on 3b literals, or traversal of the expanded graph, takes near-linear or linear time. The classes containing any one button's three literals, not necessarily distinct, are all classes of its button component. Marking those classes processed avoids charging the component multiple times without another graph traversal.",
+   "anchors": [
+    "minimum number of button presses",
+    "impossible",
+    "buttons"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N15",
+   "name": "Signed double-cover component pairing",
+   "kind": "reformulation",
+   "statement": "Represent each button by z_(u,+)=x_u and z_(u,-)=-x_u. Each binary light gives the difference equations z_(u,+)-z_(v,-)=d and z_(v,+)-z_(u,-)=d modulo three. Exchanging signs pairs connected components of this difference graph, possibly with themselves; each pair corresponds to one original button component.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Uses two vertices per button and two difference equations per binary light. Copy exchange maps each edge to its companion, so maps a connected component onto one component. Lifting button paths shows the paired components project onto exactly one button component. Equivalence to the original problem additionally requires opposite copies to be negatives and positive copies to satisfy unary lights.",
+   "anchors": [
+    "buttons",
+    "two buttons",
+    "light constraints",
+    "paired components"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N16",
+   "name": "Additive potentials in doubled components",
+   "kind": "algorithm",
+   "statement": "In each component of the doubled difference graph, propagate offsets h_w along its difference edges. An inconsistent edge makes the original constraints impossible. Otherwise all solutions of these difference equations have z_w=t_C+h_w modulo three, with one arbitrary offset t_C per doubled component C.",
+   "routes": [
+    [
+     "N15"
+    ]
+   ],
+   "accept": "Starts an arbitrary vertex at potential zero and propagates demanded differences by BFS or DFS. Verifies every edge. A connected system of difference equations determines all pairwise differences, leaving exactly a common additive offset. This costs O(l+b) on the doubled graph.",
+   "anchors": [
+    "required increment",
+    "buttons",
+    "connected component"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N17",
+   "name": "Offset compatibility of paired components",
+   "kind": "key_property",
+   "statement": "For paired doubled components C,D with consistent potentials, h_(u,+)+h_(u,-) has a constant value -K across their buttons. Requiring each button's copies to be negatives is therefore equivalent to t_C+t_D=K modulo three. Before unary restrictions, distinct components allow three offset pairs; a self-pair uniquely fixes its offset.",
+   "routes": [
+    [
+     "N15",
+     "N16"
+    ]
+   ],
+   "accept": "Companion difference edges have opposite directed differences, so the sum of the paired potentials is unchanged along a lifted path. Substitution of z_w=t_C+h_w reduces every negation requirement in the pair to the same offset equation. When C=D, invertibility of 2 modulo three gives its unique offset. Unary constraints may further restrict or contradict these choices.",
+   "anchors": [
+    "buttons",
+    "paired components",
+    "offsets",
+    "button presses"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N18",
+   "name": "Minimize paired offset costs",
+   "kind": "algorithm",
+   "statement": "For each doubled component C, tabulate costs sum_(u,+ in C) (t_C+h_(u,+) modulo three) and enforce unary requirements. For every component pair, minimize combined costs subject to t_C+t_D=K, counting self-pairs once. Output their sum, or impossible for any contradiction or nonred uncontrolled light.",
+   "routes": [
+    [
+     "N17",
+     "N4"
+    ]
+   ],
+   "accept": "Evaluates three offsets per doubled component, retains only those obeying unary constraints, and tests the paired negation relation. Only positive copies contribute press costs, using representatives 0,1,2. Paired or self-paired components partition the original button components, giving O(l+b) total time and space.",
+   "anchors": [
+    "minimum number of button presses",
+    "impossible",
+    "buttons"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 6
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N6",
+    "N7",
+    "N8"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N6",
+    "N7",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   [
+    "N1",
+    "N2",
+    "N4",
+    "N12",
+    "N13",
+    "N14"
+   ],
+   [
+    "N1",
+    "N2",
+    "N4",
+    "N15",
+    "N16",
+    "N17",
+    "N18"
+   ]
+  ],
+  "keys": [
+   "N5",
+   "N8",
+   "N11",
+   "N14",
+   "N18"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Green needs two presses modulo three, while blue needs one; the red-to-green-to-blue cycle must not be reversed.",
+   "check": "Verify the required increment mapping R=0, G=2, B=1, or check that the program's encoding yields these press counts for singly controlled lights."
+  },
+  {
+   "id": "H2",
+   "statement": "Lights with no controlling buttons and instances with zero buttons still require a feasibility check.",
+   "check": "A nonred light with no buttons leads to impossible. When all such lights are red and there are no buttons, the output is 0."
+  },
+  {
+   "id": "H3",
+   "statement": "Repeated button-pair constraints, incompatible single-button constraints, and cycle constraints must all be enforced.",
+   "check": "Check every light, including parallel edges and multiple unary constraints, rather than using only a spanning forest or overwriting incompatible requirements."
+  },
+  {
+   "id": "H4",
+   "statement": "Modular arithmetic must compare congruence classes correctly; actual button press costs must use representatives 0,1,2. Signed intermediate representatives are permitted.",
+   "check": "Check subtraction, equality tests, array indices, and cost conversion. Normalizing after subtraction is sufficient but not necessary: signed intermediates also work if congruence comparisons and indexing are valid and costs are converted to nonnegative residues."
+  },
+  {
+   "id": "H5",
+   "statement": "The button graph may contain a path with hundreds of thousands of vertices; traversals must remain stack-safe and memory use must fit the execution limit.",
+   "check": "Use iterative traversals or otherwise justify stack capacity for the maximum graph depth. Check total storage against the 2048 MB memory limit rather than requiring a particular asymptotic storage bound."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Reduce every button's number of presses modulo three. A light gives a constraint on zero, one, or two button variables, and fixing one button in a connected component forces all the others. Try the three possible root values, propagate and verify each assignment, and add the smallest surviving component cost; this takes linear time because every light has at most two incident buttons.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "key_node": "N5",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "H5"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 33,
+    "n_tests": 33,
+    "max_time_s": 0.112,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Instead of traversing a component separately for each root value, propagate symbolic affine expressions over the field of three elements. Each edge or single-button constraint then either checks consistency or fixes the root parameter, while each button contributes to three possible component costs. A single linear-time traversal per component suffices to solve the scalar restrictions and select its minimum cost.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N6",
+    "N7",
+    "N8"
+   ],
+   "key_node": "N8",
+   "new_nodes": [
+    "N6",
+    "N7",
+    "N8"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 33,
+    "n_tests": 33,
+    "max_time_s": 0.084,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Maintain components online with an affine-potential disjoint-set structure, rather than building and traversing the button graph. Each representative stores the allowed values and total press costs conditional on its three values; a new binary constraint either restricts one component or merges two tables through an affine permutation. Path compression and union by size give near-linear time, and the final answer is the sum of the minimum surviving representative costs.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N6",
+    "N7",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "key_node": "N11",
+   "new_nodes": [
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 33,
+    "n_tests": 33,
+    "max_time_s": 0.068,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Expand every button into three literal vertices representing its possible press counts. A two-button light makes corresponding literals equivalent, so ordinary union-find constructs classes of states that must be selected together. Each valid class is a complete assignment of one button component; discard classes containing conflicting or unary-forbidden states, and choose the minimum-weight remaining class per component in near-linear time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N4",
+    "N12",
+    "N13",
+    "N14"
+   ],
+   "key_node": "N14",
+   "new_nodes": [
+    "N12",
+    "N13",
+    "N14"
+   ],
+   "new_hazards": [],
+   "program": "paths/P4.cpp",
+   "submission": 5,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 33,
+    "n_tests": 33,
+    "max_time_s": 0.071,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P5",
+   "approach": "Replace each button by positive and negative copies so that every sum constraint becomes two ordinary modular difference constraints. Traverse this doubled graph to obtain additive potentials, then pair its connected components under exchange of the two copies. Each pair has three possible offsets, or one offset when it is self-paired; minimizing their press costs solves the problem in linear time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N4",
+    "N15",
+    "N16",
+    "N17",
+    "N18"
+   ],
+   "key_node": "N18",
+   "new_nodes": [
+    "N15",
+    "N16",
+    "N17",
+    "N18"
+   ],
+   "new_hazards": [],
+   "program": "paths/P5.cpp",
+   "submission": 6,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 33,
+    "n_tests": 33,
+    "max_time_s": 0.192,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Five genuinely different approaches have been implemented and accepted: concrete root-value propagation, symbolic affine propagation, online affine weighted union-find with conditional costs, three-state literal equivalence classes, and the signed double-cover difference formulation. I have no further distinct approach that I believe both correct and fast enough; the remaining promising variations reuse these same intermediate claims.",
+  "considered": [
+   "Dense Gaussian elimination over the field of three elements models the constraints correctly, but its worst-case time and storage do not fit hundreds of thousands of buttons.",
+   "Sparse variable substitution preserves equations involving at most two variables, but a reliable near-linear realization reduces to the affine component contractions and conditional-cost merging already represented by the weighted union-find path.",
+   "Tree dynamic programming alone ignores constraints from non-tree lights. Adding the necessary cycle restrictions reduces it to the existing root propagation or affine-root restriction paths.",
+   "Changing BFS to DFS, using a dummy fixed button for singly controlled lights, or implementing literal classes by graph traversal instead of union-find does not establish a genuinely new approach.",
+   "Arc consistency without root trials or literal-class conflict analysis can miss restrictions imposed by cycles. Adding those mechanisms recovers existing paths rather than a new algorithm.",
+   "Enumerating button press counts globally takes exponential time; only component-local enumeration of the three root values is justified, and that is already the first path."
+  ],
+  "submissions": 6
+ },
+ "builder_notes": "Preserved every ID and route. Moved the additive light model from N1 to N2. N3 now accepts root-conditioned uniqueness without consistency checking. Separated affine composition into N6 and root merging into N9, leaving disjoint-set optimizations as examples. Separated literal coverage (N12) from assignment validity (N13), and doubled-component pairing (N15) from offset compatibility (N17). Relaxed H4 and H5 as requested.",
+ "open_issues": [],
+ "advisories": [],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 7,
+  "submissions": 6,
+  "review_rounds": 2,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 111026,
+    "output_tokens": 21320,
+    "cached_tokens": 62502,
+    "reasoning_tokens": 8252
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 15538,
+    "output_tokens": 15385,
+    "reasoning_tokens": 13176
+   },
+   "total": {
+    "input_tokens": 126564,
+    "output_tokens": 36705,
+    "cached_tokens": 62502,
+    "reasoning_tokens": 21428
+   }
+  },
+  "inputs": {
+   "statement": "de056e246f4fc430469a2c290fb46d8fb91e2d8365660b34444a6a0319359364",
+   "editorial": "30b3c025243dd003aaec7dac2f1ac32e98d9b974b68bf52f70ff5eb93c71b273",
+   "reference": "c87724c49fd855f54909e489ea0400c81dea74040fab117354651227a1fd862e"
+  },
+  "created": "2026-11-03 01:23:39"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

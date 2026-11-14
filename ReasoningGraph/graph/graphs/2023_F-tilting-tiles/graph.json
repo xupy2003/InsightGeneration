@@ -1,0 +1,727 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2023/F-tilting-tiles",
+ "title": "Tilting Tiles",
+ "status": "accepted",
+ "version": "be7c696185544a59",
+ "solution_outline": "P1: After the first two perpendicular tilts, occupied cells form a corner-packed Ferrers diagram. P2: Use the same Ferrers-diagram and cyclic-permutation reduction, but combine rotation constraints without factoring their moduli. P3: There is an algebraic square root of the four-tilt permutation: reverse every occupied row, then every occupied column. P4: Again reduce each canonical seed to cycle rotation congruences, but explicitly construct the common exponent class using incremental generalized CRT and arbitrary-precision integers.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Tilts are stable line compression",
+   "kind": "modeling",
+   "statement": "A tilt packs each row or column against the chosen boundary while preserving tile order within that line. Consecutive tilts along one axis are equivalent to their last tilt.",
+   "routes": [
+    []
+   ],
+   "accept": "Recognizes that gaps disappear and tiles never pass within an affected line. Packing toward either end preserves that line's color sequence, so any uninterrupted run of horizontal or vertical tilts can be replaced by its final tilt.",
+   "anchors": [
+    "tilt",
+    "rows",
+    "columns",
+    "tile order"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Perpendicular tilts create corner Ferrers diagrams",
+   "kind": "key_property",
+   "statement": "Two perpendicular tilts produce a corner-packed Ferrers occupied-cell set, stable under the corresponding horizontal and vertical tilts. Further tilts preserve its row-length multiset and only change the occupied set's corner anchoring. Conversely, stability under one horizontal and one vertical tilt characterizes such corner packing.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "After horizontal compression, column populations are nested; vertical compression makes them monotone and corner-aligned. The vertical-first argument is symmetric. Subsequent tilts change the occupied set's anchoring without changing its Ferrers shape, although tile colors can be permuted by a sequence of corner changes.",
+   "anchors": [
+    "occupied cells",
+    "perpendicular tilts",
+    "corner",
+    "row lengths"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Perpendicular prefixes cover both-axis sequences",
+   "kind": "key_property",
+   "statement": "Every outcome reachable using both axes is reachable from one of the eight perpendicular two-tilt prefixes of the starting arrangement. Any reachable representative family from which all eight prefix outcomes are reachable is equally sufficient.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Collapse the initial same-axis run and retain its final tilt followed by the first perpendicular tilt. Trying all eight ordered prefixes suffices. Alternatively, four seeds suffice: first tilt in any direction, then up after a horizontal tilt or left after a vertical tilt. An additional opposite second-axis tilt recovers the other prefix outcome.",
+   "anchors": [
+    "starting arrangement",
+    "sequence of tilts",
+    "perpendicular prefixes",
+    "representative family"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N4",
+   "name": "Corner changes have inverse tilts",
+   "kind": "key_property",
+   "statement": "For corner-packed Ferrers arrangements, changing horizontal or vertical anchoring is reversed by the opposite tilt, restoring every tile. The corner transitions form a four-vertex square whose reverse edges act as inverse bijections.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Row or column order is preserved and the inverse tilt restores all original occupied positions. Boundary-degenerate diagrams may have coincident corner placements, but the corresponding transitions are identities; the four anchoring choices can still be treated as the vertices of a square.",
+   "anchors": [
+    "corner",
+    "tiles",
+    "opposite tilt"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N5",
+   "name": "Aligned reachability is one revolution orbit",
+   "kind": "reformulation",
+   "statement": "For a fixed Ferrers shape, align two arrangements' corner phases using reversible tilts. They are mutually reachable exactly when their aligned colorings differ by a power of the permutation induced by one complete revolution through the four corners.",
+   "routes": [
+    [
+     "N4"
+    ]
+   ],
+   "accept": "Cancel inverse transitions on the corner square; closed reduced walks are full revolutions. One realization normalizes by up then left and uses right, down, left, up. Any reference corner, inverse revolution, or enumeration of partial-turn anchors with target colors pulled back to reference labels is equivalent. Negative powers are reachable because the permutation is finite.",
+   "anchors": [
+    "Ferrers shape",
+    "corner phases",
+    "complete revolution",
+    "permutation orbit"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N6",
+   "name": "Repeated colors determine all matching exponents",
+   "kind": "key_property",
+   "statement": "On a cycle of the board's revolution permutation, the exponents matching the target colors are either empty or one residue class modulo the cycle's least cyclic color period, which can be smaller than its length.",
+   "routes": [
+    [
+     "N5"
+    ]
+   ],
+   "accept": "A matching exponent exists precisely when the target cycle string is a rotation of the initial string. Once one rotation matches, every other matching shift differs from it by the least color period dividing the cycle length. Uses a consistent cycle orientation and preserves all shifts allowed by indistinguishable colors.",
+   "anchors": [
+    "permutation cycle",
+    "target colors",
+    "matching exponents",
+    "least cyclic color period"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N7",
+   "name": "Prime powers synchronize tile-cycle rotations",
+   "kind": "key_property",
+   "statement": "A common number of board revolutions satisfies all tile-color cycle constraints exactly when, for each prime, every pair of imposed residues agrees modulo the smaller power of that prime dividing their least cyclic color periods.",
+   "routes": [
+    [
+     "N6"
+    ]
+   ],
+   "accept": "Decompose the color-period constraints into prime-power components. Constraints for distinct primes combine independently; constraints for one prime must agree on their shared modulus. Factoring periods and retaining only the strongest constraint for each prime is one implementation, not a required representation.",
+   "anchors": [
+    "board revolutions",
+    "tile-color cycle constraints",
+    "color periods",
+    "prime powers"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N8",
+   "name": "Test aligned orbit by prime-power compatibility",
+   "kind": "algorithm",
+   "statement": "For equal-shape arrangements with aligned corner phases, derive the revolution permutation's cycles, determine each cycle's allowable color-matching exponents, and test compatibility of their prime-power constraints. The arrangements are reachable exactly when every cycle matches and all constraints are compatible.",
+   "routes": [
+    [
+     "N5",
+     "N6",
+     "N7"
+    ]
+   ],
+   "accept": "The permutation may be obtained by labeled tilts or an equivalent mapping, using either revolution orientation. KMP on doubled cycle strings and prefix-function period extraction are examples; other sufficiently efficient rotation and period methods count. A smallest-prime-factor sieve supports compatibility checks. With n tiles, O(hw+n log n) time and O(hw+n) storage suffice without enumerating the permutation order.",
+   "anchors": [
+    "revolution permutation",
+    "color-matching exponents",
+    "prime-power compatibility",
+    "aligned arrangements"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 7
+  },
+  {
+   "id": "N9",
+   "name": "Decide using prefixes and aligned revolution orbits",
+   "kind": "algorithm",
+   "statement": "Return yes for unchanged or single-tilt outcomes. Otherwise return yes exactly when the target is corner-packed and some perpendicular-prefix representative of the same Ferrers shape passes the revolution-orbit test after accounting for the target's corner phase.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N3",
+     "N8"
+    ]
+   ],
+   "accept": "Include zero-tilt and one-axis outcomes. For the remaining cases, try all eight perpendicular prefixes or a covering representative family. Four seeds normalized by up then left are one realization; explicit partial-turn anchors are another. Compare shapes and use the prime-power orbit test. A constant number of O(hw+n log n) computations suffices.",
+   "anchors": [
+    "starting arrangement",
+    "ending arrangement",
+    "perpendicular prefixes",
+    "corner phases",
+    "yes",
+    "no"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 8
+  },
+  {
+   "id": "N10",
+   "name": "Pairwise gcd synchronizes revolution counts",
+   "kind": "key_property",
+   "statement": "Let k count complete corner revolutions, with k≡r_i modulo p_i required to match target colors on cycle i, where p_i is its least cyclic color period. One board-wide k exists exactly when every pair satisfies r_i≡r_j modulo gcd(p_i,p_j).",
+   "routes": [
+    [
+     "N6"
+    ]
+   ],
+   "accept": "Applies generalized CRT to the repetition count shared by all tile cycles. Necessity follows by subtracting two color-matching congruences. Sufficiency follows from consistency of their prime-power components, without requiring the program to factor the color periods.",
+   "anchors": [
+    "corner revolutions",
+    "target colors",
+    "least cyclic color periods",
+    "common repetition count",
+    "gcd"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N11",
+   "name": "Distinct color periods have bounded total",
+   "kind": "key_property",
+   "statement": "If n tiles occupy the permutation cycles, the sum of their distinct color periods is at most n. Consequently, the number D of distinct periods satisfies D(D+1)/2 at most n.",
+   "routes": [
+    [
+     "N6"
+    ]
+   ],
+   "accept": "Choose one cycle for each distinct period. Its period is at most its length, and chosen cycles are disjoint. The smallest possible sum of D distinct positive periods is D(D+1)/2.",
+   "anchors": [
+    "tiles",
+    "permutation cycles",
+    "distinct periods"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N12",
+   "name": "Decide reachability by pairwise period compatibility",
+   "kind": "algorithm",
+   "statement": "Include zero-tilt and one-axis outcomes. Otherwise cover perpendicular prefixes and corner phases, rejecting shape mismatches or missing cycle rotations. Accept exactly when some candidate's color-period residues agree within equal-period groups and between distinct groups modulo the gcd of their periods.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N3",
+     "N5",
+     "N6",
+     "N10",
+     "N11"
+    ]
+   ],
+   "accept": "Eight prefixes with partial-turn anchors or four top-left-normalized seeds provide coverage. KMP is one sufficiently efficient rotation/period extractor. Reject conflicting residues for repeated periods, then compare the D distinct-period constraints using O(D²) gcd checks. Since their periods sum to at most n tiles, total time O(hw+n log n) and storage O(hw+n) suffice.",
+   "anchors": [
+    "starting arrangement",
+    "ending arrangement",
+    "prefix and phase candidates",
+    "color-period residues",
+    "pairwise gcd"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 7
+  },
+  {
+   "id": "N13",
+   "name": "Four tilts square two line reversals",
+   "kind": "key_property",
+   "statement": "On a top-left Ferrers diagram, let A reverse the tiles within each occupied row and B reverse them within each occupied column. The permutation induced by right, down, left, up equals (BA) squared, where BA applies A followed by B.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Reflect each intermediate corner placement geometrically back to top-left. A horizontal corner change then acts as A and a vertical change as B. After four changes the geometric reflections cancel, leaving A,B,A,B. Reversal lengths are the occupied row lengths and column heights.",
+   "anchors": [
+    "Ferrers diagram",
+    "occupied rows",
+    "occupied columns",
+    "four tilts",
+    "line reversals"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N14",
+   "name": "Reversal-product rotations require an even exponent",
+   "kind": "reformulation",
+   "statement": "Let A reverse occupied rows and B occupied columns of a top-left Ferrers diagram. Two colorings are mutually reachable exactly when their cycle rotation constraints for BA admit a common even exponent, with moduli given by least cyclic color periods.",
+   "routes": [
+    [
+     "N5",
+     "N6",
+     "N13"
+    ]
+   ],
+   "accept": "BA applies A followed by B. Powers of the physical four-tilt permutation are exactly even powers of BA. Apply the colored-cycle rotation characterization to BA and include the congruence exponent equal to zero modulo two. This handles even cycles split by squaring and color periods smaller than cycle lengths.",
+   "anchors": [
+    "top-left Ferrers diagram",
+    "row and column reversals",
+    "BA cycles",
+    "even exponent",
+    "color periods"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N15",
+   "name": "Decide using even line-reversal powers",
+   "kind": "algorithm",
+   "statement": "Include zero-tilt and one-axis outcomes. For the remaining prefix and corner-phase candidates with matching Ferrers shapes, test the row/column-reversal product. Accept exactly when some candidate has color-matching cycle residues whose prime-power constraints admit a common even exponent.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N3",
+     "N7",
+     "N14"
+    ]
+   ],
+   "accept": "Four seeds aligned to top-left are one candidate-handling realization; equivalent prefix and phase coverage also counts. At top-left, BA's source for cell (r,c) is (s,rowlength[s]-1-c), with s=columnheight[c]-1-r. Extract rotations and periods efficiently, for example with KMP, and include residue zero modulo two in the prime-power test. O(hw+n log n) time and O(hw+n) memory suffice.",
+   "anchors": [
+    "prefix and phase candidates",
+    "row lengths",
+    "column heights",
+    "BA permutation",
+    "even exponent"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 7
+  },
+  {
+   "id": "N16",
+   "name": "Intersect tile-cycle exponent classes incrementally",
+   "kind": "algorithm",
+   "statement": "While processing the board's revolution cycles, maintain the exact arithmetic progression of repetition counts satisfying all processed tile-color constraints. Intersect it with each new cycle's residue class; reject precisely when the intersection is empty. Otherwise the updated class represents all remaining possible repetition counts.",
+   "routes": [
+    [
+     "N6"
+    ]
+   ],
+   "accept": "One update stores k≡a modulo M and adds k≡b modulo p. With g=gcd(M,p), reject unless g divides b-a; otherwise solve (M/g)t≡(b-a)/g modulo p/g and obtain k≡a+Mt modulo Mp/g. Extended Euclid supplies the inverse when p/g>1. Any equivalent exact intersection of the cycle-exponent classes counts.",
+   "anchors": [
+    "board revolution cycles",
+    "tile-color constraints",
+    "repetition counts",
+    "exact class intersection"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N17",
+   "name": "Whole-board color repetition period",
+   "kind": "key_property",
+   "statement": "For a fixed Ferrers shape and revolution permutation, the least positive revolution count restoring all tile colors is the least common multiple of the cycles' least cyclic color periods. Compatible target exponents therefore form one class modulo this whole-board color period.",
+   "routes": [
+    [
+     "N11"
+    ]
+   ],
+   "accept": "A revolution count restores the board exactly when it is divisible by every cycle's color period. Repeated periods do not change the lcm. If one exponent reaches the target, all other such exponents differ by a whole-board color-return count. The empty set of cycle periods has lcm one.",
+   "anchors": [
+    "revolution permutation",
+    "tile colors",
+    "least cyclic color periods",
+    "whole-board return period",
+    "least common multiple"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 7
+  },
+  {
+   "id": "N18",
+   "name": "Decide by exact incremental CRT",
+   "kind": "algorithm",
+   "statement": "Include zero-tilt and one-axis outcomes. Otherwise cover perpendicular prefixes and target corner phases, rejecting shape mismatches or cycles with no matching rotation. Return yes exactly when some candidate's tile-color exponent classes have a nonempty intersection computed by exact incremental CRT.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N3",
+     "N16",
+     "N17"
+    ]
+   ],
+   "accept": "One realization uses four normalized seeds, KMP, duplicate-period merging, and arbitrary-precision CRT; eight prefixes with partial-turn anchors also suffice. For n tiles, D distinct periods satisfy D(D+1)/2≤n. Their lcm is at most n^D, using O(1+sqrt(n) log(n+1)) bits and fewer than 13000 bits under the limits. O(D) small-modulus CRT merges plus O(hw+n) rotation extraction fit the limits.",
+   "anchors": [
+    "starting arrangement",
+    "ending arrangement",
+    "prefix and phase candidates",
+    "tile-color exponent classes",
+    "exact CRT"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 8
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N10",
+    "N11",
+    "N12"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N13",
+    "N14",
+    "N15"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N11",
+    "N16",
+    "N17",
+    "N18"
+   ]
+  ],
+  "keys": [
+   "N9",
+   "N12",
+   "N15",
+   "N18"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Zero-tilt and one-axis outcomes must be included, even when the ending arrangement is not corner-packed.",
+   "check": "Accept the unchanged board and every matching single-tilt board, directly or through equivalent candidate coverage. Do not exclude these outcomes solely because they fail the shape condition that applies after perpendicular tilts."
+  },
+  {
+   "id": "H2",
+   "statement": "Same-colored tiles are indistinguishable; fixing tile identities or retaining only one matching shift modulo a full cycle length can incorrectly reject reachable arrangements.",
+   "check": "Preserve every color-matching cyclic shift, using least-period congruences or an equivalent representation. Permanent identities assigned for motion analysis must not impose extra restrictions on tiles of the same color."
+  },
+  {
+   "id": "H3",
+   "statement": "The revolution order and combined cycle-period modulus need not fit machine integers, and enumerating all powers may be infeasible.",
+   "check": "Use overflow-safe compatibility tests or exact arbitrary-precision CRT. Storing the lcm is valid when exact and affordable. Runtime must not depend on enumerating the potentially enormous full permutation order."
+  },
+  {
+   "id": "H4",
+   "statement": "Single-row, single-column, full, and empty boards may have coincident corner placements and identity permutation cycles.",
+   "check": "Handle identity cycles and period one normally; do not assume all corner placements are distinct or any tile exists."
+  },
+  {
+   "id": "H5",
+   "statement": "Each tilt must preserve tile order within every affected line, preserve all colors, and leave exactly the corresponding packed occupied cells.",
+   "check": "Verify stable, lossless compaction. A fresh destination grid, temporary line buffer, or safe in-place scan all qualify; no unread tile may be overwritten and no tile may be duplicated or dropped."
+  },
+  {
+   "id": "H6",
+   "statement": "When explicit CRT arithmetic is used, residue–inverse products can exceed 32-bit range, and accumulated exponent classes can exceed machine-word range.",
+   "check": "Use exact overflow-safe arithmetic for CRT products and any stored accumulated values. A 64-bit intermediate suffices for products of residues below 250000; arbitrary precision is one valid way to store the combined exponent and modulus."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "After the first two perpendicular tilts, occupied cells form a corner-packed Ferrers diagram. Subsequent tilts are reversible corner changes, so after normalization to the top-left, reachability reduces to powers of one four-tilt permutation; only four initial seeds need consideration. On each permutation cycle, linear string matching gives a congruence for the number of repetitions, and prime-power compatibility combines these congruences without constructing a huge least common multiple.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   "key_node": "N9",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "H5"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 55,
+    "n_tests": 55,
+    "max_time_s": 0.037,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Use the same Ferrers-diagram and cyclic-permutation reduction, but combine rotation constraints without factoring their moduli. Merge equal periods and check generalized-CRT compatibility for every pair of distinct periods. The sum of those distinct periods is at most the number of tiles, so there are only O(sqrt(n)) of them and all pairwise gcd checks take O(n log n) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N10",
+    "N11",
+    "N12"
+   ],
+   "key_node": "N12",
+   "new_nodes": [
+    "N10",
+    "N11",
+    "N12"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 55,
+    "n_tests": 55,
+    "max_time_s": 0.034,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "There is an algebraic square root of the four-tilt permutation: reverse every occupied row, then every occupied column. Two applications of this product equal a complete right-down-left-up revolution. Thus canonical reachability can instead be tested on the cycles of this row/column-reversal product, provided the common exponent is constrained to be even; linear string matching and prime-power compatibility keep the computation near-linear.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N13",
+    "N14",
+    "N15"
+   ],
+   "key_node": "N15",
+   "new_nodes": [
+    "N13",
+    "N14",
+    "N15"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 55,
+    "n_tests": 55,
+    "max_time_s": 0.034,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Again reduce each canonical seed to cycle rotation congruences, but explicitly construct the common exponent class using incremental generalized CRT and arbitrary-precision integers. Equal periods are merged first. There are only O(sqrt(n)) distinct periods and their product has O(sqrt(n) log n) bits, so exact large-integer CRT is comfortably small and avoids both factorization and all-pairs compatibility checks.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N11",
+    "N16",
+    "N17",
+    "N18"
+   ],
+   "key_node": "N18",
+   "new_nodes": [
+    "N16",
+    "N17",
+    "N18"
+   ],
+   "new_hazards": [
+    "H6"
+   ],
+   "program": "paths/P4.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 55,
+    "n_tests": 55,
+    "max_time_s": 0.035,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Four accepted paths cover the cyclic Ferrers-diagram reduction with prime-power compatibility, bounded pairwise-gcd compatibility, explicit arbitrary-precision CRT, and the row/column-reversal square-root characterization with an even-exponent constraint. I have no further genuinely different approach that I can justify as correct and fast enough.",
+  "considered": [
+   "Breadth-first search over colored arrangements or direct enumeration of all four-tilt powers: the reachable orbit can have an enormous permutation order, so neither has an adequate worst-case bound.",
+   "Checking only color counts and Ferrers shape: these are necessary but miss preserved cyclic orders and synchronization constraints between permutation cycles.",
+   "Assigning permanent identities to same-colored tiles: this can reject valid transformations; cyclic color periods are necessary to represent indistinguishability.",
+   "Replacing KMP with Z-functions, suffix-based matching, or canonical necklace rotations: these merely implement the already-established rotation-and-period subproblem differently rather than giving a new reasoning path.",
+   "Reflecting each corner to top-left and describing arbitrary moves by a dihedral action: its row and column involutions reduce to the square-root permutation and parity characterization already represented by the third path.",
+   "Fixed-width incremental CRT: the accumulated modulus can overflow; the accepted arbitrary-precision path supplies a rigorous size bound instead."
+  ],
+  "submissions": 4
+ },
+ "builder_notes": "Generalized prefix and phase coverage so the existing paths also recognize eight-prefix/partial-anchor implementations. Fixed ids and routes prevent literally deleting N17 or splitting N6 into additional nodes. N17 now states the intrinsic whole-board color-return period; its former storage bound is folded into N18.accept. N6 is focused on the complete set of matching exponents, with the rotation test explained in accept. Zero-tilt handling was removed from N1 and retained in the decision rules and H1.",
+ "open_issues": [],
+ "advisories": [],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 5,
+  "submissions": 4,
+  "review_rounds": 2,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 127210,
+    "output_tokens": 30598,
+    "cached_tokens": 62986,
+    "reasoning_tokens": 16874
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 19967,
+    "output_tokens": 19205,
+    "reasoning_tokens": 16053
+   },
+   "total": {
+    "input_tokens": 147177,
+    "output_tokens": 49803,
+    "cached_tokens": 62986,
+    "reasoning_tokens": 32927
+   }
+  },
+  "inputs": {
+   "statement": "7bb9ecd52a71342a1615af41c99700b8f92cc0d316deb98b9749783d8ff14a72",
+   "editorial": "05425d0f9cb5cec39e73a76ba60ee1d9c780f9c74cf1cbe7e75eeb5d02ca0b22",
+   "reference": "c6cea71a9e12abbec24e36ad5116c34c40c70962cb8c87a8b9ffce90a3bbca6e"
+  },
+  "created": "2026-11-02 21:13:14"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

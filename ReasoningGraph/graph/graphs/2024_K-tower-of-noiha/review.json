@@ -1,0 +1,508 @@
+[
+ {
+  "round": 1,
+  "version": "d950b23ca8e79a1a",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "The three entries are immediate applications of N3 once N6 fixes the gateway configuration, rather than a separate reasoning obstacle. Fold this calculation and the definitions of e, f, and g into N9's acceptance criteria."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "The gathering cost is already implicit in N6, and J follows by substituting a=b=2^m-1 into N9 and summing N10's contributions for the intervening last-rod disks. Use this as a calculation within the exceptional-disk derivation rather than a separate stopping point."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Optimality of moving s early for target first and optimality of repairing before moving s directly for target last are distinct claims with different arguments; a solver can establish either without the other. Split these claims, leaving the trivial middle-target case and combined vector update in N13's acceptance criteria."
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Both listed routes are sufficient. P1 specifies all attainable first-r-move gateways and their exact prefix and suffix costs; P2 supplies the core distances, the exceptional update, and a linear-size arithmetic evaluation strategy.",
+   "key_ok": true,
+   "key_note": "N7 and N13 are the respective complete output algorithms, not merely feasibility or complexity claims.",
+   "hazards_ok": false,
+   "hazards_note": "H1-H3 cover the essential numeric, binary-output, and malformed-stack semantics. H4's check is unnecessarily implementation-specific: iterative scans and gateway enumeration are not requirements of every correct program, and recursion is acceptable when its stack usage is demonstrably supported. Require resource and stack safety at n=200000, and present those implementation techniques only as examples.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "The reference shares P1's gateway structure but selects a gateway using the shortest corner path of the compressed big disks, rather than evaluating all four gateways; it does not use P2's malformed-distance recurrence. The graph lacks the editorial's smallest-disk-within-two-moves lemma and the optimal-prefix selection claim that justifies following those one or two big-disk moves, with the already-finished big configuration handled separately. Add that selection route, or explicitly extend P1 to cover it with these claims.",
+   "order": "Merge N8 into N9 and incorporate N11's calculation into the exceptional-disk derivation. Split N12's target-first early-move optimality from its target-last direct-move optimality. Add the editorial's big-disk prefix-selection branch if editorial coverage is intended.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "hazards: H1-H3 cover the essential numeric, binary-output, and malformed-stack semantics. H4's check is unnecessarily implementation-specific: iterative scans and gateway enumeration are not requirements of every correct program, and recursion is acceptable when its stack usage is demonstrably supported. Require resource and stack safety at n=200000, and present those implementation techniques only as examples."
+  ],
+  "advisory": [
+   "N8 (comes with its prerequisite; merge it): The three entries are immediate applications of N3 once N6 fixes the gateway configuration, rather than a separate reasoning obstacle. Fold this calculation and the definitions of e, f, and g into N9's acceptance criteria.",
+   "N11 (comes with its prerequisite; merge it): The gathering cost is already implicit in N6, and J follows by substituting a=b=2^m-1 into N9 and summing N10's contributions for the intervening last-rod disks. Use this as a calculation within the exceptional-disk derivation rather than a separate stopping point.",
+   "N12 (bundles claims a solver can have separately; split it): Optimality of moving s early for target first and optimality of repairing before moving s directly for target last are distinct claims with different arguments; a solver can establish either without the other. Split these claims, leaving the trivial middle-target case and combined vector update in N13's acceptance criteria.",
+   "the editorial's approach is not among the paths: The reference shares P1's gateway structure but selects a gateway using the shortest corner path of the compressed big disks, rather than evaluating all four gateways; it does not use P2's malformed-distance recurrence. The graph lacks the editorial's smallest-disk-within-two-moves lemma and the optimal-prefix selection claim that justifies following those one or two big-disk moves, with the already-finished big configuration handled separately. Add that selection route, or explicitly extend P1 to cover it with these claims.",
+   "order: Merge N8 into N9 and incorporate N11's calculation into the exceptional-disk derivation. Split N12's target-first early-move optimality from its target-last direct-move optimality. Add the editorial's big-disk prefix-selection branch if editorial coverage is intended."
+  ],
+  "time": "2026-11-02 20:37:17"
+ },
+ {
+  "round": 2,
+  "version": "5bcf119fe5191760",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The necessity of moving r, with C frozen beforehand, and the guarantee that its first move restores complete legality are distinguishable claims. Separate the bottleneck observation from the legal-gateway observation to distinguish those reasoning gaps."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "These three expressions are direct substitutions into N3 for the legal gateway already specified by N6. Fold them into N9's supporting calculation rather than treating them as a separate stopping point."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "The gathering cost is already established in N6; the expression for J follows by substituting a=b=2^m-1 into N9 and summing N10 over the intervening last-rod disks. Fold this specialization into the supporting derivation of N12."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Optimality of the early unresolved move for target first and the fact that an early detour cannot help for target last require distinct arguments; a solver can establish one without the other. Separate the exceptional first-target shortcut from the justification of the unchanged middle/last updates."
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Both routes are sufficient. P1 provides all possible first-r gateways, attainable minimum prefix costs, and legal suffix distances. P2 provides the malformed-core distances, the exceptional s update, and the ordinary updates elsewhere; N13's accept also explains how to avoid repeated operations on growing binary numbers.",
+   "key_ok": true,
+   "key_note": "N7 and N13 are the respective complete output algorithms, including the initially legal case. Neither key is merely a proof or resource-bound claim.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover exact long-binary arithmetic and carries, input bit alignment and zero output, preservation of the transferred stack and top-only move legality, and worst-case resource and stack safety. They do not mandate a particular representation or implementation strategy.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "The reference solution uses a related but distinct selection branch rather than P1's enumeration of all gateways or P2's three-distance transformation. The graph does not state that, when the compressed big-disk configuration is unfinished, following its shortest corner path through its first move of r selects an optimal gateway, with r moving within the first two big-disk moves; when that configuration is finished, only the two direct openings are tested. An explicit branch containing this selection rule and the first-two-moves lemma would represent the editorial.",
+   "order": "Optional granularity improvements: fold N8 into N9 and N11 into N12; split N4's bottleneck and restored-legality claims, and distinguish N12's early first-target shortcut from its no-benefit-of-detours argument for the last target. The existing dependency order is otherwise sound.",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [
+   "N4 (bundles claims a solver can have separately; split it): The necessity of moving r, with C frozen beforehand, and the guarantee that its first move restores complete legality are distinguishable claims. Separate the bottleneck observation from the legal-gateway observation to distinguish those reasoning gaps.",
+   "N8 (comes with its prerequisite; merge it): These three expressions are direct substitutions into N3 for the legal gateway already specified by N6. Fold them into N9's supporting calculation rather than treating them as a separate stopping point.",
+   "N11 (comes with its prerequisite; merge it): The gathering cost is already established in N6; the expression for J follows by substituting a=b=2^m-1 into N9 and summing N10 over the intervening last-rod disks. Fold this specialization into the supporting derivation of N12.",
+   "N12 (bundles claims a solver can have separately; split it): Optimality of the early unresolved move for target first and the fact that an early detour cannot help for target last require distinct arguments; a solver can establish one without the other. Separate the exceptional first-target shortcut from the justification of the unchanged middle/last updates.",
+   "the editorial's approach is not among the paths: The reference solution uses a related but distinct selection branch rather than P1's enumeration of all gateways or P2's three-distance transformation. The graph does not state that, when the compressed big-disk configuration is unfinished, following its shortest corner path through its first move of r selects an optimal gateway, with r moving within the first two big-disk moves; when that configuration is finished, only the two direct openings are tested. An explicit branch containing this selection rule and the first-two-moves lemma would represent the editorial.",
+   "order: Optional granularity improvements: fold N8 into N9 and N11 into N12; split N4's bottleneck and restored-legality claims, and distinguish N12's early first-target shortcut from its no-benefit-of-detours argument for the last target. The existing dependency order is otherwise sound."
+  ],
+  "time": "2026-11-02 20:42:46"
+ },
+ {
+  "round": 3,
+  "version": "2dc47d8df8375bac",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "These three costs are direct substitutions into N3 for the already-defined legal gateway, rather than a distinct reasoning obstacle. Fold this calculation and the definitions of e,f,g into N9's accept."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "The gathering cost is already established by N6, and J follows by substituting a=b=2^m-1 into N9 and applying N10 to the intervening last-rod disks. Fold this gathered-state specialization into N12's accept rather than treating it as a separate bottleneck."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Computing the first move by recursive decomposition and proving that the smallest disk moves within two moves are distinguishable claims. Keep the first-two-moves lemma here and move the first-move procedure into N3's or N16's accept."
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All three routes specify complete output algorithms, including the legal-state case, repair costs, and legal finishing distances. P1 exhausts the first-r-move gateways; P2 supplies the malformed-core and exceptional-s transformations with a resource-safe evaluation; P3 supplies both projected-prefix selection and the finished-projection exception.",
+   "key_ok": true,
+   "key_note": "N7, N13, and N16 are the respective output-determining algorithms, not merely feasibility or proof claims.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover exact long-binary arithmetic and carries, input bit alignment and binary zero output, preserved stack order and top-only placement legality, and worst-case time, memory, and stack safety. They do not mandate a particular numeric representation or traversal implementation.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P3 matches the editorial and reference solution: decode the state, compress the free smaller disks and the r-through-n projection, execute the projected shortest prefix through r or test both destinations when the projection is finished, and add the ordinary finishing distance. N15 explicitly records the dominance claim needed to justify selecting that projected prefix.",
+   "order": "Optional granularity cleanup: fold N8 into N9 and N11 into N12; keep N14 focused on the first-two-moves lemma and place its first-move computation in an algorithm's accept. No dependency reordering is needed.",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [
+   "N8 (comes with its prerequisite; merge it): These three costs are direct substitutions into N3 for the already-defined legal gateway, rather than a distinct reasoning obstacle. Fold this calculation and the definitions of e,f,g into N9's accept.",
+   "N11 (comes with its prerequisite; merge it): The gathering cost is already established by N6, and J follows by substituting a=b=2^m-1 into N9 and applying N10 to the intervening last-rod disks. Fold this gathered-state specialization into N12's accept rather than treating it as a separate bottleneck.",
+   "N14 (bundles claims a solver can have separately; split it): Computing the first move by recursive decomposition and proving that the smallest disk moves within two moves are distinguishable claims. Keep the first-two-moves lemma here and move the first-move procedure into N3's or N16's accept.",
+   "order: Optional granularity cleanup: fold N8 into N9 and N11 into N12; keep N14 focused on the first-two-moves lemma and place its first-move computation in an algorithm's accept. No dependency reordering is needed."
+  ],
+  "time": "2026-11-02 20:51:40"
+ }
+]

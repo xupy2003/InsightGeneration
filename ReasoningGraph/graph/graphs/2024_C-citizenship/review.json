@@ -1,0 +1,961 @@
+[
+ {
+  "round": 1,
+  "version": "6204b6631fa2b0a4",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The fixed-calendar/daily-absence model and the partition into y application-relative annual blocks are distinct deductions; a solver can correctly encode trips while misunderstanding the required periods. Separate these modeling steps."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": false,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": "The statement's bound is correct, but accept incorrectly says it adds at most 365000 days to the final trip. The increment is 365y+1, potentially 365001 days; the extra day is necessary when d=365."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Global chronological order is unnecessary: the recurrence can be evaluated along separate residue chains and their eligible dates minimized. The accept text also fixes an unshifted origin and corresponding array-size bound, excluding harmless shifted encodings such as the reference solution's; move these implementation choices into examples and allow equivalent evaluation orders and origins."
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The daily add/remove identity and the sparse slope-event characterization are separate insights: a solver can implement the rolling count without recognizing piecewise-affine structure. Split the rolling identity from the boundary-event deduction."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "Given N10's slope and event characterization, this merely substitutes T-365j and takes y translated copies. Fold that parameterized version into the slope-event node rather than treating it as another independent stopping point."
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The substantive construction is binary doubling/composition of rejection sets, followed by finding the earliest date outside the resulting set; physical bitset encoding is a representation choice. State the set construction independently and retain bitsets and word-parallel operations as implementation examples in accept."
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All seven listed END routes contain enough mathematics and an implementable, sufficiently efficient output algorithm. The bound actually stated in N3 is sufficient despite the off-by-one sentence in its accept text.",
+   "key_ok": true,
+   "key_note": "N5, N7, N9, N13, N16, N18, and N21 each specify their path's earliest-date output construction.",
+   "hazards_ok": false,
+   "hazards_note": "H1-H3 describe legitimate constraints, but the output-format check is incomplete: H3 checks only year width. Explicitly require YYYY-MM-DD with zero-padded two-digit month and day, hyphen separators, and a zero-padded four-digit year.",
+   "missing": [
+    "The editorial/reference construction scans aligned 365-day blocks while maintaining the consecutive-good-block run length: increment on a good block, reset on a bad block, and consider its ending application date when the run is at least y and that date exceeds L. Taking the minimum over alignments is not stated as a run-based algorithm in any current path."
+   ],
+   "editorial_found": false,
+   "editorial_note": "The reference uses consecutive-good-block runs, not F(T), the sliding invalid-count recurrence, or a globally chronological daily scan. Thus N4 and N5 are not established by following the editorial as written, and the other paths require different constructions; add an aligned-block run path or explicitly broaden the relevant nodes to cover it.",
+   "order": "Separate N1's calendar/absence model from its application-period model. Split N10 into the rolling-count identity and sparse affine-event structure, absorbing N14's translated version into the latter. Add the editorial's good-run characterization and output construction rather than identifying it with the distinct invalid-count recurrence.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N3 (a claim or a route is wrong or cannot be judged): The statement's bound is correct, but accept incorrectly says it adds at most 365000 days to the final trip. The increment is 365y+1, potentially 365001 days; the extra day is necessary when d=365.",
+   "N5 (a reader of a solver's work cannot decide whether the solver has it; it states one implementation's choice, not what every correct solution through this step gets right): Global chronological order is unnecessary: the recurrence can be evaluated along separate residue chains and their eligible dates minimized. The accept text also fixes an unshifted origin and corresponding array-size bound, excluding harmless shifted encodings such as the reference solution's; move these implementation choices into examples and allow equivalent evaluation orders and origins.",
+   "N18 (it states one implementation's choice, not what every correct solution through this step gets right): The substantive construction is binary doubling/composition of rejection sets, followed by finding the earliest date outside the resulting set; physical bitset encoding is a representation choice. State the set construction independently and retain bitsets and word-parallel operations as implementation examples in accept.",
+   "hazards: H1-H3 describe legitimate constraints, but the output-format check is incomplete: H3 checks only year width. Explicitly require YYYY-MM-DD with zero-padded two-digit month and day, hyphen separators, and a zero-padded four-digit year."
+  ],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): The fixed-calendar/daily-absence model and the partition into y application-relative annual blocks are distinct deductions; a solver can correctly encode trips while misunderstanding the required periods. Separate these modeling steps.",
+   "N10 (bundles claims a solver can have separately; split it): The daily add/remove identity and the sparse slope-event characterization are separate insights: a solver can implement the rolling count without recognizing piecewise-affine structure. Split the rolling identity from the boundary-event deduction.",
+   "N14 (comes with its prerequisite; merge it): Given N10's slope and event characterization, this merely substitutes T-365j and takes y translated copies. Fold that parameterized version into the slope-event node rather than treating it as another independent stopping point.",
+   "missing (a claim the paths rest on that no node states): The editorial/reference construction scans aligned 365-day blocks while maintaining the consecutive-good-block run length: increment on a good block, reset on a bad block, and consider its ending application date when the run is at least y and that date exceeds L. Taking the minimum over alignments is not stated as a run-based algorithm in any current path.",
+   "the editorial's approach is not among the paths: The reference uses consecutive-good-block runs, not F(T), the sliding invalid-count recurrence, or a globally chronological daily scan. Thus N4 and N5 are not established by following the editorial as written, and the other paths require different constructions; add an aligned-block run path or explicitly broaden the relevant nodes to cover it.",
+   "order: Separate N1's calendar/absence model from its application-period model. Split N10 into the rolling-count identity and sparse affine-event structure, absorbing N14's translated version into the latter. Add the editorial's good-run characterization and output construction rather than identifying it with the distinct invalid-count recurrence."
+  ],
+  "time": "2026-11-03 01:36:11"
+ },
+ {
+  "round": 2,
+  "version": "d8f9d7b4a974644d",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The placement of application-relative annual blocks and the presence model outside listed trips are independently gettable claims. Separate them so that correct annual boundaries but incorrect treatment of unlisted history can be localized independently."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "N3 already supplies the bounded search domain, and N4 supplies an incremental qualification test; selecting the minimum eligible endpoint and formatting it add no independent reasoning obstacle. Merge N4 and N5 into an output-producing aligned-suffix algorithm node, retaining N3 as its horizon prerequisite."
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The sparse locations of slope changes and the restriction to three possible slopes are distinguishable insights: interval compression uses the former, while the three-envelope construction additionally uses the latter. Split these claims, with the rolling-difference identity supporting both."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Requiring each residue to be assigned exactly once makes a bookkeeping optimization part of the claim. Keep the witness-based construction of latest invalid endpoints and the final threshold minimum in the statement; put once-only assignment in accept as an efficient implementation, allowing equivalent efficient extraction of the same maxima."
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Every END route contains a complete qualification model, an output-producing construction, and sufficient computational machinery in its accepts. The daily methods fit the bounded date span, and the interval, event, bitset, and witness methods state the additional machinery needed to avoid excessive repeated work.",
+   "key_ok": true,
+   "key_note": "N5, N7, N9, N13, N16, N18, and N21 each specify how that path determines its output for every input. If N4 and N5 are merged, the merged output-producing node should remain P1's key.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover the fixed non-leap calendar, inclusive travel dates, exclusion of the application day, strict advancement past the final trip, pre-0000 history, extended output years, and zero-padded formatting. The maximum necessary output year is still four digits, and the stated bounds introduce no additional essential overflow or precision hazard.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 includes the editorial and reference solution: fixed-calendar serial days, prefix absence counts, good aligned annual blocks, consecutive-good runs, and minimization over eligible endpoints. N4 and N5 explicitly permit the reference solution's residue-chain run scan, and the prehistory initialization covers its history shift.",
+   "order": "Split N1's annual-block model from its presence-history model. Split N10's sparse breakpoint structure from its three-valued slope restriction; P4 needs the former, while P5 uses both. Merge N4 and N5 to avoid a separate node for routine minimum selection after the full incremental test is already established. Move N21's once-only assignment requirement into accept.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N21 (it states one implementation's choice, not what every correct solution through this step gets right): Requiring each residue to be assigned exactly once makes a bookkeeping optimization part of the claim. Keep the witness-based construction of latest invalid endpoints and the final threshold minimum in the statement; put once-only assignment in accept as an efficient implementation, allowing equivalent efficient extraction of the same maxima."
+  ],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): The placement of application-relative annual blocks and the presence model outside listed trips are independently gettable claims. Separate them so that correct annual boundaries but incorrect treatment of unlisted history can be localized independently.",
+   "N5 (comes with its prerequisite; merge it): N3 already supplies the bounded search domain, and N4 supplies an incremental qualification test; selecting the minimum eligible endpoint and formatting it add no independent reasoning obstacle. Merge N4 and N5 into an output-producing aligned-suffix algorithm node, retaining N3 as its horizon prerequisite.",
+   "N10 (bundles claims a solver can have separately; split it): The sparse locations of slope changes and the restriction to three possible slopes are distinguishable insights: interval compression uses the former, while the three-envelope construction additionally uses the latter. Split these claims, with the rolling-difference identity supporting both.",
+   "order: Split N1's annual-block model from its presence-history model. Split N10's sparse breakpoint structure from its three-valued slope restriction; P4 needs the former, while P5 uses both. Merge N4 and N5 to avoid a separate node for routine minimum selection after the full incremental test is already established. Move N21's once-only assignment requirement into accept."
+  ],
+  "time": "2026-11-03 01:43:25"
+ },
+ {
+  "round": 3,
+  "version": "7e36e66d0d3f71b7",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "This bundles two independently recognizable modeling claims: the application-relative 365-day partition and residency as the complement of inclusive travel intervals, including unlisted history. Split these so that understanding the annual boundaries does not automatically count as understanding the presence model."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "The O(n) interval bound is an immediate threshold-crossing corollary of N10's O(n)-piece affine structure, rather than a separate algorithmic obstacle. Fold it into N10, retaining the explanation that each affine piece crosses the threshold at most once."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The shared O(ny) event partition and the restriction of every slope to {-1,0,1} are distinct claims: a solver can identify the event partition without exploiting the three slope classes. Split them, with the three-slope claim feeding the envelope reduction in N15."
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "This makes reverse traversal and first-hit assignment mandatory even though they are implementation choices for extracting the same residue maxima; moving them out of N21's statement does not remove this requirement from its END route. State the order-independent maximum over witness intervals instead, and keep the reverse-sweep argument as an efficient example in accept."
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All seven END routes supply a complete output algorithm and a sufficiently efficient realization. Their accepts and hazards also cover pre-travel initialization, endpoint conventions, and the necessary search or window-count ranges.",
+   "key_ok": true,
+   "key_note": "N5, N7, N9, N13, N16, N18, and N21 each state their path's output-determining algorithm, rather than merely a bound or correctness lemma.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover the fixed non-leap calendar, inclusive trips, application-day exclusion, strict lower bound on the answer, pre-year-0000 history, answers beyond year 5000, and output formatting. No additional precision or overflow constraint is essential at these bounds.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 includes the editorial and reference solution: prefix absence counts, residue-aligned blocks, consecutive-good run lengths, and the minimum eligible endpoint. The reference's history shift and its slightly larger sufficient horizon are explicitly allowed by the graph's accepts.",
+   "order": "Split N1's annual-block model from its presence/travel model. Merge N11's immediate sparsity corollary into N10. Split N14's shared event partition from its three-valued slope restriction. Recast N20 as order-independent residue maxima over witness intervals, leaving reverse traversal and once-only assignment in accept.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N20 (it states one implementation's choice, not what every correct solution through this step gets right): This makes reverse traversal and first-hit assignment mandatory even though they are implementation choices for extracting the same residue maxima; moving them out of N21's statement does not remove this requirement from its END route. State the order-independent maximum over witness intervals instead, and keep the reverse-sweep argument as an efficient example in accept."
+  ],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): This bundles two independently recognizable modeling claims: the application-relative 365-day partition and residency as the complement of inclusive travel intervals, including unlisted history. Split these so that understanding the annual boundaries does not automatically count as understanding the presence model.",
+   "N11 (comes with its prerequisite; merge it): The O(n) interval bound is an immediate threshold-crossing corollary of N10's O(n)-piece affine structure, rather than a separate algorithmic obstacle. Fold it into N10, retaining the explanation that each affine piece crosses the threshold at most once.",
+   "N14 (bundles claims a solver can have separately; split it): The shared O(ny) event partition and the restriction of every slope to {-1,0,1} are distinct claims: a solver can identify the event partition without exploiting the three slope classes. Split them, with the three-slope claim feeding the envelope reduction in N15.",
+   "order: Split N1's annual-block model from its presence/travel model. Merge N11's immediate sparsity corollary into N10. Split N14's shared event partition from its three-valued slope restriction. Recast N20 as order-independent residue maxima over witness intervals, leaving reverse traversal and once-only assignment in accept."
+  ],
+  "time": "2026-11-03 01:47:02"
+ },
+ {
+  "round": 4,
+  "version": "100d025f426a9eb9",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The common shifted-boundary event partition and the restriction to three possible slopes are separately recognizable claims. Move the slope restriction into N10, where it follows directly from the indicator-difference identity, or separate it from the shared-partition claim."
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All seven END routes supply the residency model, the necessary rejection or eligibility characterization, and a sufficiently efficient output algorithm. Initialization before the recorded history, finite bounds where needed, and efficient event or witness processing are covered by the nodes and their acceptance criteria.",
+   "key_ok": true,
+   "key_note": "N5, N7, N9, N13, N16, N18, and N21 each state their path's output-determining algorithm, including the earliest-date selection.",
+   "hazards_ok": true,
+   "hazards_note": "H1–H3 cover the fixed calendar, inclusive trip endpoints, exclusion of the application day, strict post-trip eligibility, pre-0000 history, extended answer range, and output formatting. The bounded day indices and counts fit signed 32-bit arithmetic; no additional essential numerical hazard is missing.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 includes the editorial's absence-prefix queries and residue-by-residue consecutive-good-block scans through N4 and N5. The reference solution's 365y-day history shift implements the all-present prehistory initialization explicitly allowed by these nodes.",
+   "order": "Minor, nonblocking cut improvement: separate N14's common event partition from its three-slope restriction, or fold the slope restriction into N10. The remaining dependency order is sound.",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [
+   "N14 (bundles claims a solver can have separately; split it): The common shifted-boundary event partition and the restriction to three possible slopes are separately recognizable claims. Move the slope restriction into N10, where it follows directly from the indicator-difference identity, or separate it from the shared-partition claim.",
+   "order: Minor, nonblocking cut improvement: separate N14's common event partition from its three-slope restriction, or fold the slope restriction into N10. The remaining dependency order is sound."
+  ],
+  "time": "2026-11-03 01:52:40"
+ }
+]

@@ -1,0 +1,226 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2021/J-splitstream",
+ "title": "Splitstream",
+ "status": "accepted",
+ "version": "f67480c28962f15c",
+ "solution_outline": "P1: Compute every stream's length in topological dependency order without constructing its elements.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Lengths of split and merge streams",
+   "kind": "modeling",
+   "statement": "The original stream has length m. Splitting a length-L stream produces lengths ceil(L/2) and floor(L/2), respectively. Merging streams of lengths A and B produces length A+B. These recurrences also apply to empty streams.",
+   "routes": [
+    []
+   ],
+   "accept": "Establishes the original length and the split and merge length recurrences, including zero-length outputs. Evaluation of dependencies is covered by N4.",
+   "anchors": [
+    "input sequence",
+    "split node",
+    "merge node",
+    "sequence length"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Invert a split position",
+   "kind": "key_property",
+   "statement": "The kth element of a split node's first output is its input's (2k-1)th element; the kth element of its second output is its input's (2k)th element, whenever the queried output position exists.",
+   "routes": [
+    []
+   ],
+   "accept": "Uses one-based odd positions for output 1 and even positions for output 2. Equivalent zero-based mappings are accepted.",
+   "anchors": [
+    "split node",
+    "first output",
+    "second output",
+    "kth number"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N3",
+   "name": "Invert alternating merge and remaining tail",
+   "kind": "key_property",
+   "statement": "For merge input lengths A,B, let t=min(A,B). Output positions k<=2t select input 1 at (k+1)/2 for odd k and input 2 at k/2 for even k. Later valid positions select the longer input at position k-t.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Correctly identifies both the predecessor in the alternating prefix and the predecessor after either input is exhausted. Equivalent exhausted-input tests or separate boundary handling count. For t=0 every valid position comes directly from the nonempty input.",
+   "anchors": [
+    "merge node",
+    "first input",
+    "second input",
+    "shorter sequence",
+    "remaining numbers"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N4",
+   "name": "Answer queries by tracing predecessor positions",
+   "kind": "algorithm",
+   "statement": "Evaluate stream lengths in dependency order. A query with k greater than its stream's length has answer none; otherwise, its value equals the source index reached by repeatedly inverting the producing split or merge until reaching input 1.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Maintains access to each output's producer. Valid predecessor steps preserve the selected element and reach input 1, whose values equal their indices. Topological or memoized dependency evaluation computes lengths in O(n); inverse traces take at most n steps per query, totaling O(n+nq) time with linear network storage. Nonexistence may be detected before or during tracing.",
+   "anchors": [
+    "query",
+    "output identifier",
+    "input 1",
+    "none"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ]
+  ],
+  "keys": [
+   "N4"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Node descriptions are not promised to be in dependency order; lengths must not be read before their producers have been evaluated.",
+   "check": "Uses topological scheduling, dependency memoization, or another ordering justified by the network rather than by input line order."
+  },
+  {
+   "id": "H2",
+   "statement": "Empty split outputs and exhausted merge inputs must be handled correctly, including positions at the transition from alternating elements to the remaining suffix.",
+   "check": "Selects the correct elements on both sides of the exhaustion boundary whenever those positions exist. Handles either input being empty without invalid access or division by zero. Equivalent exhausted-input tests and separate boundary handling qualify."
+  },
+  {
+   "id": "H3",
+   "statement": "A query for a nonexistent position must print exactly none, not a numeric sentinel.",
+   "check": "Reports every nonexistent queried position as lowercase none on its own line, regardless of where invalidity is detected."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Compute every stream's length in topological dependency order without constructing its elements. A valid queried position has exactly one predecessor position: split outputs undo odd/even selection, while merge outputs undo either the alternating prefix or the unmatched tail. Following these predecessors reaches the original stream, whose position equals its value, in at most n steps per query; total time is O(n+nq).",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   "key_node": "N4",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 72,
+    "n_tests": 72,
+    "max_time_s": 0.033,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "The accepted length-DP and inverse-position method answers all queries in O(n+nq) time. I found no genuinely different approach with a justified worst-case bound that fits these limits; alternative backward-processing organizations establish the same graph claims.",
+  "considered": [
+   "Explicitly constructing all streams: a stream can contain up to a billion elements, so materialization is too expensive.",
+   "Forward tracing source values and binary-searching for the queried position: source-to-output positions are not monotone, as a split followed by a merge with reversed inputs already demonstrates.",
+   "Batching queries in reverse topological order: this uses exactly the same length formulas and predecessor-position inversions as the accepted path, changing execution scheduling rather than the reasoning approach.",
+   "Representing streams as arithmetic-progression runs or bitwise permutation expressions: unequal merge tails and repeated splitting complicate these representations, and I did not establish a sufficiently small worst-case representation.",
+   "Memoized stream-expression evaluation and acceleration of chains of split nodes: these are implementations or optional optimizations of the accepted predecessor-tracing algorithm, not distinct paths."
+  ],
+  "submissions": 1
+ },
+ "builder_notes": "Removed dependency evaluation from N1 and retained it in N4. N3 remains a single merge-inversion characterization because this revision must preserve node IDs and routes; its acceptance text explicitly requires correctness in both the alternating prefix and the exhausted-input tail.",
+ "open_issues": [],
+ "advisories": [
+  "N1 (bundles claims a solver can have separately; split it): Knowing that a merge adds lengths does not establish the split's odd-length rounding, or vice versa. Separate the split- and merge-length transfer rules, retaining the original length m as the base case.",
+  "N3 (bundles claims a solver can have separately; split it): A solver can correctly invert the alternating prefix but incorrectly continue using parity after one input is exhausted. Separate prefix inversion from tail inversion so that this distinct failure point can be identified; requiring both in accept does not resolve the bundling.",
+  "N4 (bundles claims a solver can have separately; split it): Dependency-aware length evaluation and composing predecessor mappings into a query trace are separate steps: a solver can understand the trace but incorrectly compute lengths in input order. Give dependency evaluation its own prerequisite node and retain N4 as the query/output algorithm.",
+  "order: Split N1 into split-length and merge-length claims, keeping the source length as the base case. Split N3 into alternating-prefix and exhausted-tail inversion claims. Extract dependency-aware length evaluation from N4 into a prerequisite, leaving N4 as the final query/output algorithm, and update the routes accordingly."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 2,
+  "submissions": 1,
+  "review_rounds": 2,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 19971,
+    "output_tokens": 6890,
+    "cached_tokens": 6382,
+    "reasoning_tokens": 4359
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 10767,
+    "output_tokens": 7864,
+    "reasoning_tokens": 6744
+   },
+   "total": {
+    "input_tokens": 30738,
+    "output_tokens": 14754,
+    "cached_tokens": 6382,
+    "reasoning_tokens": 11103
+   }
+  },
+  "inputs": {
+   "statement": "024b68a820cac7b8afcc17fd27e6f1073d4889eea4c639c66a6eeffc56ff1e11",
+   "editorial": "b99fb033359767d6fdf801316795c3d31267e6878bbbce503795cefab1cea6ba",
+   "reference": "3788cb5ac7e91821dd83d6e31a4138815fb78c17f5599bb63c9abdc772716bb6"
+  },
+  "created": "2026-11-03 01:06:21"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

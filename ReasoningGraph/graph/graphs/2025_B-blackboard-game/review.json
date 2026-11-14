@@ -1,0 +1,1108 @@
+[
+ {
+  "round": 1,
+  "version": "6848039efc70dbb7",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The displayed five pairs are a particular witness; the invariant needed is a matching of the neighborhood of S into S excluding the chosen start, producing a closed reply strategy. State that invariant and the winning-start conclusion here, and keep the explicit pairing as an example in accept."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": false,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": "The statement is an unchanged theorem about arbitrary bipartite graphs, without identifying this board graph or its required output. Specialize it to the prime-ratio graph and state that its reached even-labelled vertices are exactly the winning initial selections."
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Putting the even-endpoint costs specifically on cross-arcs fixes one encoding; equivalent networks can place those costs on endpoint arcs. State that maximum flow realizes matching cardinality and minimum cost realizes minimum even coverage, with the particular cost placement as an example in accept."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": false,
+     "note": "The B-1/B scalarization is one encoding of the lexicographic objective and belongs in accept rather than being required by the statement. The node also combines two independently learnable reductions—extremal minimum cover to weighted cover, and weighted cover to minimum cut—so separate those claims."
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N22",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N23",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N24",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All five routes supply a valid large-board construction, an exact fallback decision and witness rule, and a bound restricting the expensive fallback to at most 176 board vertices. No essential algorithmic claim is missing from these routes.",
+   "key_ok": true,
+   "key_note": "N8, N11, N15, N21 and N24 each specify the complete first/second decision and how to obtain the printed winning even integer.",
+   "hazards_ok": false,
+   "hazards_note": "H3 is a precondition of the three-prime construction, not a requirement of every correct program. Likewise, the Omega bookkeeping in H2 and auxiliary-loop bookkeeping in H5 belong with their respective reductions rather than among universal END constraints. H5's instruction to deduplicate prime divisors is unnecessarily restrictive: repeated adjacency entries can be harmless and need not be removed. Keep the exact-division rule and the universal starting-turn and output conventions; move construction-specific checks into the corresponding accepts.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "None of the paths represents the reference algorithm's exact table through 83 followed by twice the largest prime at most n/3 for every n >= 84. The graph instead establishes a three-prime construction guaranteed from 177 and computes exceptional answers by matching-based methods. Moreover, the supplied editorial's perfect-matching characterization is false: deleting one vertex from an even-order board cannot leave a perfect matching, although such boards can have winning starts. N5's maximum-matching exposure characterization is the correct theorem; do not replace it with the editorial's assertion.",
+   "order": "Specialize N6 to winning even starts in the board graph. Move the explicit pairing in N3 and cross-arc cost placement in N10 into their accepts. Split N14's lexicographic weighting reduction from its weighted-cover/min-cut reduction, keeping the particular B-1/B weights as an implementation example.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N3 (it states one implementation's choice, not what every correct solution through this step gets right): The displayed five pairs are a particular witness; the invariant needed is a matching of the neighborhood of S into S excluding the chosen start, producing a closed reply strategy. State that invariant and the winning-start conclusion here, and keep the explicit pairing as an example in accept.",
+   "N6 (not specific to this problem): The statement is an unchanged theorem about arbitrary bipartite graphs, without identifying this board graph or its required output. Specialize it to the prime-ratio graph and state that its reached even-labelled vertices are exactly the winning initial selections.",
+   "N10 (it states one implementation's choice, not what every correct solution through this step gets right): Putting the even-endpoint costs specifically on cross-arcs fixes one encoding; equivalent networks can place those costs on endpoint arcs. State that maximum flow realizes matching cardinality and minimum cost realizes minimum even coverage, with the particular cost placement as an example in accept.",
+   "N14 (it states one implementation's choice, not what every correct solution through this step gets right; bundles claims a solver can have separately; split it): The B-1/B scalarization is one encoding of the lexicographic objective and belongs in accept rather than being required by the statement. The node also combines two independently learnable reductions—extremal minimum cover to weighted cover, and weighted cover to minimum cut—so separate those claims.",
+   "hazards: H3 is a precondition of the three-prime construction, not a requirement of every correct program. Likewise, the Omega bookkeeping in H2 and auxiliary-loop bookkeeping in H5 belong with their respective reductions rather than among universal END constraints. H5's instruction to deduplicate prime divisors is unnecessarily restrictive: repeated adjacency entries can be harmless and need not be removed. Keep the exact-division rule and the universal starting-turn and output conventions; move construction-specific checks into the corresponding accepts."
+  ],
+  "advisory": [
+   "the editorial's approach is not among the paths: None of the paths represents the reference algorithm's exact table through 83 followed by twice the largest prime at most n/3 for every n >= 84. The graph instead establishes a three-prime construction guaranteed from 177 and computes exceptional answers by matching-based methods. Moreover, the supplied editorial's perfect-matching characterization is false: deleting one vertex from an even-order board cannot leave a perfect matching, although such boards can have winning starts. N5's maximum-matching exposure characterization is the correct theorem; do not replace it with the editorial's assertion.",
+   "order: Specialize N6 to winning even starts in the board graph. Move the explicit pairing in N3 and cross-arc cost placement in N10 into their accepts. Split N14's lexicographic weighting reduction from its weighted-cover/min-cut reduction, keeping the particular B-1/B weights as an implementation example."
+  ],
+  "time": "2026-11-02 21:52:26"
+ },
+ {
+  "round": 2,
+  "version": "37d90689111adc0e",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N22",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N23",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N24",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All five routes supply a complete output algorithm, its winning-start characterization or construction, and a bounded exact fallback. No essential claim of these approaches is missing.",
+   "key_ok": true,
+   "key_note": "N8, N11, N15, N21, and N24 each specify their path's output rule for every input, including the fallback and the second outcome.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover initial-turn orientation, legal prime-ratio moves, deletion of visited vertices, output conventions, and arithmetic overflow. The loop and bipartition requirements are appropriately confined to the approaches that use them.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "No END route represents the reference solution's precomputed answers through 83 followed by twice the largest prime at most n/3 for every n>=84. The graph instead establishes three-prime or semiprime-core constructions with exact matching-based fallbacks. In particular, it lacks the editorial's stronger single-prime construction for the range beginning at 84. The editorial's asserted perfect-matching characterization should not be imported: the correct characterization is maximum-matching exposure, as in N5. For even n, deleting one starting vertex leaves an odd number of vertices and therefore cannot leave a perfect matching, despite the reference returning first for many such boards.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [
+   "the editorial's approach is not among the paths: No END route represents the reference solution's precomputed answers through 83 followed by twice the largest prime at most n/3 for every n>=84. The graph instead establishes three-prime or semiprime-core constructions with exact matching-based fallbacks. In particular, it lacks the editorial's stronger single-prime construction for the range beginning at 84. The editorial's asserted perfect-matching characterization should not be imported: the correct characterization is maximum-matching exposure, as in N5. For even n, deleting one starting vertex leaves an odd number of vertices and therefore cannot leave a perfect matching, despite the reference returning first for many such boards."
+  ],
+  "time": "2026-11-02 21:58:01"
+ },
+ {
+  "round": 3,
+  "version": "64c0de0042f5ebdf",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N22",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N23",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N24",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N25",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N26",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Requiring precomputed stored outcomes for n <= 83 is a caching choice: the identical small-board results can be obtained by N6 on demand. State the exact-small-board/largest-prime output rule without prescribing caching, and keep precomputation and lookup as examples in accept."
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All six routes contain sufficient constructions, exact fallback characterizations, and bounds to implement correct programs within the limits. In P6, N6 supplies a way to produce and certify the small table, so explicit table entries need not be nodes.",
+   "key_ok": true,
+   "key_note": "N8, N11, N15, N21, N24, and N26 each specify the complete output-producing algorithm for their respective paths.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover initial-turn ownership, legal prime-ratio moves, permanent vertex deletion, output conventions, and safe arithmetic without imposing construction-specific implementation choices.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "P6 reproduces the reference solution's output rule, but not an END route that the supplied editorial reasoning establishes: its route additionally requires the three-prime gadget, the 177 bound, bipartiteness, and alternating-path exposure. The editorial instead invokes a perfect matching of G minus the starting vertex; that justification is false for even n, since the remaining graph has odd order. The graph correctly uses maximum-matching exposure instead; the false editorial theorem must not be added merely to obtain route coverage.",
+   "order": "Move the precomputation/lookup requirement out of N26's statement and into its accept, retaining the combined exact-small-board/largest-prime output rule as the key node.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N26 (it states one implementation's choice, not what every correct solution through this step gets right): Requiring precomputed stored outcomes for n <= 83 is a caching choice: the identical small-board results can be obtained by N6 on demand. State the exact-small-board/largest-prime output rule without prescribing caching, and keep precomputation and lookup as examples in accept."
+  ],
+  "advisory": [
+   "the editorial's approach is not among the paths: P6 reproduces the reference solution's output rule, but not an END route that the supplied editorial reasoning establishes: its route additionally requires the three-prime gadget, the 177 bound, bipartiteness, and alternating-path exposure. The editorial instead invokes a perfect matching of G minus the starting vertex; that justification is false for even n, since the remaining graph has odd order. The graph correctly uses maximum-matching exposure instead; the false editorial theorem must not be added merely to obtain route coverage.",
+   "order: Move the precomputation/lookup requirement out of N26's statement and into its accept, retaining the combined exact-small-board/largest-prime output rule as the key node."
+  ],
+  "time": "2026-11-02 22:05:39"
+ },
+ {
+  "round": 4,
+  "version": "29b348c251b23c0f",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N22",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N23",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N24",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N25",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N26",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All six routes supply a winning-start construction, an exact decision procedure for their exceptional boards, and bounds keeping those procedures small. No essential algorithmic step is missing before routine implementation.",
+   "key_ok": true,
+   "key_note": "N8, N11, N15, N21, N24, and N26 each state their path's complete output algorithm, including when to output second and how to choose a winning even start.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover the initial-turn convention, legal prime-ratio moves, erased vertices, required output, and overflow-safe products. They impose semantic or arithmetic constraints without requiring a particular representation or integer type.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "P6 reproduces the reference solution's small-table/largest-prime output algorithm, but not the supplied editorial's reasoning: that editorial does not establish the maximum-matching exposure and prime-gadget prerequisites of the END route. Its claimed perfect-matching characterization and large-board perfect matching after deleting 2p are false; for even n, that deletion leaves an odd number of vertices. Those claims should remain excluded rather than be added to the graph; P6 supplies a corrected justification.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [
+   "the editorial's approach is not among the paths: P6 reproduces the reference solution's small-table/largest-prime output algorithm, but not the supplied editorial's reasoning: that editorial does not establish the maximum-matching exposure and prime-gadget prerequisites of the END route. Its claimed perfect-matching characterization and large-board perfect matching after deleting 2p are false; for even n, that deletion leaves an odd number of vertices. Those claims should remain excluded rather than be added to the graph; P6 supplies a corrected justification."
+  ],
+  "time": "2026-11-02 22:09:47"
+ }
+]

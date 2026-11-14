@@ -1,0 +1,28 @@
+# local settings and data (see env.example.sh)
+env.sh
+data/
+models/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# ReasoningGraph outputs: only graph.json, graph.md and review.json of each graph are tracked
+ReasoningGraph/graph/graphs/*/*
+!ReasoningGraph/graph/graphs/*/graph.json
+!ReasoningGraph/graph/graphs/*/graph.md
+!ReasoningGraph/graph/graphs/*/review.json
+ReasoningGraph/graph/logs/
+ReasoningGraph/grade/runs/
+ReasoningGraph/validate/reports/
+
+# GPTv4 outputs
+GPTv4/runs*/
+GPTv4/*.out
+GPTv4/*.log
+
+# solver outputs
+Solver/runs*/
+Solver/logs/
+Solver/insights/

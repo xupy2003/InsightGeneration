@@ -1,0 +1,271 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2024/G-kindergarten",
+ "title": "Kindergarten",
+ "status": "accepted",
+ "version": "bbafc04f587de62e",
+ "solution_outline": "P1: Search from the unique jealous cycle using a guarded, jealous-first DFS, accepting a repeated-vertex loop only when it contains a jealous edge.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Two safe precedence patterns",
+   "kind": "modeling",
+   "statement": "An order is safe exactly when each kid appears after their jealousy target, or appears before their liked kid with that liked kid preceding the jealousy target.",
+   "routes": [
+    []
+   ],
+   "accept": "For every kid i, establish pos(j_i) < pos(i) or pos(i) < pos(l_i) < pos(j_i). Equivalent descriptions using precedence constraints count.",
+   "anchors": [
+    "kids",
+    "jealous of",
+    "really likes",
+    "order"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Unique jealous cycle requires a reversal",
+   "kind": "key_property",
+   "statement": "Following each kid's jealousy target gives one directed cycle containing kid 1, with all other kids in trees directed toward it. Every safe order places at least one cycle kid before their jealousy target.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "For every kid except 1, jealous edges decrease the index, so every jealous chain reaches 1. Following jealousy from 1 identifies the unique cycle. Requiring every jealousy target to precede its source would contradict the cycle.",
+   "anchors": [
+    "kid 1",
+    "jealous cycle",
+    "decreasing order of coolness",
+    "jealous trees"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Safe orders induce guarded mixed witnesses",
+   "kind": "key_property",
+   "statement": "A guarded mixed walk starts on the jealous cycle with a like edge. After liking from a kid, subsequent jealous steps cannot reach that kid's jealousy target before another like step. Every safe order induces such a walk whose terminal loop contains a jealous edge.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "Start at a cycle kid whose jealousy target is later. Follow jealousy when its target is earlier, otherwise follow liking. After a like step, jealous steps decrease positions and remain earlier than the blocked target. A loop consisting entirely of like steps is impossible because those steps strictly increase positions. Thus the first repetition closes a loop containing jealousy.",
+   "anchors": [
+    "jealous cycle",
+    "like edge",
+    "jealous edge",
+    "blocked jealousy target",
+    "mixed walk"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Guarded mixed-walk witness search",
+   "kind": "algorithm",
+   "statement": "Guarded mixed walks from the jealous-cycle vertices admit a complete depth-first witness search using active-path detection. A repeated vertex closes an acceptable loop precisely when that loop contains a jealous edge; if every start fails, no safe order exists.",
+   "routes": [
+    [
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Initially block the starting kid's jealousy target. Carry the blocked target, active-path positions, and position after the latest jealous move. Explore jealousy before liking; liking replaces the block, and failed calls restore active marks. Accept a repeat only when its position precedes the latest jealous position. The single-cycle jealous-tree structure gives O(n) total exploration and storage across all starts; equivalent explicit-stack execution counts.",
+   "anchors": [
+    "jealous-cycle vertices",
+    "current path",
+    "blocked parent",
+    "last jealous move",
+    "terminal loop"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N5",
+   "name": "Materialize witness and append jealous subtrees",
+   "kind": "construction",
+   "statement": "The successful search path yields a safe permutation by reversing jealous chains, cutting the terminal loop at a jealous edge, postponing its entering jealous stem, and extending parent-before-child through untouched jealous subtrees. Failed search requires outputting impossible.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N4"
+    ]
+   ],
+   "accept": "Let r be the loop entry and q the start of the jealous chain entering r. If closure is a like edge, rotate the loop after its last internal jealous edge. Reverse each resulting jealous run, omitting the prefix slice [q,r); then emit that slice in reverse. Finally emit unprinted jealous descendants only after their parents. Establish N1 for every kid and emission of all n kids exactly once. Materialization is linear.",
+   "anchors": [
+    "order",
+    "jealous chains",
+    "terminal loop",
+    "entering jealous stem",
+    "untouched kids",
+    "impossible"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 5
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ]
+  ],
+  "keys": [
+   "N5"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "A search path can contain all n kids; traversal must support this depth without exhausting the call stack.",
+   "check": "Use explicit DFS frames preserving branch state, blocked target, and latest-jealous position, or provide sufficient recursion stack for n = 200000."
+  },
+  {
+   "id": "H2",
+   "statement": "Active-path membership and the blocked jealousy target are branch-local; vertex-only visitation is not a substitute for this search state.",
+   "check": "Remove active marks on failed backtracking and preserve each caller's guard and latest-jealous marker. Do not prune later searches merely because a vertex was examined under another context."
+  },
+  {
+   "id": "H3",
+   "statement": "Following jealous children can revisit the cycle and vertices already emitted from the special path; every kid must appear exactly once.",
+   "check": "Mark each emitted kid and enqueue its children only on its first emission. Check that the final order contains n distinct kids; processing already emitted vertices must not restart traversal around the cycle."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "source": "editorial",
+   "approach": "Search from the unique jealous cycle using a guarded, jealous-first DFS, accepting a repeated-vertex loop only when it contains a jealous edge. Construct the order by reversing jealous chains, cutting the terminal loop at a jealous edge, postponing its entering stem, and then appending untouched jealous subtrees parent-before-child. Every safe order induces a searchable witness, while the selected witness supports this construction; the single-cycle structure gives linear total work and memory.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "key_node": "N5",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": null,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 113,
+    "n_tests": 113,
+    "max_time_s": 0.073,
+    "time_limit_s": 2.0
+   },
+   "notes": "The necessity argument uses a walk induced by a valid order, rather than asserting that all reversed kids form one mixed walk. The construction applies to the jealous-first search witness, not an arbitrary guarded mixed cycle, and includes the reference's postponed entering stem, which the editorial's construction summary omits."
+  }
+ ],
+ "rejected": [
+  {
+   "approach": "The two-edge graph provides a safe-block construction: deleting a jealousy-cycle vertex, take all vertices that can reach a jealousy-containing SCC. If this set meets the original jealousy cycle, it can be topologically ordered first, after which jealousy-parent traversal appends everyone else. Find an appropriate deleted vertex through SCCs and a two-layer 0–1 BFS; a constant number of direct candidate checks is also linear overall.",
+   "last_verdict": "WA",
+   "attempts": 4,
+   "submission": 4
+  }
+ ],
+ "exploration": {
+  "finished": true,
+  "reason": "The attempted SCC-based approach has reached four failed submissions and is abandoned. I do not have a genuinely different, proved algorithm meeting the limits to submit. There is also an unresolved validation discrepancy: the last program exhaustively enumerates permutations for n <= 9, yet was rejected on the six-kid example; its first valid permutation should be 4 1 5 2 3 6, which satisfies the condition as stated.",
+  "considered": [
+   "Ordering by increasing index handles every kid except kid 1, but cannot decide the general case.",
+   "Breaking only one jealousy-cycle edge is incomplete: satisfying its liking requirement can require additional reversed jealousy edges in attached trees.",
+   "Testing every jealousy-cycle vertex using SCC computations gives a potentially quadratic algorithm, exceeding the constraints.",
+   "The proposed jealousy-containing-cycle characterization and witness extraction did not yield an accepted path and should not be treated as established.",
+   "Exhaustive permutation search is exact for small inputs but cannot handle n up to 200000. On the reported failing small input, 4 1 5 2 3 6 is safe: kid 4 has liked kid 1 before jealous kid 2; kid 1 has liked kid 5 before jealous kid 2; every other kid's jealous target is earlier."
+  ],
+  "submissions": 4
+ },
+ "builder_notes": "",
+ "open_issues": [],
+ "advisories": [],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 5,
+  "submissions": 4,
+  "review_rounds": 1,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 183506,
+    "output_tokens": 50403,
+    "cached_tokens": 133277,
+    "reasoning_tokens": 39132
+   },
+   "integrator": {
+    "input_tokens": 4490,
+    "output_tokens": 12420,
+    "reasoning_tokens": 10955
+   },
+   "reviewer": {
+    "input_tokens": 5611,
+    "output_tokens": 10786,
+    "reasoning_tokens": 10358
+   },
+   "total": {
+    "input_tokens": 193607,
+    "output_tokens": 73609,
+    "cached_tokens": 133277,
+    "reasoning_tokens": 60445
+   }
+  },
+  "inputs": {
+   "statement": "d6b7212e81fd73bdffa56efc92e191d24871277c43edab8cb3c4a256c230a3fb",
+   "editorial": "8ac2f252df23f3eec19102cfaf12b8fa1a0ea14f16430b7d574d6a7519b581dc",
+   "reference": "6555ad38f38ff44c12fe8e5ff351c55c2d1362ce0836e2b1e9df3bb93dd9d1fa"
+  },
+  "created": "2026-11-02 21:42:59"
+ },
+ "editorial": {
+  "covered": false,
+  "path": "P1",
+  "new_nodes": [
+   "N1",
+   "N2",
+   "N3",
+   "N4",
+   "N5"
+  ]
+ }
+}

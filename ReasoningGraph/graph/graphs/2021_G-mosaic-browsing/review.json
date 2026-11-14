@@ -1,0 +1,672 @@
+[
+ {
+  "round": 1,
+  "version": "7e35407fd82cd73f",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The zero-score characterization and the algebraic decomposition into correlations are distinct discoveries: a solver can have the former without finding the latter. Separate these claims so that getting stuck at the expansion is distinguishable from failing to construct a sound mismatch score."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The required invariant is that convolution coefficients represent the intended two-dimensional correlations, but the statement mandates a particular serialization, trimmed length, reversal convention, and coefficient index. State the alignment invariant and put this correct indexing construction in accept as an example, allowing equivalent padding and reversal conventions."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Explicit integer recovery by rounding is not required: a sufficiently accurate near-zero test, as in the reference solution, also works. State FFT-based evaluation followed by a numerically reliable zero-score decision; keep rounding and particular convolution-padding choices as examples rather than requirements."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Maximality is an optional grouping choice; partitioning the constrained cells into shorter solid horizontal runs gives the same necessary-and-sufficient matching condition. State the run-cover equivalence without requiring maximal runs, and retain maximal runs as an example in accept."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": false,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": "The statement is a generic canonical substring-ranking construction and does not identify the motif/mosaic comparison it enables. Bring the joint identifier universe for motif and mosaic substrings, and its use for prescribed run comparisons, into the statement rather than leaving that connection only in accept."
+    },
+    {
+     "id": "N13",
+     "specific": false,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": "This is a general string-equality lemma with no problem-specific objects in its statement. State it as an exact comparison between a motif run and its prescribed mosaic substring using their shared power-of-two identifiers."
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The color-indicator correlation claim is essential, but the fixed trimmed length, reversed operand, and coefficient index are one implementation convention. State that correctly aligned indicator convolutions count equal-color cells, and move the concrete flattening/index formulas into accept."
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Masked bit disagreements being zero exactly for matches is separate from expressing their total as a constant plus seven correlations. Split the characterization from the correlation expansion; the bound can accompany the latter or its modular-evaluation accept."
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The output rule should be exact modular evaluation of the masked bit-disagreement total, not a mandatory trimmed array length and extraction index. Keep the stated cq-stride construction and coefficient formula as a concrete accepted implementation while allowing equivalent convolution layouts."
+    },
+    {
+     "id": "N22",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The essential reduction is preservation of motif offsets by a consistent row stride with wildcard gaps, whereas the statement fixes one row-major, minimally trimmed serialization. State that geometric correspondence and retain the cq-cp gaps and exact L formula as an example in accept."
+    },
+    {
+     "id": "N23",
+     "specific": false,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The statement is a generic Shift-And invariant; explicitly connect its prefix bits to the flattened motif while scanning the mosaic. Seeding only legal starts is optional—seeding every start and filtering completed matches by rectangle legality is equally correct—so make the invariant accommodate both."
+    },
+    {
+     "id": "N24",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "This output rule unnecessarily requires legality to be enforced during start seeding. State that full-prefix hits corresponding to legal rectangular placements are reported, allowing either gated seeding or filtering at completion."
+    },
+    {
+     "id": "N25",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Reducing a prescribed run comparison to an LCP threshold and obtaining suffix LCP from a range minimum of adjacent LCP values are separate claims. A solver can know the first without knowing the second, so separate the run-comparison reduction from the suffix-array query lemma."
+    },
+    {
+     "id": "N26",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N27",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Run suffix intervals and rank-membership tests determine this algorithm's output; building an LCP range-minimum index is only one way to obtain those intervals. Remove that mandatory preprocessing choice from the statement and retain RMQ plus binary search as an example in accept."
+    },
+    {
+     "id": "N28",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N29",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": false,
+     "note": "Sound rejection by unequal hashes is distinct from constructing constant-time substring hashes, and the displayed extraction formula fixes one polynomial-hash orientation. Keep the collision-safe rejection claim in the node and place prefix-hash extraction conventions and equivalent formulas in accept."
+    },
+    {
+     "id": "N30",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each listed accepted approach has its matching criterion and an executable output algorithm represented. No essential algorithmic claim is missing from those END routes; their accepted performance is not contradicted merely by unfavorable worst-case bounds.",
+   "key_ok": true,
+   "key_note": "All thirteen designated key nodes state algorithms that determine the reported placements, rather than merely asserting feasibility, complexity, or a supporting lemma.",
+   "hazards_ok": false,
+   "hazards_note": "H3 is too restrictive: computing the entire linear convolution is sufficient but not necessary. For example, a circular transform of length at least the text length can preserve the inspected full-overlap coefficients even though other coefficients alias; require that inspected coefficients be uncorrupted, not full-length linear padding. Balanced complex packing and explicit rounding are also implementation options, not universal requirements; a justified near-zero test is valid. H7 should prohibit counting cross-row occurrences, rather than require resetting the automaton, since separators or boundary filtering also work. Add an explicit all-zero-motif check: every legal placement must be reported even when no constrained cells or runs are processed. If the editorial's weighted score is added, label H2's 9,801,000,000 bound as specific to the unweighted score and cover the larger weighted totals and cube-sum constant.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "The editorial/reference uses the weighted score sum P(Q-P)^2, expanded as corr(P,Q^2)-2 corr(P^2,Q)+sum P^3. P1 instead requires the different unweighted score, correlations corr(M,Q^2) and corr(P,Q), and constant sum P^2; the reference therefore does not establish N2/N3 as written. Generalize the score/correlation nodes to admit both identities, or add the weighted identity and its FFT output route.",
+   "order": "Separate zero-score characterization from correlation expansion in N2 and N20. Separate the run-to-LCP reduction from the adjacent-LCP range-minimum lemma in N25, and move the concrete prefix-hash extraction recipe out of N29's claim. Factor the common geometric alignment invariant behind N3, N18, N21, and N22 so that method-specific nodes need not repeat a mandatory serialization convention. Keep legal-start seeding as an example spanning N23/N24, not as a separate required insight.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N3 (it states one implementation's choice, not what every correct solution through this step gets right): The required invariant is that convolution coefficients represent the intended two-dimensional correlations, but the statement mandates a particular serialization, trimmed length, reversal convention, and coefficient index. State the alignment invariant and put this correct indexing construction in accept as an example, allowing equivalent padding and reversal conventions.",
+   "N4 (it states one implementation's choice, not what every correct solution through this step gets right): Explicit integer recovery by rounding is not required: a sufficiently accurate near-zero test, as in the reference solution, also works. State FFT-based evaluation followed by a numerically reliable zero-score decision; keep rounding and particular convolution-padding choices as examples rather than requirements.",
+   "N10 (it states one implementation's choice, not what every correct solution through this step gets right): Maximality is an optional grouping choice; partitioning the constrained cells into shorter solid horizontal runs gives the same necessary-and-sufficient matching condition. State the run-cover equivalence without requiring maximal runs, and retain maximal runs as an example in accept.",
+   "N12 (not specific to this problem): The statement is a generic canonical substring-ranking construction and does not identify the motif/mosaic comparison it enables. Bring the joint identifier universe for motif and mosaic substrings, and its use for prescribed run comparisons, into the statement rather than leaving that connection only in accept.",
+   "N13 (not specific to this problem): This is a general string-equality lemma with no problem-specific objects in its statement. State it as an exact comparison between a motif run and its prescribed mosaic substring using their shared power-of-two identifiers.",
+   "N18 (it states one implementation's choice, not what every correct solution through this step gets right): The color-indicator correlation claim is essential, but the fixed trimmed length, reversed operand, and coefficient index are one implementation convention. State that correctly aligned indicator convolutions count equal-color cells, and move the concrete flattening/index formulas into accept.",
+   "N21 (it states one implementation's choice, not what every correct solution through this step gets right): The output rule should be exact modular evaluation of the masked bit-disagreement total, not a mandatory trimmed array length and extraction index. Keep the stated cq-stride construction and coefficient formula as a concrete accepted implementation while allowing equivalent convolution layouts.",
+   "N22 (it states one implementation's choice, not what every correct solution through this step gets right): The essential reduction is preservation of motif offsets by a consistent row stride with wildcard gaps, whereas the statement fixes one row-major, minimally trimmed serialization. State that geometric correspondence and retain the cq-cp gaps and exact L formula as an example in accept.",
+   "N23 (not specific to this problem; it states one implementation's choice, not what every correct solution through this step gets right): The statement is a generic Shift-And invariant; explicitly connect its prefix bits to the flattened motif while scanning the mosaic. Seeding only legal starts is optional—seeding every start and filtering completed matches by rectangle legality is equally correct—so make the invariant accommodate both.",
+   "N24 (it states one implementation's choice, not what every correct solution through this step gets right): This output rule unnecessarily requires legality to be enforced during start seeding. State that full-prefix hits corresponding to legal rectangular placements are reported, allowing either gated seeding or filtering at completion.",
+   "N27 (it states one implementation's choice, not what every correct solution through this step gets right): Run suffix intervals and rank-membership tests determine this algorithm's output; building an LCP range-minimum index is only one way to obtain those intervals. Remove that mandatory preprocessing choice from the statement and retain RMQ plus binary search as an example in accept.",
+   "N29 (it states one implementation's choice, not what every correct solution through this step gets right; bundles claims a solver can have separately; split it): Sound rejection by unequal hashes is distinct from constructing constant-time substring hashes, and the displayed extraction formula fixes one polynomial-hash orientation. Keep the collision-safe rejection claim in the node and place prefix-hash extraction conventions and equivalent formulas in accept.",
+   "hazards: H3 is too restrictive: computing the entire linear convolution is sufficient but not necessary. For example, a circular transform of length at least the text length can preserve the inspected full-overlap coefficients even though other coefficients alias; require that inspected coefficients be uncorrupted, not full-length linear padding. Balanced complex packing and explicit rounding are also implementation options, not universal requirements; a justified near-zero test is valid. H7 should prohibit counting cross-row occurrences, rather than require resetting the automaton, since separators or boundary filtering also work. Add an explicit all-zero-motif check: every legal placement must be reported even when no constrained cells or runs are processed. If the editorial's weighted score is added, label H2's 9,801,000,000 bound as specific to the unweighted score and cover the larger weighted totals and cube-sum constant."
+  ],
+  "advisory": [
+   "N2 (bundles claims a solver can have separately; split it): The zero-score characterization and the algebraic decomposition into correlations are distinct discoveries: a solver can have the former without finding the latter. Separate these claims so that getting stuck at the expansion is distinguishable from failing to construct a sound mismatch score.",
+   "N20 (bundles claims a solver can have separately; split it): Masked bit disagreements being zero exactly for matches is separate from expressing their total as a constant plus seven correlations. Split the characterization from the correlation expansion; the bound can accompany the latter or its modular-evaluation accept.",
+   "N25 (bundles claims a solver can have separately; split it): Reducing a prescribed run comparison to an LCP threshold and obtaining suffix LCP from a range minimum of adjacent LCP values are separate claims. A solver can know the first without knowing the second, so separate the run-comparison reduction from the suffix-array query lemma.",
+   "the editorial's approach is not among the paths: The editorial/reference uses the weighted score sum P(Q-P)^2, expanded as corr(P,Q^2)-2 corr(P^2,Q)+sum P^3. P1 instead requires the different unweighted score, correlations corr(M,Q^2) and corr(P,Q), and constant sum P^2; the reference therefore does not establish N2/N3 as written. Generalize the score/correlation nodes to admit both identities, or add the weighted identity and its FFT output route.",
+   "order: Separate zero-score characterization from correlation expansion in N2 and N20. Separate the run-to-LCP reduction from the adjacent-LCP range-minimum lemma in N25, and move the concrete prefix-hash extraction recipe out of N29's claim. Factor the common geometric alignment invariant behind N3, N18, N21, and N22 so that method-specific nodes need not repeat a mandatory serialization convention. Keep legal-start seeding as an example spanning N23/N24, not as a separate required insight."
+  ],
+  "time": "2026-11-03 14:07:05"
+ },
+ {
+  "round": 2,
+  "version": "6eca7330a54fb9ee",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Whole-rectangle legality and wildcard color semantics are independently learnable: a solver can compare all nonzero cells correctly yet incorrectly trim empty borders when deciding legal starts. Separate these two modeling claims."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Expanding the squared-error score into correlations and realizing those 2D correlations as correctly indexed convolutions are separate obstacles. Split the algebraic expansion from the padding, reversal, and coefficient-alignment claim."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "A solver can express agreements as indicator correlations while still being unable to preserve the grid alignment in a convolution. Keep the agreement-correlation identity here and extract convolution alignment into a shared prerequisite with N3 and N21."
+    },
+    {
+     "id": "N19",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N20",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N21",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The masked-XOR correlation expansion is a new algebraic insight, distinct from evaluating it with aligned NTTs and using a sufficiently large modulus to enumerate matches. Extract the expansion as a prerequisite, leaving this node as the output-determining NTT algorithm."
+    },
+    {
+     "id": "N22",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N23",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N24",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N25",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N26",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N27",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N28",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N29",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N30",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Every END route contains the claims needed to implement its accepted approach. No route is rejected for a weak worst-case running-time bound; the recommended splits improve localization of reasoning rather than repair missing algorithmic content.",
+   "key_ok": true,
+   "key_note": "All thirteen designated key nodes state an output-determining algorithm, including the exact-verification requirement for the hashing path.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover rectangle legality, the all-wildcard case, output indexing and ordering, numerical range and precision, transform aliasing and NTT compatibility, bitset boundary safety, and repeated or cross-row run occurrences. Their implementation checks provide usable ways to meet the applicable constraints.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "The editorial and reference solution follow P1: N2 permits the weighted score with W=P, N3 includes its cubic constant and the reference's stride, reversal, and coefficient index, and N4 permits separate FFT convolutions with a reliable zero test.",
+   "order": "Split N1 into rectangle legality and wildcard matching semantics. Separate correlation identities from convolution alignment in N3 and N18, sharing the alignment claim with N21 where appropriate. Extract the masked-XOR expansion from N21 before its NTT enumeration algorithm; retain N21 as P9's key node.",
+   "verdict": "revise"
+  },
+  "blocking": [],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): Whole-rectangle legality and wildcard color semantics are independently learnable: a solver can compare all nonzero cells correctly yet incorrectly trim empty borders when deciding legal starts. Separate these two modeling claims.",
+   "N3 (bundles claims a solver can have separately; split it): Expanding the squared-error score into correlations and realizing those 2D correlations as correctly indexed convolutions are separate obstacles. Split the algebraic expansion from the padding, reversal, and coefficient-alignment claim.",
+   "N18 (bundles claims a solver can have separately; split it): A solver can express agreements as indicator correlations while still being unable to preserve the grid alignment in a convolution. Keep the agreement-correlation identity here and extract convolution alignment into a shared prerequisite with N3 and N21.",
+   "N21 (bundles claims a solver can have separately; split it): The masked-XOR correlation expansion is a new algebraic insight, distinct from evaluating it with aligned NTTs and using a sufficiently large modulus to enumerate matches. Extract the expansion as a prerequisite, leaving this node as the output-determining NTT algorithm.",
+   "order: Split N1 into rectangle legality and wildcard matching semantics. Separate correlation identities from convolution alignment in N3 and N18, sharing the alignment claim with N21 where appropriate. Extract the masked-XOR expansion from N21 before its NTT enumeration algorithm; retain N21 as P9's key node."
+  ],
+  "time": "2026-11-03 14:13:42"
+ }
+]

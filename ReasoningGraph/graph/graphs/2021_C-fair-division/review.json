@@ -1,0 +1,476 @@
+[
+ {
+  "round": 1,
+  "version": "b7808627a2226252",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The large-n exclusion from D>=2^n-1 and the denominator bound from D>b^(n-1) are separate deductions: a solver can establish either without the other. Split them into two bounding claims."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Symmetry and strict coordinatewise monotonicity are distinct properties that a solver can establish separately. The searches only need monotonicity, so remove the unused symmetry assertion or separate it."
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The exact starting corner and root bound, and moving both pointers immediately after equality, prescribe one staircase implementation. State the complete level-set enumeration by monotone row/column elimination, and put these particular initialization and update choices in accept."
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Choosing the smallest prime factor and the exact floor-root bound is one implementation of the short-block search; other sufficiently small divisors k of n and conservative denominator bounds give the same complete candidate generation. State that general coverage rule, keeping the smallest-prime-factor choice and its numerical cost bound in accept."
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": false,
+     "note": "Constructing an order-n element by the particular projection g^((ell-1)/n) and enumerating all order-n elements from a known one are distinct steps; a solver can know the latter without knowing the former. Make the main claim complete enumeration of the order-n witness ratios, moving the projection/sampling construction into accept, or separate construction from classification without requiring one construction formula."
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Testing denominator two upfront for every n is an optional early-success optimization and fixes where the exceptional case is handled. State that the candidate set includes the witness-generated pairs and the exception (n,a,b)=(6,1,2), with the upfront denominator-two test only an accept example."
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All four routes contain the share model, the exact divisibility criterion, sufficient search bounds, complete candidate generation, and the required optimization rule. No essential mathematical step is missing from an END route.",
+   "key_ok": true,
+   "key_note": "N4, N7, N10, and N13 each give their path's complete candidate-generation, validation, and output rule.",
+   "hazards_ok": false,
+   "hazards_note": "H1's reassurance about signed __int128 needs qualification: the separate bounds b<=3981 and n<=59 do not suffice, since 3981^58 is far larger than 128 bits. Safety requires the stronger per-input power bound for already-bounded candidates, or guarded/capped evaluation including bound computations; the reference uses guarded 64-bit multiplication and capping. H3 should be conditional on using factorization, with Miller–Rabin bases and Pollard-rho retry details treated as implementation examples rather than universal requirements. H4 should require a conservative bound containing every feasible denominator, not preservation of every exact root-boundary candidate or exact root correction: when b^(n-1)=m, that b is already infeasible because D>b^(n-1), and safely rounded-up bounds also work.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "The editorial and reference follow P1: geometric shares, primitive-sum divisibility, small feasible search space, and bounded enumeration with the required minimum. Their stopping condition D(q,1)>m is tighter pruning of the denominator range, explicitly allowed by N3's accept.",
+   "order": "Split N3 into the large-n exclusion and denominator bound. Remove unused symmetry from N5 rather than coupling it to monotonicity. For N12, separate construction from classification if both are retained as claims; alternatively keep complete witness-residue enumeration as the node and move the particular generator construction into accept. Generalize N6, N9, and N13 as described without changing their dependency order.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N6 (it states one implementation's choice, not what every correct solution through this step gets right): The exact starting corner and root bound, and moving both pointers immediately after equality, prescribe one staircase implementation. State the complete level-set enumeration by monotone row/column elimination, and put these particular initialization and update choices in accept.",
+   "N9 (it states one implementation's choice, not what every correct solution through this step gets right): Choosing the smallest prime factor and the exact floor-root bound is one implementation of the short-block search; other sufficiently small divisors k of n and conservative denominator bounds give the same complete candidate generation. State that general coverage rule, keeping the smallest-prime-factor choice and its numerical cost bound in accept.",
+   "N12 (it states one implementation's choice, not what every correct solution through this step gets right; bundles claims a solver can have separately; split it): Constructing an order-n element by the particular projection g^((ell-1)/n) and enumerating all order-n elements from a known one are distinct steps; a solver can know the latter without knowing the former. Make the main claim complete enumeration of the order-n witness ratios, moving the projection/sampling construction into accept, or separate construction from classification without requiring one construction formula.",
+   "N13 (it states one implementation's choice, not what every correct solution through this step gets right): Testing denominator two upfront for every n is an optional early-success optimization and fixes where the exceptional case is handled. State that the candidate set includes the witness-generated pairs and the exception (n,a,b)=(6,1,2), with the upfront denominator-two test only an accept example.",
+   "hazards: H1's reassurance about signed __int128 needs qualification: the separate bounds b<=3981 and n<=59 do not suffice, since 3981^58 is far larger than 128 bits. Safety requires the stronger per-input power bound for already-bounded candidates, or guarded/capped evaluation including bound computations; the reference uses guarded 64-bit multiplication and capping. H3 should be conditional on using factorization, with Miller–Rabin bases and Pollard-rho retry details treated as implementation examples rather than universal requirements. H4 should require a conservative bound containing every feasible denominator, not preservation of every exact root-boundary candidate or exact root correction: when b^(n-1)=m, that b is already infeasible because D>b^(n-1), and safely rounded-up bounds also work."
+  ],
+  "advisory": [
+   "N3 (bundles claims a solver can have separately; split it): The large-n exclusion from D>=2^n-1 and the denominator bound from D>b^(n-1) are separate deductions: a solver can establish either without the other. Split them into two bounding claims.",
+   "N5 (bundles claims a solver can have separately; split it): Symmetry and strict coordinatewise monotonicity are distinct properties that a solver can establish separately. The searches only need monotonicity, so remove the unused symmetry assertion or separate it.",
+   "order: Split N3 into the large-n exclusion and denominator bound. Remove unused symmetry from N5 rather than coupling it to monotonicity. For N12, separate construction from classification if both are retained as claims; alternatively keep complete witness-residue enumeration as the node and move the particular generator construction into accept. Generalize N6, N9, and N13 as described without changing their dependency order."
+  ],
+  "time": "2026-11-03 01:00:13"
+ },
+ {
+  "round": 2,
+  "version": "c6a6389298216cdf",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The exclusion of large n using D>=2^n-1 and the denominator bound using D>b^(n-1) are distinct deductions; a solver can establish either without the other. Split them into separate feasibility-bound nodes and update the dependent routes."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each route provides complete candidate coverage, the full primitive-sum divisibility test, and the required output minimization. The accepts supply sufficiently fast enumeration methods and appropriate factorization methods where needed.",
+   "key_ok": true,
+   "key_note": "N4, N7, N10, and N13 each state their path's output-producing search, including selection of the optimum and the impossible case.",
+   "hazards_ok": false,
+   "hazards_note": "H4 overstates the requirement by saying that any denominator bound must contain every feasible denominator. Once a feasible denominator b0 is known, a correct search may discard all larger denominators even if they are feasible, as N7 explicitly permits; target-specific bounds likewise need only cover the relevant target. Require bounds and rounding to preserve every candidate that could still improve the answer, and reserve the all-feasible-denominators requirement for an unconditional global feasibility bound. The other hazards are adequate.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "The editorial and reference solution follow P1 with b=q and a=q-p. Their stopping condition D(q,1)>m is a stronger completeness-preserving bound than b^(n-1)<m, and their increasing q,p enumeration implements N4's minimization.",
+   "order": "Split N3 into the large-n exclusion and the denominator bound. Both should remain downstream of N2 and feed the applicable search nodes; the explorer's text-only editing restriction does not make these independent deductions atomic.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "hazards: H4 overstates the requirement by saying that any denominator bound must contain every feasible denominator. Once a feasible denominator b0 is known, a correct search may discard all larger denominators even if they are feasible, as N7 explicitly permits; target-specific bounds likewise need only cover the relevant target. Require bounds and rounding to preserve every candidate that could still improve the answer, and reserve the all-feasible-denominators requirement for an unconditional global feasibility bound. The other hazards are adequate."
+  ],
+  "advisory": [
+   "N3 (bundles claims a solver can have separately; split it): The exclusion of large n using D>=2^n-1 and the denominator bound using D>b^(n-1) are distinct deductions; a solver can establish either without the other. Split them into separate feasibility-bound nodes and update the dependent routes.",
+   "order: Split N3 into the large-n exclusion and the denominator bound. Both should remain downstream of N2 and feed the applicable search nodes; the explorer's text-only editing restriction does not make these independent deductions atomic."
+  ],
+  "time": "2026-11-03 01:06:03"
+ },
+ {
+  "round": 3,
+  "version": "eca5789a26b6a2ca",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The bound on n and the bound on b are independently discoverable: a solver can establish either without establishing the other. Split the minimum-sum argument yielding n<=59 from the leading-term argument bounding denominators."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each route supplies the infinite-process model, the exact divisibility criterion, complete bounded candidate generation, and the required output selection. The staircase elimination is valid on the triangular region a<b, the short-block bound covers every feasible pair, and the primitive-prime route correctly includes the sole relevant Zsigmondy exception.",
+   "key_ok": true,
+   "key_note": "N4, N7, N10, and N13 each state their path's candidate-generation algorithm, final validity test, optimal output selection, and impossible outcome.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover potentially oversized polynomial and modular arithmetic, reduced-fraction optimization, reliable factorization when used, and conservative search-bound rounding. H4 correctly distinguishes global coverage from target-specific and incumbent-based pruning. No essential numerical or output constraint is missing.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "The editorial and reference solution follow P1: sum the infinite payments, derive D|m, bound the search, and select the first valid fraction in the required order. Their stopping test D(q,1)>m is a tighter denominator bound explicitly permitted by N3; their capped recurrence is permitted by N4 and H1.",
+   "order": "For finer stuck-point attribution, split N3 into the minimum primitive-sum bound on n and the leading-term bound on b. This is a structural recommendation; the existing combined claim is correct and usable.",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [
+   "N3 (bundles claims a solver can have separately; split it): The bound on n and the bound on b are independently discoverable: a solver can establish either without establishing the other. Split the minimum-sum argument yielding n<=59 from the leading-term argument bounding denominators.",
+   "order: For finer stuck-point attribution, split N3 into the minimum primitive-sum bound on n and the leading-term bound on b. This is a structural recommendation; the existing combined claim is correct and usable."
+  ],
+  "time": "2026-11-03 01:10:02"
+ }
+]

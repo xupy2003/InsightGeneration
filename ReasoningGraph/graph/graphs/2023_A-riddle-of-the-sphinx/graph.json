@@ -1,0 +1,656 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2023/A-riddle-of-the-sphinx",
+ "title": "Riddle of the Sphinx",
+ "status": "accepted",
+ "version": "2f15ef871a401492",
+ "solution_outline": "P1: Ask five predetermined questions whose coefficients are (1,t,t(t-1)/2) for t=0,1,2,3,4. P2: Use three singleton questions followed by an unweighted and a weighted checksum. P3: Interpret the same five legal questions as samples of a quadratic polynomial and decode them using a linear error-locator polynomial. P4: Use four quadratic-evaluation questions to reduce the possibilities to at most four nonnegative integer leg triples. P5: The singleton-and-checksum questions also admit an exact weighted least-absolute-deviations decoder.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Four truthful linear equations",
+   "kind": "modeling",
+   "statement": "For the hidden leg triple L, a truthful reply to question (a,b,c) equals (a,b,c)·L. Among the five received replies, at least four are truthful, so L is a nonnegative integer solution of at least four corresponding equations.",
+   "routes": [
+    []
+   ],
+   "accept": "Models each response as a linear equation in the three unknown leg counts and allows at most one equation to fail, including the possibility that none fail.",
+   "anchors": [
+    "questions",
+    "answers",
+    "number of legs"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Legal questions with independent triples",
+   "kind": "construction",
+   "statement": "There exist five legal question rows with every three linearly independent. Such a design makes any three truthful replies sufficient to determine the leg triple.",
+   "routes": [
+    []
+   ],
+   "accept": "Establishes independence of every three chosen legal rows. Examples are the singleton rows followed by (1,1,1),(1,2,3), or rows (1,t,t(t−1)/2) for t=0,…,4. For the former, nonzero checksum coefficients and distinct coefficient ratios establish independence; for the latter, Vandermonde determinants do. Other legal designs satisfying the same invariant count.",
+   "anchors": [
+    "five questions",
+    "legal coefficients",
+    "linearly independent question rows"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N3",
+   "name": "Four agreements uniquely identify legs",
+   "kind": "key_property",
+   "statement": "If every three of five question rows are linearly independent, at most one leg triple agrees with at least four replies. Two such triples would share at least three matching equations, whose independence forces the triples to be equal.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "Uses intersection size at least 4+4−5=3 and invertibility of the shared equations. Equivalently proves that distinct truthful response vectors differ in at least three coordinates, permitting correction of one corrupted coordinate.",
+   "anchors": [
+    "five answers",
+    "leg triple",
+    "linearly independent questions"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N4",
+   "name": "Decode by four-agreement candidate validation",
+   "kind": "algorithm",
+   "statement": "Using five legal rows with every three independent, generate candidate leg triples from reply subsets guaranteed to include an all-truthful determining subset. Output a nonnegative integer candidate agreeing with at least four replies. Such a candidate exists and is unique.",
+   "routes": [
+    [
+     "N1",
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Examples include solving all ten triples, or omitting each possible erroneous reply, solving three remaining equations, and verifying all four. Establishes that the true triple is generated and validates integrality, nonnegativity, and four agreements. Exact solving or numerically justified solving followed by rounding and reliable validation counts. Only constantly many fixed-size systems are needed.",
+   "anchors": [
+    "five questions",
+    "candidate leg triples",
+    "four matching replies",
+    "output leg counts"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N5",
+   "name": "Parity checks isolate the single response error",
+   "kind": "reformulation",
+   "statement": "For three singleton questions and two legal checksum questions, let Q be their coefficient matrix and r their reply vector. Any parity-check matrix H satisfying HQ=0 cancels truthful responses. With one additive error δ in reply i, the syndrome Hr equals δh_i, where h_i is column i.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "For checks (1,1,1),(1,2,3) and replies (A,B,C,S,W), use Hr=(S−A−B−C,W−A−2B−3C). Its columns are (−1,−1),(−1,−2),(−1,−3),(1,0),(0,1). Substitution or matrix multiplication proves the error formula. Other legal checksum coefficients and parity-check coordinate conventions satisfying HQ=0 count.",
+   "anchors": [
+    "singleton questions",
+    "checksum questions",
+    "parity-check matrix",
+    "syndrome"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N6",
+   "name": "Distinct syndrome directions locate one lie",
+   "kind": "key_property",
+   "statement": "When the five syndrome columns are nonzero and pairwise nonparallel, a nonzero syndrome uniquely identifies the erroneous reply and its additive error. A zero syndrome then means every reply is truthful.",
+   "routes": [
+    [
+     "N5"
+    ]
+   ],
+   "accept": "Establishes nonzero, pairwise-distinct column directions for the chosen checks. For checks (1,1,1),(1,2,3), the directions have slopes 1,2,3,0 and vertical. Uses the at-most-one-error promise; a purported lie equal to the truthful value counts as no error.",
+   "anchors": [
+    "syndrome columns",
+    "erroneous reply",
+    "error magnitude"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N7",
+   "name": "Correct singleton answers using two checksums",
+   "kind": "algorithm",
+   "statement": "Ask three singleton questions and two checksums whose parity-check columns are nonzero and pairwise nonparallel. Compute the syndrome; if nonzero, identify the erroneous response and its error magnitude. Correct a singleton response when necessary, then output the three singleton values.",
+   "routes": [
+    [
+     "N5",
+     "N6"
+    ]
+   ],
+   "accept": "Locates and measures an error through the syndrome, correcting a singleton only when that response is erroneous. For replies (A,B,C,S,W) to the displayed checks, set u=S−A−B−C and v=W−A−2B−3C. If u≠0 and v=i·u for i=1,2,3, add u to singleton i; otherwise leave the singleton replies unchanged. Other syndrome conventions and legal distinguishing checksum weights count.",
+   "anchors": [
+    "output leg counts",
+    "checksum syndrome",
+    "singleton replies"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N8",
+   "name": "Leg counts as corrupted quadratic evaluations",
+   "kind": "reformulation",
+   "statement": "Five legal questions can make truthful replies equal P(t) at five distinct t, where P has degree at most two and uniquely determines the leg triple. The received values differ from these polynomial evaluations in at most one position.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "For q(t)=(1,t,t(t−1)/2), t=0,…,4, the truthful polynomial is P(t)=ℓa+ℓb·t+ℓc·t(t−1)/2. All coefficients are legal, and the polynomial basis gives a bijection between leg triples and quadratic coefficients. Other legal evaluation designs with an invertible coefficient-to-leg mapping count.",
+   "anchors": [
+    "quadratic evaluation questions",
+    "truthful polynomial",
+    "leg counts",
+    "corrupted evaluation"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N9",
+   "name": "Locator equations characterize the true quadratic",
+   "kind": "key_property",
+   "statement": "For five distinct evaluations of the true quadratic P, with at most one corrupted reply r_t, the locator equations N(t)=r_tE(t), with monic linear E and deg N≤3, hold exactly when N=EP and E vanishes at the corrupted point, if any. Such solutions exist.",
+   "routes": [
+    [
+     "N8"
+    ]
+   ],
+   "accept": "Choose E vanishing at the erroneous evaluation point and N=EP; without an error, any monic linear E works. Conversely, N−EP has degree at most three and vanishes at four truthful points, hence is zero. At a genuinely corrupted point, the locator equation then forces E to vanish. This also proves division by E recovers P despite nonunique no-error locators.",
+   "anchors": [
+    "locator equations",
+    "truthful evaluation points",
+    "error locator",
+    "polynomial division"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N10",
+   "name": "Decode through a cubic linear system",
+   "kind": "algorithm",
+   "statement": "Ask five legal questions encoding quadratic evaluations. Solve N(t)=r_t(t+e) for the cubic coefficients and e, allowing free variables. Divide by t+e to obtain the true quadratic and recover the integer leg triple using the chosen polynomial representation.",
+   "routes": [
+    [
+     "N2",
+     "N8",
+     "N9"
+    ]
+   ],
+   "accept": "Reliably solves the five-variable locator system, permits free variables, and recovers the quotient's integer leg counts. Fixed-size rational elimination is one sufficient implementation; numerically justified solving and integer recovery also count. For the binomial-basis design, a quotient P=p0+p1·t+p2·t² yields legs (p0,p1+p2,2p2).",
+   "anchors": [
+    "five replies",
+    "linear system",
+    "quadratic quotient",
+    "output leg counts"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N11",
+   "name": "Four replies leave at most four candidates",
+   "kind": "reformulation",
+   "statement": "After four legal questions whose every three rows are independent, the leg triples compatible with at most one erroneous reply are exactly the nonnegative integer solutions of their three-reply subsystems. There are between one and four distinct candidates.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "At least three of the four replies are truthful. Each of the four three-question subsets determines one rational triple; retains precisely the nonnegative integral triples and deduplicates. The first four binomial-basis evaluation questions are one valid design, but any four legal rows satisfying the independence invariant count.",
+   "anchors": [
+    "first four questions",
+    "three-reply subsystems",
+    "candidate leg triples"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N12",
+   "name": "Multiple candidates exhaust the lie budget",
+   "kind": "key_property",
+   "statement": "If the first four replies produce multiple distinct candidates, at least one of those replies was false. Otherwise every three-reply subsystem would recover the same true triple. Therefore, with multiple candidates, the fifth reply is guaranteed truthful.",
+   "routes": [
+    [
+     "N11"
+    ]
+   ],
+   "accept": "Uses independence of every three initial question rows and the at-most-one-lie promise. Does not assume the fifth answer truthful when only one candidate remains; that answer can instead be ignored.",
+   "anchors": [
+    "candidate leg triples",
+    "first four replies",
+    "fifth reply"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N13",
+   "name": "A legal question separates four candidates",
+   "kind": "construction",
+   "statement": "For at most four distinct candidate leg triples, some legal question gives different totals for every candidate. Each candidate pair forbids at most 11² questions in {0,…,10}³, and at most six pairs cannot forbid all 11³ questions.",
+   "routes": [
+    [
+     "N11"
+    ]
+   ],
+   "accept": "For a nonzero difference between two candidates, select a coordinate where it is nonzero. Fixing the other two question coefficients permits at most one value of the selected coefficient to make the totals equal. Union-bounds the six equality planes. Checking the 1331 legal questions is one sufficient construction; any proven separating choice counts.",
+   "anchors": [
+    "legal question",
+    "candidate pairs",
+    "different totals"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N14",
+   "name": "Adapt the final question to surviving candidates",
+   "kind": "algorithm",
+   "statement": "Ask four legal questions with every three rows independent and generate their candidate set. For a singleton, ask any legal fifth question and output that candidate. Otherwise ask a separating fifth question and output the candidate matching its guaranteed-truthful reply. Complete exactly five rounds.",
+   "routes": [
+    [
+     "N11",
+     "N12",
+     "N13"
+    ]
+   ],
+   "accept": "Uses the four-question candidate characterization, including filtering and deduplication. The first four binomial-basis evaluation rows are one example, not a requirement. For multiple candidates, constructs a legal question giving pairwise-distinct totals and selects by its reply. For one candidate, still asks and reads the fifth round but ignores that response.",
+   "anchors": [
+    "adaptive fifth question",
+    "candidate set",
+    "five rounds",
+    "output leg counts"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N15",
+   "name": "Positive weights strictly expose syndrome columns",
+   "kind": "key_property",
+   "statement": "For nonzero, pairwise-nonparallel syndrome columns h_i, positive weights w_i can be chosen so that each h_i admits a vector z_i satisfying z_i·h_i=w_i and |z_i·h_j|<w_j for every j≠i.",
+   "routes": [
+    [
+     "N5"
+    ]
+   ],
+   "accept": "Generally, w_i=||h_i||₂ and z_i=h_i/||h_i||₂ work by strict Cauchy–Schwarz. For the displayed singleton/checksum columns, weights (14,22,31,10,10) work with certificates (−7,−7),(−5,−17/2),(−5/2,−19/2),(10,0),(0,10). Any verified positive weights satisfying the strict supporting-functional property count.",
+   "anchors": [
+    "syndrome columns",
+    "positive weights",
+    "strict supporting functionals"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N16",
+   "name": "Weighted absolute residual uniquely recovers legs",
+   "kind": "key_property",
+   "statement": "For singleton-and-checksum rows q_i, if positive weights w_i give every syndrome column a strict supporting functional, the true leg triple uniquely minimizes ∑w_i|r_i−q_i·L| over L∈ℝ³ despite at most one erroneous reply.",
+   "routes": [
+    [
+     "N5",
+     "N15"
+    ]
+   ],
+   "accept": "Write residual e=r−QL, whose syndrome equals the true error syndrome δh_k. Applying sign(δ)z_k lower-bounds the objective by w_k|δ|. Strict inequalities force every other residual coordinate to zero at equality, hence recover the true triple. With no error, the minimum is zero and the singleton rows give uniqueness. The particular numerical weights are immaterial once the strict-support condition holds.",
+   "anchors": [
+    "weighted absolute residual",
+    "strict-support condition",
+    "true leg triple",
+    "single error"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N17",
+   "name": "Decode by weighted robust regression",
+   "kind": "algorithm",
+   "statement": "Ask singleton-and-checksum questions with weights satisfying the strict-support condition and output the triple minimizing the weighted absolute residual. It suffices to compare solutions of invertible three-reply subsystems: the truthful rows contain an independent triple and hence generate the unique minimizer.",
+   "routes": [
+    [
+     "N5",
+     "N16"
+    ]
+   ],
+   "accept": "One implementation enumerates at most ten rational candidates and compares their weighted costs. Strict support excludes a nonzero response difference supported on one coordinate, so the four truthful rows span three dimensions. Accepts any weights satisfying the condition and any sufficiently reliable optimization, objective comparison, and integer recovery; exact rational enumeration with the displayed integer weights is one sufficient implementation.",
+   "anchors": [
+    "three-reply subsystems",
+    "weighted residual objective",
+    "reliable minimization",
+    "output leg counts"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 5
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   [
+    "N1",
+    "N5",
+    "N6",
+    "N7"
+   ],
+   [
+    "N1",
+    "N2",
+    "N8",
+    "N9",
+    "N10"
+   ],
+   [
+    "N1",
+    "N2",
+    "N11",
+    "N12",
+    "N13",
+    "N14"
+   ],
+   [
+    "N1",
+    "N5",
+    "N15",
+    "N16",
+    "N17"
+   ]
+  ],
+  "keys": [
+   "N4",
+   "N7",
+   "N10",
+   "N14",
+   "N17"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "The interaction requires exactly five question lines, each flushed before reading its reply, followed by one flushed answer line. Standard output must contain no explanations or protocol markers.",
+   "check": "Each question prints three legal integers and flushes, then reads one reply. The final triple is printed only after all five replies; no extra output is produced."
+  },
+  {
+   "id": "H2",
+   "statement": "Leg counts must be recovered as nonnegative integers. Arithmetic, objective comparisons, and response validation must avoid overflow and numerical errors that could change the selected answer.",
+   "check": "Exact arithmetic or justified floating-point solving, rounding, and reliable validation can suffice. Signed 64-bit arithmetic covers Cramer determinants, numerators, and dot products for the displayed small-row designs and replies at most 100000. Separately justify intermediate bounds and numerical reliability for other calculations, including rational elimination."
+  },
+  {
+   "id": "H3",
+   "statement": "A lie is optional. An error-locator linear system can consequently have free variables; singularity must not be treated as an invalid interaction.",
+   "check": "The solver permits nonpivot columns and selects arbitrary values for free variables, or separately handles the all-truthful case. The decoder must not require a unique locator polynomial."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Ask five predetermined questions whose coefficients are (1,t,t(t-1)/2) for t=0,1,2,3,4. Any three questions are linearly independent, so two different leg triples cannot both agree with at least four replies. Solve each of the ten three-question subsystems exactly and output a nonnegative integer solution agreeing with at least four replies; this uses constant time and tolerates either one lie or no lies.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   "key_node": "N4",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 50,
+    "n_tests": 50,
+    "max_time_s": 0.014,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Use three singleton questions followed by an unweighted and a weighted checksum. The two checksum discrepancies form a syndrome: each possible corrupted reply produces a different direction, so they identify whether a singleton answer needs correction and by how much. The five questions and the decoder both use constant time and small exact integers.",
+   "end_route": [
+    "N1",
+    "N5",
+    "N6",
+    "N7"
+   ],
+   "key_node": "N7",
+   "new_nodes": [
+    "N5",
+    "N6",
+    "N7"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 50,
+    "n_tests": 50,
+    "max_time_s": 0.007,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Interpret the same five legal questions as samples of a quadratic polynomial and decode them using a linear error-locator polynomial. A monic linear polynomial can annihilate the one erroneous sample, making the product with the true quadratic a cubic satisfying five linear equations. Any solution of those equations recovers the true quadratic, since its difference from that product has four roots; exact elimination of this fixed-size system is easily fast enough.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N8",
+    "N9",
+    "N10"
+   ],
+   "key_node": "N10",
+   "new_nodes": [
+    "N8",
+    "N9",
+    "N10"
+   ],
+   "new_hazards": [
+    "H3"
+   ],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 50,
+    "n_tests": 50,
+    "max_time_s": 0.008,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Use four quadratic-evaluation questions to reduce the possibilities to at most four nonnegative integer leg triples. If several candidates survive, a lie has already occurred, so the final reply must be truthful; choose the fifth question adaptively to distinguish all candidates. Such a legal question always exists because the at most six forbidden equality planes cannot cover the 11-by-11-by-11 coefficient grid, which can be searched directly.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N11",
+    "N12",
+    "N13",
+    "N14"
+   ],
+   "key_node": "N14",
+   "new_nodes": [
+    "N11",
+    "N12",
+    "N13",
+    "N14"
+   ],
+   "new_hazards": [],
+   "program": "paths/P4.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 50,
+    "n_tests": 50,
+    "max_time_s": 0.007,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P5",
+   "approach": "The singleton-and-checksum questions also admit an exact weighted least-absolute-deviations decoder. With specially chosen integer weights, each possible single-error syndrome has a strict supporting functional, proving that the true leg triple uniquely minimizes the weighted absolute residual over all real triples. Enumerating the ten three-equation intersections includes the true triple, so comparing their rational objective values exactly gives a constant-time robust-regression solution.",
+   "end_route": [
+    "N1",
+    "N5",
+    "N15",
+    "N16",
+    "N17"
+   ],
+   "key_node": "N17",
+   "new_nodes": [
+    "N15",
+    "N16",
+    "N17"
+   ],
+   "new_hazards": [],
+   "program": "paths/P5.cpp",
+   "submission": 5,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 50,
+    "n_tests": 50,
+    "max_time_s": 0.008,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Five genuinely different approaches were implemented and accepted: full-spark subsystem decoding, direct checksum-syndrome correction, polynomial error-locator decoding, an adaptive separating fifth question, and exact weighted absolute-residual minimization. I have no further distinct approach that I believe both correct and sufficiently efficient.",
+  "considered": [
+   "Repeating each singleton question three times gives independent majority protection but requires nine questions, exceeding the five-round limit.",
+   "Other full-spark matrices, alternative exact linear solvers, and finite-difference syndrome formulas only change constructions or implementations of the existing decoding principles.",
+   "Ordinary least squares is not robust to an arbitrary false reply. Unweighted absolute-residual minimization also lacks the strict recovery guarantee; the accepted weighted decoder supplies the necessary geometry.",
+   "Exhaustive enumeration of all three leg counts is unnecessarily large and offers no competitive alternative to the constant-sized candidate constructions.",
+   "Packing all three unknown counts into one small-base response cannot be justified: coefficients are at most 10, and the statement does not bound each leg count below that base."
+  ],
+  "submissions": 5
+ },
+ "builder_notes": "Kept every node, hazard, id, and route. To separate polynomial representation from the shared query-design invariant without adding nodes, N2 now states only the legal independent-triples design, N8 states the quadratic-evaluation reformulation, and N9 gives the locator characterization including existence and recovery. N4 now recognizes both all-triples enumeration and omit-one reconstruction, including the singleton-and-checksum design. Fixed matrices, syndrome coordinates, weights, certificates, and exact arithmetic are acceptance examples rather than universal requirements.",
+ "open_issues": [],
+ "advisories": [
+  "N9 (bundles claims a solver can have separately; split it): A solver can construct a locator vanishing at the corrupted point and derive a consistent system using N=EP, yet still be stuck proving that every solution of that system recovers P. Separate locator formulation/existence from the converse recovery claim proved by the four truthful roots.",
+  "order: Split N9 into locator-equation formulation/existence and universal recovery by the four-root argument. Place the recovery node after the formulation node, and make N10 depend on both; this distinguishes discovering the linearization from proving that arbitrary solutions, including no-error free-variable solutions, decode correctly."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 6,
+  "submissions": 5,
+  "review_rounds": 2,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 99277,
+    "output_tokens": 22888,
+    "cached_tokens": 50241,
+    "reasoning_tokens": 12853
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 14845,
+    "output_tokens": 19480,
+    "reasoning_tokens": 16943
+   },
+   "total": {
+    "input_tokens": 114122,
+    "output_tokens": 42368,
+    "cached_tokens": 50241,
+    "reasoning_tokens": 29796
+   }
+  },
+  "inputs": {
+   "statement": "7432d0fd44f3c1639c2df67d2d765a5c4870cb58923b3891dfd5212a59b9f6a6",
+   "editorial": "0209d4ef6fec014194e3f9c1b0c2b2073ae7953d2fa0094fefb58470b66e8fc6",
+   "reference": "67fd6187992f8934d8829cd6110dd6df7c958a477879aef7376354bd128bc389"
+  },
+  "created": "2026-11-03 01:03:04"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

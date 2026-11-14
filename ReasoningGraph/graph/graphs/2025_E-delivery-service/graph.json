@@ -1,0 +1,451 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2025/E-delivery-service",
+ "title": "Delivery Service",
+ "status": "accepted",
+ "version": "dc9421d8da316474",
+ "solution_outline": "P1: Split every city into a home-time copy and a destination-time copy, and join the appropriate copies for each courier. P2: Count only pairs that become connected at each component merge, rather than maintaining an inclusion-exclusion total. P3: Use the entire hiring sequence to build a binary merge forest, so every component that ever occurs is a fixed interval of leaves.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Courier handoffs form a two-copy graph",
+   "kind": "modeling",
+   "statement": "Create home copy H_v and destination copy D_v for each city v, with edge H_aD_b for each hired courier (a,b). Couriers can exchange packages, possibly over several days, exactly when their edges belong to the same connected component.",
+   "routes": [
+    []
+   ],
+   "accept": "Couriers can meet only at a common home city or a common destination city. These meetings correspond to incident graph edges. A courier can retain a package until the next appropriate meeting, so any finite chain of such meetings is feasible in either direction.",
+   "anchors": [
+    "home city",
+    "destination city",
+    "couriers",
+    "hand off"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Connected cities share a copy component",
+   "kind": "key_property",
+   "statement": "Distinct cities u and v are connected precisely when some copy of u and some copy of v lie in the same component of the two-copy graph. Sharing a city name does not itself join its home and destination copies.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "A customer may give or receive a package at either daily visit. A delivery between distinct cities uses a chain of meeting couriers, and any shared component supplies such a chain in both directions. Singleton copies introduce no false connected pairs.",
+   "anchors": [
+    "connected cities",
+    "home copy",
+    "destination copy",
+    "component"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Component cliques minus duplicate city pairs",
+   "kind": "reformulation",
+   "statement": "Let d_C count distinct cities represented in component C, and p_CD count cities whose copies lie in distinct components C,D. The answer is Σ_C binom(d_C,2) minus Σ_{C<D} binom(p_CD,2).",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Each connected pair occurs in one or two component cliques because a city has only two copies. It occurs twice exactly when both cities have the same unordered pair of distinct copy components. Cities whose copies coincide in a component count once in d_C and in no p bucket.",
+   "anchors": [
+    "pairs of cities",
+    "component city count",
+    "component-pair bucket"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Local changes when moving one copy",
+   "kind": "key_property",
+   "statement": "For a transfer A→B (A≠B), let T contain the other copy. Decrease d_A iff T≠A; increase d_B iff T≠B. Remove the city from p_AT iff T≠A; add it to p_BT iff T≠B.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "This holds for any partition of the copies, including intermediate partitions during a merge. Use the other copy's current block. A count changing k to k+1 changes its binomial contribution by k; changing k to k−1 changes it by −(k−1).",
+   "anchors": [
+    "home copy",
+    "destination copy",
+    "component city count",
+    "component-pair bucket"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N5",
+   "name": "Per-copy updates maintain every answer",
+   "kind": "algorithm",
+   "statement": "Start with 2n singleton blocks. For each courier, join its home-copy and destination-copy blocks, maintaining the clique and duplicate sums through local updates for each transferred copy. Output their difference after each hire.",
+   "routes": [
+    [
+     "N1",
+     "N3",
+     "N4"
+    ]
+   ],
+   "accept": "Keep current owners and iterable membership lists, distinct-city counts, and a dictionary of nonzero unordered component-pair counts. Use an amortized balancing policy, such as union by copy count or rank. Each copy then moves O(log n) times, giving expected O(m+n log n) time with hashing and O(n) space. Already joined endpoints require no updates.",
+   "anchors": [
+    "couriers hired",
+    "component merge",
+    "pairs of connected cities"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N6",
+   "name": "New pairs are exclusive cross-component pairs",
+   "kind": "key_property",
+   "statement": "Let S_C be the cities represented in component C. Merging A,B newly connects precisely those pairs with one city in S_A\\S_B and the other in S_B\\S_A that did not previously share a third component.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Cities in S_A∩S_B were already connected to every other city of S_A∪S_B. No city outside that union gains a shared component. Each exclusive cross pair becomes connected via the merged component, and its only possible previous connection is through its other copies.",
+   "anchors": [
+    "connected cities",
+    "component merge",
+    "exclusive cities"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N7",
+   "name": "Exact gain from a component contraction",
+   "kind": "reformulation",
+   "statement": "Let d_C count distinct cities represented in component C, and p_CD count cities with copies in distinct components C,D. Merging A,B adds (d_A−p_AB)(d_B−p_AB)−Σ_{C≠A,B}p_ACp_BC connected pairs.",
+   "routes": [
+    [
+     "N6"
+    ]
+   ],
+   "accept": "The shared-city count is p_AB. An exclusive cross pair was already connected precisely when both other copies lie in the same component C. Such pairs number p_AC p_BC for that C, and cannot be counted for two different third components.",
+   "anchors": [
+    "component city count",
+    "component-pair multiplicity",
+    "new connected pairs"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N8",
+   "name": "Contract weighted component adjacency maps",
+   "kind": "algorithm",
+   "statement": "Initialize singleton copy components, with one multiplicity contribution linking each city's copies. For each courier joining distinct components, add the contraction gain and contract their weighted adjacency maps, updating the merged distinct-city count. Output accumulated gains after every hire.",
+   "routes": [
+    [
+     "N1",
+     "N7"
+    ]
+   ],
+   "accept": "Store symmetric maps p_CD between current DSU roots. Compute gain before changing maps. Absorbing A into B removes A−B, redirects other A−C weights to B−C in both maps, and sets d_B←d_A+d_B−p_AB. Balancing by copy count or rank, for example, limits each city's representative changes to O(log n), giving expected O(m α(n)+n log n) time with hashing and O(n) live entries.",
+   "anchors": [
+    "couriers hired",
+    "component contraction",
+    "neighbor multiplicities",
+    "pairs of connected cities"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N9",
+   "name": "Merge forest makes components leaf intervals",
+   "kind": "key_property",
+   "statement": "Build a binary forest whose leaves are the 2n city copies and whose internal nodes join the two components of each successful courier insertion. Every component appearing during hiring is a subtree, hence a contiguous leaf interval in a depth-first ordering.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Maintain a DSU while reading hires and create an internal node only when two roots differ. Store each root's current tree node. Traverse all final trees; their leaf ordering gives each historical component a fixed interval. Redundant insertions introduce no node.",
+   "anchors": [
+    "couriers hired",
+    "component",
+    "home copy",
+    "destination copy",
+    "merge forest"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N10",
+   "name": "Component overlap is a static rectangle count",
+   "kind": "reformulation",
+   "statement": "Let mate(x) be the leaf position of the other copy of x's city. For disjoint component intervals I_A,I_B, p_AB equals the number of positions x in I_A with mate(x) in I_B. All such queries use one fixed permutation of the leaves.",
+   "routes": [
+    [
+     "N9"
+    ]
+   ],
+   "accept": "Place one point (x,mate(x)) per leaf. A city split between A and B contributes exactly one point to I_A×I_B. A wavelet tree, wavelet matrix, or persistent prefix frequency tree provides these static rectangle counts in O(log n) time using O(n log n) space.",
+   "anchors": [
+    "component-pair multiplicity",
+    "paired city copies",
+    "leaf intervals"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N11",
+   "name": "Evaluate merge gains with static range queries",
+   "kind": "algorithm",
+   "statement": "Preprocess paired-leaf rectangle counts. At each merge A,B, obtain p_AB and enumerate A's leaves. For each leaf whose partner lies in a current component T outside A,B, subtract p_BT from (d_A−p_AB)(d_B−p_AB). Output cumulative gains after each hire.",
+   "routes": [
+    [
+     "N7",
+     "N9",
+     "N10"
+    ]
+   ],
+   "accept": "Each leaf of A with partner outside A∪B contributes one p_BT, expanding N7's correction. Maintain current owners while merging and set d_merged=d_A+d_B−p_AB. An amortized balancing policy, such as smaller leaf count or union by rank, limits each leaf to O(log n) enumerations. Static O(log n) overlap queries give O(m α(n)+n log² n) time and O(n log n) space.",
+   "anchors": [
+    "new connected pairs",
+    "couriers hired",
+    "merge forest",
+    "rectangle counts"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 5
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   [
+    "N1",
+    "N2",
+    "N6",
+    "N7",
+    "N8"
+   ],
+   [
+    "N1",
+    "N2",
+    "N6",
+    "N7",
+    "N9",
+    "N10",
+    "N11"
+   ]
+  ],
+  "keys": [
+   "N5",
+   "N8",
+   "N11"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Pair-count products and accumulated totals can exceed 32-bit signed range, including binomial terms, candidate merge gains, and duplicate corrections.",
+   "check": "Use sufficiently wide exact arithmetic for every pair-count product and accumulated total. Promote operands before multiplication, including (d_A−p_AB)(d_B−p_AB), p_AC p_BC, and binomial products. Signed 64-bit integers suffice for these quantities under the input limits."
+  },
+  {
+   "id": "H2",
+   "statement": "Repeated courier routes and hires whose two endpoint copies are already connected must not change the maintained partition or pair count.",
+   "check": "Test whether the endpoint copies have the same current owner before performing any merge; still print the unchanged answer for that hire."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Split every city into a home-time copy and a destination-time copy, and join the appropriate copies for each courier. Two cities can exchange packages exactly when some copies lie in the same component; counting component cliques and subtracting pairs counted twice gives the answer. Maintain this formula while merging components by size, moving individual copies and updating only their city's component-pair bucket, in expected O(m+n log n) time and O(n) space.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "key_node": "N5",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 25,
+    "n_tests": 25,
+    "max_time_s": 1.094,
+    "time_limit_s": 12.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Count only pairs that become connected at each component merge, rather than maintaining an inclusion-exclusion total. If A and B share t cities, the candidate new pairs are the Cartesian product of their exclusive cities; subtract those already connected through a third component using the dot product of component-pair multiplicities. A weighted multigraph on components supports these contractions with small-to-large adjacency updates in expected O(m α(n)+n log n) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N6",
+    "N7",
+    "N8"
+   ],
+   "key_node": "N8",
+   "new_nodes": [
+    "N6",
+    "N7",
+    "N8"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 25,
+    "n_tests": 25,
+    "max_time_s": 1.761,
+    "time_limit_s": 12.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Use the entire hiring sequence to build a binary merge forest, so every component that ever occurs is a fixed interval of leaves. Pair each leaf with the other copy of its city; a static wavelet matrix then answers component-overlap queries as rectangle counts. At each merge, enumerate only the smaller component's leaves and use these static queries to evaluate the new-pair formula, avoiding dynamic multiplicity maps and running in O(m α(n)+n log² n) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N6",
+    "N7",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "key_node": "N11",
+   "new_nodes": [
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 25,
+    "n_tests": 25,
+    "max_time_s": 0.805,
+    "time_limit_s": 12.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Three genuinely different approaches were implemented and accepted: maintaining the clique-minus-duplicates invariant by copy transfers, counting gains through weighted component contractions, and evaluating gains offline using a merge forest and static rectangle queries. I have no further distinct approach that I believe both correct and fast enough.",
+  "considered": [
+   "A DSU on physical cities is incorrect: home-time and destination-time visits cannot automatically exchange packages, as the sample's first two hires demonstrate.",
+   "Explicitly maintaining connected city pairs or their delivery times requires quadratic storage or work; n can reach 200,000.",
+   "Recomputing the two-copy components and pair counts independently after every hire is too slow for 400,000 hires.",
+   "Computing the minimum of four merge-tree LCA times for every city pair correctly characterizes its first connection, but enumerating all pairs remains quadratic.",
+   "Reversing contractions, changing hash maps to ordered maps, or sorting the same copy-transfer bucket events would mainly reimplement already established claims rather than provide another genuinely distinct reasoning path."
+  ],
+  "submissions": 3
+ },
+ "builder_notes": "Moved the exact balancing policies from N5, N8, and N11 statements into implementation examples in their accepts. Expanded H1 to cover all paths' products and totals. Removed the merged-count identity from N7's statement and retained it in N8/N11 accepts. N4 remains a combined single-copy transition claim because splitting it would require adding a node and changing prerequisites, whereas this revision must preserve all ids and routes.",
+ "open_issues": [],
+ "advisories": [
+  "N4 (bundles claims a solver can have separately; split it): The distinct-city-count updates and the split-component-pair updates are independently understandable invariants: a solver can update d correctly while mishandling p, or conversely. Split these into two local-transition claims feeding N5; preserving existing IDs does not resolve this granularity issue.",
+  "order: Split N4 into the distinct-city-count transition and the split-component-pair transition, with both prerequisites feeding N5. The remaining cuts and dependency ordering are sound."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 4,
+  "submissions": 3,
+  "review_rounds": 2,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 59871,
+    "output_tokens": 17412,
+    "cached_tokens": 23648,
+    "reasoning_tokens": 9980
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 13365,
+    "output_tokens": 20860,
+    "reasoning_tokens": 19006
+   },
+   "total": {
+    "input_tokens": 73236,
+    "output_tokens": 38272,
+    "cached_tokens": 23648,
+    "reasoning_tokens": 28986
+   }
+  },
+  "inputs": {
+   "statement": "0a1e7badbc69c7148d2999d8b52e09e7fee7cae0d0d6a2307593df8d88861c33",
+   "editorial": "d3d8f9f45c42c66c6ec4522f6206097855b4b78b86bbd113f7a3fbb8f13dda2d",
+   "reference": "52dcfbbf44d29798a193277fe0816913b2b4aad9f6ef56054a04900875b22dba"
+  },
+  "created": "2026-11-02 23:46:25"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

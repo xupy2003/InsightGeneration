@@ -1,0 +1,6 @@
+# ReasoningGraph and GPTv4 (login node): Python >= 3.10 and
+openai>=2.0
+# offline tests
+pytest
+
+# The solver jobs (Solver/run.py) run in their own conda env with vllm and transformers; the judge needs g++.

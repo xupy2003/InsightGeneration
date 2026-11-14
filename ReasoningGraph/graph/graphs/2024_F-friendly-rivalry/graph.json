@@ -1,0 +1,969 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2024/F-friendly-rivalry",
+ "title": "Friendly Rivalry",
+ "status": "accepted",
+ "version": "4108eb273df67438",
+ "solution_outline": "P1: For a proposed squared separation D, connect every pair closer than D; all vertices of each connected component must receive the same color. P2: Instead of binary search, sweep pairwise edges in nondecreasing length and recompute the component-size subset sum only after a successful DSU merge. P3: Reduce the complete distance graph to a minimum spanning tree: for every two-team division, its shortest cross-team distance is attained by a crossing MST edge. P4: Maintain the exact generating polynomial of attainable component-size subsets during the edge sweep, rather than recomputing subset sum after each merge. P5: Use an MST as a sparse certificate for every threshold-connectivity graph: keeping only its edges shorter than a threshold gives exactly the original short-edge components. P6: Build the binary hierarchy of successful Kruskal merges and optimize directly on that hierarchy without a threshold search or root-color state. P7: Linearize the Kruskal merge hierarchy into an artificial weighted path: its leaf order is depth-first, and consecutive leaves are joined with their lowest-common-ancestor merge weight. P8: Compute every Kruskal-prefix balance test offline.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Short edges force monochromatic components",
+   "kind": "modeling",
+   "statement": "For squared threshold D, form the graph joining chapters whose squared distance is strictly less than D. A division has minimum cross-team distance at least sqrt(D) if and only if every connected component is assigned wholly to one team.",
+   "routes": [
+    []
+   ],
+   "accept": "Establishes that every short edge must have equally colored endpoints, propagates this along paths, and conversely observes that monochromatic components forbid every cross-team pair shorter than the threshold.",
+   "anchors": [
+    "chapters",
+    "Euclidean distance",
+    "teams",
+    "connected components"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Balance is component-size subset sum",
+   "kind": "reformulation",
+   "statement": "A squared threshold D is feasible for two teams of n chapters exactly when some subset of its short-edge connected components has total size n. The remaining components then also total n.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Uses connected-component sizes as indivisible 0/1 weights and tests whether n is reachable. A component larger than n immediately implies infeasibility.",
+   "anchors": [
+    "n chapters",
+    "connected components",
+    "component sizes"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Discrete monotone separation optimum",
+   "kind": "key_property",
+   "statement": "Feasibility is monotone decreasing as the squared threshold increases. The optimal squared separation equals a squared distance between two input chapters, so it is the largest feasible value among the distinct pairwise squared distances.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "Increasing the threshold only adds same-team constraints. Every balanced division has a cross-team pair attaining its minimum, and there are finitely many divisions; hence the optimum is a pairwise distance. The smallest pairwise distance is feasible.",
+   "anchors": [
+    "optimal distance",
+    "pairwise distances",
+    "threshold"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Binary-search threshold and reconstruct teams",
+   "kind": "construction",
+   "statement": "Binary-search the last pairwise squared threshold whose component sizes can sum to n. Reconstruct such a component subset at this threshold and output all of its vertices as blue, together with the threshold's square root.",
+   "routes": [
+    [
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Sorts pairwise squared distances, builds trial components with DSU, and computes reachable sums by bitset shifts or another sufficiently efficient subset-sum DP. Reconstructs a winning subset using stored predecessors or DP layers. O(V² log V + log V·(V²α(V)+Vn)) time for V=2n is sufficient; bitsets further reduce subset-sum work.",
+   "anchors": [
+    "blue team",
+    "binary search",
+    "subset-sum reconstruction",
+    "distance"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N5",
+   "name": "First balance-destroying merge fixes optimum",
+   "kind": "key_property",
+   "statement": "During a nondecreasing edge sweep, suppose adding an edge of squared length D first makes n unattainable as a component-size subset sum. Any balanced coloring of the preceding components is optimal and has separation sqrt(D), even when distances tie.",
+   "routes": [
+    [
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Before failure all shorter edges have been processed. Every balanced coloring before the merge must separate its endpoints, or it would survive the merge. No separation greater than sqrt(D) can omit this same-team constraint. Eventually merging all chapters destroys balance.",
+   "anchors": [
+    "component sizes",
+    "n chapters",
+    "edge distances",
+    "optimal division"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N6",
+   "name": "Sweep merges and recover preceding partition",
+   "kind": "construction",
+   "statement": "Sweep pairwise edges by nondecreasing distance, testing component-size subset sums after every union of distinct components. Stop at the first union eliminating n; reconstruct a size-n subset from the preceding partition and output its chapters as blue and that union's edge length.",
+   "routes": [
+    [
+     "N2",
+     "N5"
+    ]
+   ],
+   "accept": "DSU skips redundant edges. At most 2n-1 unions require a new subset-sum calculation, implemented with shifted bitsets. Save or rebuild the partition immediately before failure, then reconstruct a component subset with total n. Sorting costs O(n² log n); all bitset tests cost O(n³/word_size), with O(n²) scalar reconstruction.",
+   "anchors": [
+    "blue team",
+    "DSU merges",
+    "subset-sum reconstruction",
+    "edge length"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N7",
+   "name": "MST paths dominate direct distances",
+   "kind": "key_property",
+   "statement": "In any minimum spanning tree of the complete graph weighted by squared chapter distances, every edge on the tree path between chapters u and v has weight at most the squared distance between u and v.",
+   "routes": [
+    []
+   ],
+   "accept": "Uses the MST exchange property: if a path edge were heavier than the direct edge uv, replacing it by uv would decrease the spanning-tree weight. Squared Euclidean distances preserve the needed edge ordering.",
+   "anchors": [
+    "chapters",
+    "squared distances",
+    "minimum spanning tree",
+    "tree path"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N8",
+   "name": "MST preserves every division's separation",
+   "kind": "reformulation",
+   "statement": "For every division into two nonempty teams, the minimum cross-team squared distance equals the minimum weight of an MST edge with endpoints in different teams.",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "MST edges are input pairs, giving one inequality. The tree path between a closest cross-team pair contains a crossing edge, and N7 bounds that edge's weight by the pair's squared distance, giving the reverse inequality.",
+   "anchors": [
+    "teams",
+    "minimum cross-team distance",
+    "MST edges"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N9",
+   "name": "Cardinality-and-color bottleneck tree DP",
+   "kind": "algorithm",
+   "statement": "Root the MST. Let F_v(c,k) maximize the minimum crossing-edge weight in v's subtree with root color c and k blue vertices; no crossing means +∞. Merging child u maximizes min(F_current(c,a),F_u(d,b),B) over a+b=k and d, where B=w(v,u) if c≠d, otherwise +∞.",
+   "routes": [
+    [
+     "N8"
+    ]
+   ],
+   "accept": "Initial singleton states are F_v(blue,1)=F_v(green,0)=infinity; other states are impossible. Enumerates both child colors and bounded subtree counts. The bottleneck of a combined coloring is the minimum of its two internal bottlenecks and any crossing connecting edge. Restricting counts to n gives O(V²) total merge work for V=2n.",
+   "anchors": [
+    "blue vertices",
+    "root color",
+    "MST subtree",
+    "bottleneck DP"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N10",
+   "name": "Backtrack optimal balanced tree coloring",
+   "kind": "construction",
+   "statement": "Build an MST and evaluate the cardinality-and-color bottleneck DP. Select the root state with n blue vertices and greatest bottleneck, backtrack its maximizing child transitions, and output the blue chapters together with the square root of that bottleneck.",
+   "routes": [
+    [
+     "N9"
+    ]
+   ],
+   "accept": "Constructs an MST, for example with dense O(V²) Prim. Chooses max(F_root(blue,n),F_root(green,n)), reconstructs the chosen child count and color at each merge, and reports the resulting n identifiers and Euclidean separation. Maximizing transitions may be stored during evaluation or recovered afterward.",
+   "anchors": [
+    "blue team",
+    "MST",
+    "DP reconstruction",
+    "distance"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N11",
+   "name": "Component generating polynomial counts teams",
+   "kind": "reformulation",
+   "statement": "For component sizes s₁,…,s_k, the coefficient of x^j in P(x)=∏(1+x^{s_i}) counts subsets of whole components totaling j chapters. In particular, the coefficient of x^n is positive exactly when those components admit a balanced division.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Each factor chooses whether a component belongs to blue. Multiplication counts all component subsets, so coefficients are nonnegative integers and positivity is equivalent to subset-sum attainability. Coefficients beyond n may be discarded.",
+   "anchors": [
+    "component sizes",
+    "blue team",
+    "subset counts",
+    "generating polynomial"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N12",
+   "name": "Update subset counts across component merges",
+   "kind": "algorithm",
+   "statement": "Merging component sizes a,b replaces their subset-count polynomial P(x) by P(x)(1+x^{a+b})/((1+x^a)(1+x^b)). This replacement can be computed exactly through degree n using only coefficients through degree n, preserving all team-size counts relevant to balance.",
+   "routes": [
+    [
+     "N11"
+    ]
+   ],
+   "accept": "One realization removes each factor 1+x^s via q_j=p_j−q_{j−s}, evaluated in increasing j with negative indices zero, then inserts the merged factor by descending in-place addition. Other exact truncated-polynomial division and multiplication methods count. Initially P=(1+x)^(2n). Each successful union can use O(n) operations on O(n)-bit integers.",
+   "anchors": [
+    "component merge",
+    "polynomial factors",
+    "subset counts",
+    "truncated polynomial"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N13",
+   "name": "Polynomial sweep and balanced reconstruction",
+   "kind": "construction",
+   "statement": "During the nondecreasing edge sweep, maintain exact component-subset counts by factor removal and insertion. At the first merge making the coefficient of x^n zero, reconstruct n vertices from the preceding components and output them as blue with that edge's length.",
+   "routes": [
+    [
+     "N5",
+     "N12"
+    ]
+   ],
+   "accept": "Skips edges internal to a component. Uses arbitrary-precision polynomial coefficients for an exact zero test, saves the successful merges before failure, rebuilds that partition, and reconstructs a component subset totaling n. Edge sorting plus O(n²) big-integer operations and O(n²) reconstruction fits the limits.",
+   "anchors": [
+    "blue team",
+    "edge sweep",
+    "polynomial coefficients",
+    "reconstruction"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N14",
+   "name": "MST certifies all threshold components",
+   "kind": "key_property",
+   "statement": "For every squared threshold D, the MST edges with weight less than D have exactly the same connected components as all chapter pairs with squared distance less than D.",
+   "routes": [
+    [
+     "N1",
+     "N7"
+    ]
+   ],
+   "accept": "Every retained MST edge is an original short edge. Conversely, N7 gives an entirely short MST path for every original short edge, so original short-edge connectivity cannot join different truncated-MST components.",
+   "anchors": [
+    "threshold",
+    "connected components",
+    "MST edges",
+    "chapter distances"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N15",
+   "name": "Search sparse MST and reconstruct components",
+   "kind": "construction",
+   "statement": "Build an MST and binary-search its distinct squared edge weights, testing whether components formed by shorter tree edges can total n. At the largest passing weight, reconstruct components totaling n and output their chapters as blue together with the square root of that weight.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N8",
+     "N14"
+    ]
+   ],
+   "accept": "N8 restricts the optimum to MST edge weights, and N14 makes tree-component subset sum identical to the original balance test. Dense Prim uses O(V²) distance evaluations; searches process only V-1 edges and use bitset subset sums. Standard predecessor reconstruction supplies exactly n blue chapters.",
+   "anchors": [
+    "MST",
+    "blue team",
+    "threshold search",
+    "subset-sum reconstruction"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N16",
+   "name": "Distances across a Kruskal merge",
+   "kind": "key_property",
+   "statement": "When Kruskal's algorithm on the complete squared-distance graph merges components A and B using an edge of weight w, the minimum squared distance between a chapter in A and a chapter in B is exactly w.",
+   "routes": [
+    []
+   ],
+   "accept": "Any strictly shorter edge between distinct current components would already have merged them. The current merge edge witnesses equality. Ties may be processed in any order; recording each successful merge creates a binary hierarchy with chapters as leaves.",
+   "anchors": [
+    "chapters",
+    "Kruskal components",
+    "merge distance",
+    "pairwise distances"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N17",
+   "name": "Mixed-cluster separation depends only on children",
+   "kind": "reformulation",
+   "statement": "In the binary Kruskal merge hierarchy, a cluster with both colors has internal squared separation min(w,s_A,s_B), where w is its merge weight and s_A,s_B are the child separations. A monochromatic child has separation +∞.",
+   "routes": [
+    [
+     "N1",
+     "N16"
+    ]
+   ],
+   "accept": "Each child is connected by its earlier union edges, all of weight at most w. Consequently, any mixed child has internal separation at most w. All pairs between children have weight at least w by N16, so a mixed child's bottleneck controls the result. If both children are monochromatic with opposite colors, their minimum cross distance squared is exactly w.",
+   "anchors": [
+    "merge hierarchy",
+    "mixed cluster",
+    "child separations",
+    "teams"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N18",
+   "name": "Cardinality-only merge-hierarchy bottleneck DP",
+   "kind": "algorithm",
+   "statement": "In the Kruskal merge hierarchy, let F_C(k) be the best internal squared separation with k blue leaves. Monochromatic counts have F_C(k)=+∞. For other k, F_C(k)=max_{a+b=k} min(w_C,F_A(a),F_B(b)), where A,B are C's children.",
+   "routes": [
+    [
+     "N17"
+    ]
+   ],
+   "accept": "Leaves allow counts zero and one, both with infinite internal separation. At each binary merge, enumerates all child counts summing to k and computes the largest bottleneck. Counts beyond n can be omitted. The sum of child-size products over the hierarchy is O(V²), so the DP fits the limits.",
+   "anchors": [
+    "blue count",
+    "merge hierarchy",
+    "bottleneck DP",
+    "child counts"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N19",
+   "name": "Recover balanced hierarchy coloring",
+   "kind": "construction",
+   "statement": "Construct the Kruskal merge hierarchy and evaluate its cardinality-only bottleneck DP. Starting from count n at the hierarchy root, backtrack the maximizing child counts, output leaves assigned count one as blue, and print the square root of the root's DP value.",
+   "routes": [
+    [
+     "N18"
+    ]
+   ],
+   "accept": "Creates one binary node per successful union, with chapters as leaves and squared edge length as its label. Evaluates nodes after their children. Maximizing child-count splits can be stored or recovered afterward. Backtracking partitions the target count exactly among children and yields the required n chapter identifiers.",
+   "anchors": [
+    "blue team",
+    "Kruskal hierarchy",
+    "DP reconstruction",
+    "distance"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N20",
+   "name": "Linearize proximity hierarchy into a path",
+   "kind": "reformulation",
+   "statement": "List the leaves of the Kruskal merge hierarchy in depth-first left-to-right order. Weight each consecutive-leaf edge by its lowest common ancestor's merge weight. This artificial path has exactly the original short-edge connected components at every squared threshold.",
+   "routes": [
+    [
+     "N1",
+     "N16"
+    ]
+   ],
+   "accept": "Recursively concatenate child leaf orders, connecting their boundary leaves with the parent merge weight. Earlier union weights never exceed the parent weight. At any threshold, either a whole merge cluster connects or its two child paths stay separate, precisely matching Kruskal connectivity, including tied weights.",
+   "anchors": [
+    "Kruskal merge hierarchy",
+    "chapter order",
+    "weighted path",
+    "threshold components"
+   ],
+   "source": "exploration",
+   "path": "P7",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N21",
+   "name": "Prefix bottleneck DP on chapter path",
+   "kind": "algorithm",
+   "statement": "On the artificial path, let F(i,k,c) maximize the minimum crossing-edge weight in the first i chapters, with k blue chapters and last color c. Then F(i,k,c)=max_d min(F(i−1,k−[c=blue],d),B), where B is the preceding path-edge weight if c≠d, otherwise +∞.",
+   "routes": [
+    [
+     "N1",
+     "N20"
+    ]
+   ],
+   "accept": "Initial one-chapter states have infinite bottleneck. Impossible states are excluded. Each transition adds only the new adjacent edge, so two previous colors suffice. Equal threshold components imply equal separation for every coloring by N1. There are O(Vn) states and constant work per state.",
+   "anchors": [
+    "path prefix",
+    "blue count",
+    "last color",
+    "minimum crossing edge"
+   ],
+   "source": "exploration",
+   "path": "P7",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N22",
+   "name": "Backtrack balanced path coloring",
+   "kind": "construction",
+   "statement": "Construct and linearize the Kruskal hierarchy, then evaluate the prefix bottleneck DP. Choose the final state with n blue chapters and greatest bottleneck, backtrack its colors, and output the corresponding input chapter identifiers and the square root of that bottleneck.",
+   "routes": [
+    [
+     "N21"
+    ]
+   ],
+   "accept": "Builds the hierarchy from successful distance-ordered unions. Recursive traversal supplies both the chapter order and boundary merge weights. Stores or recovers a maximizing previous color for each visited prefix/count/color state, reverses these transitions from the chosen final state, and maps blue positions back to chapter identifiers.",
+   "anchors": [
+    "blue team",
+    "artificial path",
+    "DP reconstruction",
+    "distance"
+   ],
+   "source": "exploration",
+   "path": "P7",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N23",
+   "name": "Kruskal components have contiguous lifetimes",
+   "kind": "key_property",
+   "statement": "Index partitions by the number t of successful Kruskal unions, starting at zero. Each component exists on one contiguous interval of t, from its creation until the union that absorbs it. There are at most 4n−1 distinct component lifetimes.",
+   "routes": [
+    [
+     "N16"
+    ]
+   ],
+   "accept": "Initially each chapter is one component. Every successful union ends two component lifetimes and creates one new component; after 2n-1 unions only the full component remains. Components are identified by their vertex sets, not merely by sizes.",
+   "anchors": [
+    "Kruskal components",
+    "union count",
+    "component lifetimes"
+   ],
+   "source": "exploration",
+   "path": "P8",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N24",
+   "name": "Offline lifetime subset-sum traversal",
+   "kind": "algorithm",
+   "statement": "Assign each component size to its lifetime interval in a segment tree over union counts. A traversal carrying subset-sum reachability and inserting weights along each root-to-leaf path determines, for each partition, whether it admits a blue team of n chapters.",
+   "routes": [
+    [
+     "N2",
+     "N23"
+    ]
+   ],
+   "accept": "Canonical interval decomposition places each active component exactly once on each affected leaf's root path. Updates reachability by dp |= dp << size, restoring or copying the bitset between sibling branches. With V=2n, O(V log V) weight insertions, each costing O(n/word_size), evaluate all partitions.",
+   "anchors": [
+    "component lifetimes",
+    "subset sums",
+    "blue team size",
+    "segment tree"
+   ],
+   "source": "exploration",
+   "path": "P8",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N25",
+   "name": "Recover team before first failing prefix",
+   "kind": "construction",
+   "statement": "Evaluate all Kruskal-prefix partitions with the lifetime subset-sum traversal. Find the first prefix losing count n, rebuild the forest immediately before its last merge, and reconstruct components totaling n. Output their chapters as blue and the last merge's edge length.",
+   "routes": [
+    [
+     "N5",
+     "N24"
+    ]
+   ],
+   "accept": "Stores successful Kruskal edges in order. If partition t first loses balance, replay the first t-1 successful unions and use predecessor subset-sum DP to recover a balanced component subset. The t-th successful union's distance is the optimum by N5.",
+   "anchors": [
+    "blue team",
+    "first failing prefix",
+    "component reconstruction",
+    "optimal distance"
+   ],
+   "source": "exploration",
+   "path": "P8",
+   "traps": [],
+   "depth": 5
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N6"
+   ],
+   [
+    "N7",
+    "N8",
+    "N9",
+    "N10"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N11",
+    "N12",
+    "N13"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N7",
+    "N8",
+    "N14",
+    "N15"
+   ],
+   [
+    "N1",
+    "N16",
+    "N17",
+    "N18",
+    "N19"
+   ],
+   [
+    "N1",
+    "N16",
+    "N20",
+    "N21",
+    "N22"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N16",
+    "N23",
+    "N24",
+    "N25"
+   ]
+  ],
+  "keys": [
+   "N4",
+   "N6",
+   "N10",
+   "N13",
+   "N15",
+   "N19",
+   "N22",
+   "N25"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Numerical representations must safely handle squared distances up to 8·10^18. In bottleneck DPs, an infinity sentinel must dominate every legitimate weight, and impossible states must never be treated as valid choices.",
+   "check": "Integer arithmetic widens before products and sums; floating-point alternatives need adequate range and accuracy for their decisions. Conditional on bottleneck DP, verifies that infinity cannot clip legitimate values and that unreachable states are excluded or represented by a safe invalid marker."
+  },
+  {
+   "id": "H2",
+   "statement": "Threshold comparisons must match their interpretation: separation at least sqrt(D) forbids squared distances below D, while separation greater than sqrt(D) forbids distances at most D. Equal-distance edges may be processed individually in a correctly justified sweep.",
+   "check": "For threshold tests, verifies strict or inclusive connectivity consistently with the claimed separation relation. For incremental sweeps, verifies that the reported failure distance and reconstructed preceding partition remain valid when the failed edge ties with previously processed edges."
+  },
+  {
+   "id": "H3",
+   "statement": "Output the Euclidean distance, not its square, with sufficient precision for absolute or relative error at most 10^-6.",
+   "check": "The reported distance must agree with the constructed teams' optimal separation within tolerance. Uses a square root or equivalent distance computation and sufficient printed precision; any arithmetic representation is acceptable if its accumulated error meets the required bound."
+  },
+  {
+   "id": "H4",
+   "statement": "Output exactly n distinct chapter identifiers, numbered from 1 through 2n.",
+   "check": "Checks count, uniqueness, range, and mapping back to input chapters. The resulting blue team and its complement must achieve the reported optimal separation; component reconstruction, direct coloring DP, or another correct construction is acceptable."
+  },
+  {
+   "id": "H5",
+   "statement": "Exact component-subset counts can reach binomial(1000,500), far beyond 64 bits. A zero count modulo a fixed modulus does not establish that no balanced division exists.",
+   "check": "For a counting-based feasibility test, verifies an exact zero/nonzero decision despite potentially huge counts, for example with arbitrary-precision coefficients. A zero residue alone is not accepted as proof of infeasibility."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "For a proposed squared separation D, connect every pair closer than D; all vertices of each connected component must receive the same color. A balanced division exists exactly when component sizes have a subset sum of n, giving a monotone feasibility test for binary search over pairwise squared distances. After finding the largest feasible distance, reconstruct the component subset; sorting the O(n²) edges and using DSU plus bitset subset sum per search step fits the limits.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   "key_node": "N4",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 40,
+    "n_tests": 40,
+    "max_time_s": 0.055,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Instead of binary search, sweep pairwise edges in nondecreasing length and recompute the component-size subset sum only after a successful DSU merge. The first merge that destroys balance fixes the optimal distance: the preceding partition still permits balance, while any larger separation would require that failed merge. There are at most 2n-1 successful merges, so sorting edges plus bitset subset sums is fast enough.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N6"
+   ],
+   "key_node": "N6",
+   "new_nodes": [
+    "N5",
+    "N6"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 40,
+    "n_tests": 40,
+    "max_time_s": 0.058,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Reduce the complete distance graph to a minimum spanning tree: for every two-team division, its shortest cross-team distance is attained by a crossing MST edge. Optimize the bottleneck directly on the rooted tree using a DP indexed by subtree blue count and root color, merging children with max-min transitions. Dense Prim and the size-bounded tree-knapsack transitions take O((2n)²) time, and stored transitions reconstruct an optimal balanced coloring.",
+   "end_route": [
+    "N7",
+    "N8",
+    "N9",
+    "N10"
+   ],
+   "key_node": "N10",
+   "new_nodes": [
+    "N7",
+    "N8",
+    "N9",
+    "N10"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 5,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 40,
+    "n_tests": 40,
+    "max_time_s": 0.019,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Maintain the exact generating polynomial of attainable component-size subsets during the edge sweep, rather than recomputing subset sum after each merge. Merging sizes a and b removes factors (1+x^a),(1+x^b) and inserts (1+x^(a+b)); truncated coefficients support each update in O(n) arbitrary-precision operations. The first zero coefficient of x^n identifies the optimum, and an ordinary predecessor DP reconstructs the preceding balanced partition.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N11",
+    "N12",
+    "N13"
+   ],
+   "key_node": "N13",
+   "new_nodes": [
+    "N11",
+    "N12",
+    "N13"
+   ],
+   "new_hazards": [
+    "H5"
+   ],
+   "program": "paths/P4.cpp",
+   "submission": 6,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 40,
+    "n_tests": 40,
+    "max_time_s": 0.064,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P5",
+   "approach": "Use an MST as a sparse certificate for every threshold-connectivity graph: keeping only its edges shorter than a threshold gives exactly the original short-edge components. Thus only the 2n-1 MST edge lengths need be searched, and each balance test processes a forest rather than all pairs. Dense Prim, binary search with bitset subset sum, and component reconstruction run comfortably within the limits.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N7",
+    "N8",
+    "N14",
+    "N15"
+   ],
+   "key_node": "N15",
+   "new_nodes": [
+    "N14",
+    "N15"
+   ],
+   "new_hazards": [],
+   "program": "paths/P5.cpp",
+   "submission": 7,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 40,
+    "n_tests": 40,
+    "max_time_s": 0.014,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P6",
+   "approach": "Build the binary hierarchy of successful Kruskal merges and optimize directly on that hierarchy without a threshold search or root-color state. A mixed cluster's separation is the minimum of its merge distance and its two child separations, while a monochromatic cluster has infinite internal separation. A cardinality-only max-min tree DP therefore finds the best balanced division; its size-bounded convolutions take O((2n)²) time after sorting the pairwise edges.",
+   "end_route": [
+    "N1",
+    "N16",
+    "N17",
+    "N18",
+    "N19"
+   ],
+   "key_node": "N19",
+   "new_nodes": [
+    "N16",
+    "N17",
+    "N18",
+    "N19"
+   ],
+   "new_hazards": [],
+   "program": "paths/P6.cpp",
+   "submission": 8,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 40,
+    "n_tests": 40,
+    "max_time_s": 0.054,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P7",
+   "approach": "Linearize the Kruskal merge hierarchy into an artificial weighted path: its leaf order is depth-first, and consecutive leaves are joined with their lowest-common-ancestor merge weight. This path has the same threshold components as the original graph, so it preserves every division's separation. A prefix DP with blue count and last color optimizes the bottleneck in O(n²) time and directly reconstructs the balanced coloring.",
+   "end_route": [
+    "N1",
+    "N16",
+    "N20",
+    "N21",
+    "N22"
+   ],
+   "key_node": "N22",
+   "new_nodes": [
+    "N20",
+    "N21",
+    "N22"
+   ],
+   "new_hazards": [],
+   "program": "paths/P7.cpp",
+   "submission": 9,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 40,
+    "n_tests": 40,
+    "max_time_s": 0.064,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P8",
+   "approach": "Compute every Kruskal-prefix balance test offline. Each component size is active on a contiguous interval between its creation and absorption; place these intervals in a segment tree over merge counts and propagate a subset-sum bitset down the tree. Each leaf then gives balance for one partition, so the first failing prefix determines the distance and the preceding forest supplies a reconstructed team; the offline knapsack work is O(n² log n / word_size).",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N16",
+    "N23",
+    "N24",
+    "N25"
+   ],
+   "key_node": "N25",
+   "new_nodes": [
+    "N23",
+    "N24",
+    "N25"
+   ],
+   "new_hazards": [],
+   "program": "paths/P8.cpp",
+   "submission": 10,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 40,
+    "n_tests": 40,
+    "max_time_s": 0.048,
+    "time_limit_s": 2.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Eight accepted paths now cover threshold search, incremental merging, exact polynomial updates, MST optimization, merge-hierarchy optimization, path linearization, and offline component lifetimes. I do not have another genuinely different approach that I can justify as both correct and fast enough; the remaining practical variants reuse these established claims.",
+  "considered": [
+   "Enumerating balanced teams is exponential in 2n and cannot handle 1000 chapters.",
+   "Stopping only when a component exceeds n is incorrect: component sizes 2,2,2 cannot form a team of size 3.",
+   "Deleting a single MST edge is insufficient because an optimal balanced division may need several crossing tree edges.",
+   "Restricting teams to opposite sides of a line is incorrect: a tight inner cluster and a surrounding outer cluster can form the uniquely optimal partition up to swapping teams.",
+   "Reverse-order edge processing, MST-based merge sweeps, floating-point threshold search, and alternative subset-sum implementations reuse the accepted connectivity and balance characterizations rather than supplying a new reasoning path.",
+   "Delaunay-based sparsification could replace dense MST construction, but adds geometric degeneracy handling without a new balancing or optimization method."
+  ],
+  "submissions": 10
+ },
+ "builder_notes": "Addressed both blocking issues: N12 now states only the exact truncated-polynomial update, with recurrence and scan directions moved to accept; numerical, threshold, and output hazards now allow alternative correct implementations. The requested conditional bottleneck-DP sentinel and impossible-state checks are included in H1, preserving hazard IDs. Also narrowed N16 to the inter-child distance fact and moved the internal-connectivity invariant into N17's justification. The suggested node splits and merges cannot be performed while preserving all IDs and routes; the existing nodes are retained, with stored reconstruction choices removed from the numeric DP nodes' acceptance criteria and left to their construction nodes.",
+ "open_issues": [],
+ "advisories": [
+  "N3 (bundles claims a solver can have separately; split it): Monotonicity and restriction of the optimum to pairwise distances are independently discoverable claims. Split them to distinguish a solver who understands threshold feasibility from one who also identifies the finite candidate set.",
+  "order: Nonblocking granularity improvement: split N3 into monotonicity and the pairwise-distance candidate property, retaining their combined largest-feasible-candidate consequence for the search nodes."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 11,
+  "submissions": 10,
+  "review_rounds": 2,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 252495,
+    "output_tokens": 33476,
+    "cached_tokens": 168158,
+    "reasoning_tokens": 13504
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 19904,
+    "output_tokens": 19390,
+    "reasoning_tokens": 15922
+   },
+   "total": {
+    "input_tokens": 272399,
+    "output_tokens": 52866,
+    "cached_tokens": 168158,
+    "reasoning_tokens": 29426
+   }
+  },
+  "inputs": {
+   "statement": "2ca38f42ed39812cea0473aa3364bf5c49d175aead2d2055d08fb0cc4040974c",
+   "editorial": "aa0200add7ca3c40f12a2bca490c7a6b61c4d5e556a12390b8dd312bd631ba5b",
+   "reference": "00157923ec39ec2894503f8a4868da5dda7fa1ea8216e3bfabd788363080027e"
+  },
+  "created": "2026-11-03 00:32:08"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

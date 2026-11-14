@@ -1,0 +1,542 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2024/I-steppe-on-it",
+ "title": "Steppe on It",
+ "status": "accepted",
+ "version": "990ea691437b9791",
+ "solution_outline": "P1: Binary-search the response time and test a radius with a bottom-up greedy covering algorithm. P2: View each village's possible engine locations at radius R as a connected subtree, and solve a minimum hitting-set problem on these subtrees. P3: A different greedy decision processes villages by decreasing weighted distance from a fixed root.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Vertex centers in the weighted tree",
+   "kind": "modeling",
+   "statement": "For an engine set C of villages, the guaranteed response time is max_v min_c∈C dist(v,c), where dist is the sum of road times on the unique path. Engines must be placed at vertices, not inside roads.",
+   "routes": [
+    []
+   ],
+   "accept": "Recognizes the weighted vertex-center objective, including service to villages containing engines at distance zero. Uses the unique tree path to measure travel time.",
+   "anchors": [
+    "villages",
+    "fire engines",
+    "response time",
+    "roads"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Monotone radius feasibility",
+   "kind": "reformulation",
+   "statement": "The answer is the smallest nonnegative integer R for which at most f village centers cover every village within distance R. Feasibility is monotone in R; any solution using fewer than f centers can be extended to f centers.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Uses a radius decision problem and monotone integer search. Zero is a valid lower bound. An established feasible upper bound suffices; examples include the sum of road times or the maximum distance from a chosen village. Extra engines cannot worsen coverage.",
+   "anchors": [
+    "f",
+    "response time",
+    "villages"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Subtree coverage extrema",
+   "kind": "key_property",
+   "statement": "For radius R, merge child subtrees at u. Let A be the farthest pending-village distance, including u's demand, and B the nearest retained-center distance. A+B≤R clears all demands; otherwise A remains the unresolved constraint. These extrema suffice for the upward coverage decision.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Simultaneous summaries qualify directly. Tagged states may instead retain only A while unresolved and only B when covered, provided discarded centers are justified: an unresolved child's farthest demand a and nearest internal center b satisfy a+b>R. Its centers cannot resolve an ancestor's maximum while that demand persists; any center resolving that maximum is closer to the ancestor and dominates their outward contribution. Child distances include connecting road times; u contributes zero.",
+   "anchors": [
+    "subtree",
+    "uncovered village",
+    "nearest fire engine",
+    "R"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Exchange to the forced subtree root",
+   "kind": "key_property",
+   "statement": "If every uncovered village in u's subtree lies within R of u, and one cannot be served from outside that subtree, a minimum-cardinality extension of the selected centers can include u as an additional center.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Choose an additional center serving the forced local demand in a minimum extension and replace it by u. Selected centers preserve already covered villages; every remaining local village fits, and distances to villages outside the subtree do not increase. A witness farther than R from parent(u) excludes every outside center. At the root, any uncovered witness suffices.",
+   "anchors": [
+    "subtree",
+    "uncovered villages",
+    "fire engines",
+    "replacement"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N5",
+   "name": "Bottom-up forcing invariant",
+   "kind": "key_property",
+   "statement": "When children defer only demands reachable from their parent within R, every demand pending at u is within R of u. For nonroot u, a maximum A satisfying A+w(u,parent)>R excludes every outside center, establishing the hypotheses for the subtree-root exchange.",
+   "routes": [
+    [
+     "N3",
+     "N4"
+    ]
+   ],
+   "accept": "A child with deferred farthest distance a transmits a+w(child,u)≤R. Taking the maximum with u's zero-distance demand preserves this bound. If A+w(u,parent)>R, its witnessing village is too far from every outside center. Thus the exchange lemma applies at u. Both simultaneous and tagged summaries can establish this invariant; only tagged implementations need the optional justification for discarding internal-center information.",
+   "anchors": [
+    "parent",
+    "road time",
+    "radius R",
+    "pending demands",
+    "fire engines"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N6",
+   "name": "Bottom-up optimal response-time algorithm",
+   "kind": "algorithm",
+   "statement": "For each trial radius R, merge coverage summaries children-first, selecting u when a pending demand cannot reach its parent and selecting the root if needed. Monotonically search for the least R whose resulting center count is at most f, and output it.",
+   "routes": [
+    [
+     "N2",
+     "N5"
+    ]
+   ],
+   "accept": "Either simultaneous or tagged summaries implement the decision. Clear demands covered by retained centers before testing forced placement; repeated exchanges make the count minimal. Search any established valid bracket, including zero; the sum of road times is one possible upper bound U. Each decision takes O(n), yielding O(n log(U+1)) time and O(n) memory. Reverse village numbering is a valid children-first order because vi<i.",
+   "anchors": [
+    "minimum response time",
+    "f",
+    "coverage summaries",
+    "road times"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N7",
+   "name": "Allowed engine locations are subtrees",
+   "kind": "reformulation",
+   "statement": "For radius R, each village v requires a selected vertex in S_v={x:dist(v,x)≤R}. This set is a connected subtree whose unique rootmost vertex is the highest ancestor of v within distance R. Radius feasibility is hitting every such subtree with at most f vertices.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "Roots the original tree, observes that a tree ball contains paths between its vertices, and identifies its rootmost member by climbing ancestors from v while the distance remains at most R. Binary lifting can find this member in O(log n).",
+   "anchors": [
+    "villages",
+    "fire engines",
+    "radius R",
+    "ancestor"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N8",
+   "name": "Greedy transversal of rooted subtrees",
+   "kind": "key_property",
+   "statement": "Process the allowed-location subtrees in an order placing descendant rootmost vertices before ancestors. Whenever a subtree is unhit, select its rootmost vertex. This selects a minimum-size hitting set.",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "An optimal extension must hit the current unhit subtree at some x. Every later subtree containing x also contains the current rootmost vertex: their rootmost vertices are comparable ancestors of x, and the later one cannot be a strict descendant. Replacing x by the greedy choice preserves all remaining requirements. Incomparable rootmost vertices imply disjoint subtrees.",
+   "anchors": [
+    "allowed engine locations",
+    "rootmost vertex",
+    "minimum number of engines"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N9",
+   "name": "Centroid-based dynamic coverage queries",
+   "kind": "algorithm",
+   "statement": "Centroid decomposition supports inserting selected fire-engine villages and querying whether a village lies within R of any selected engine, without enumerating centers or covered villages. These dynamic coverage queries maintain the covered or uncovered status needed by the greedy placement algorithms.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "One realization stores best[a], the minimum dist(a,c) over inserted centers c having centroid ancestor a, and queries min_a(dist(v,a)+best[a]) over v's centroid ancestors, including v. A pair's separating centroid lies on its tree path, giving equality; other sums are upper bounds. Precomputed centroid distances give O(log n) insertion/query time and O(n log n) storage. Equivalent centroid-based coverage structures qualify.",
+   "anchors": [
+    "nearest fire engine",
+    "tree distance",
+    "centroid decomposition",
+    "coverage"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N10",
+   "name": "Nearest-query ball-hitting decision",
+   "kind": "algorithm",
+   "statement": "For radius R, process villages in descendant-first order of their allowed-location subtrees' rootmost vertices. Query each village's nearest selected engine; if its distance exceeds R, select that ball's rootmost vertex. This computes the minimum number of engines needed for R.",
+   "routes": [
+    [
+     "N7",
+     "N8",
+     "N9"
+    ]
+   ],
+   "accept": "Nearest-engine distance exceeds R exactly when the village's allowed-location subtree is unhit. Centroid queries therefore implement the minimum hitting-set greedy. Binary lifting finds ball tops. Individual processing is valid; alternatively bucket villages by top and process buckets in reverse input numbering. After selecting a bucket's top, its remaining queries may be skipped. Each decision takes O(n log n) and may stop after f+1 selections.",
+   "anchors": [
+    "radius R",
+    "rootmost vertex",
+    "fire engines",
+    "coverage"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N11",
+   "name": "Ball-hitting optimal response-time algorithm",
+   "kind": "algorithm",
+   "statement": "For each trial radius R, process allowed-location balls descendants-first by their rootmost vertices, using nearest-engine queries to select the rootmost vertex of every unhit ball. Monotonically search for the least R requiring at most f selections, and output it.",
+   "routes": [
+    [
+     "N2",
+     "N10"
+    ]
+   ],
+   "accept": "Uses the exact minimum count supplied by the subtree-hitting greedy. Any established valid search bracket is acceptable; zero and the sum of road times are examples. Binary lifting and centroid preprocessing cost O(n log n). For upper bound U, the complete algorithm takes O(n log n log(U+1)) time and O(n log n) memory.",
+   "anchors": [
+    "minimum response time",
+    "f",
+    "allowed engine locations",
+    "rootmost vertex"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N12",
+   "name": "Deepest demand bounds remaining descendants",
+   "kind": "key_property",
+   "statement": "Among currently uncovered villages, let x have maximum weighted root distance. For any ancestor u of x with dist(u,x)≤R, every uncovered descendant of u lies within R of u.",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "For every uncovered descendant y of u, dist(u,y)=depth(y)-depth(u)≤depth(x)-depth(u)≤R. Here depth is the sum of road times from the root, not edge count or input index. In particular, choosing the highest ancestor within R supplies the local-coverage hypothesis needed for the placement exchange.",
+   "anchors": [
+    "uncovered villages",
+    "ancestor",
+    "road times",
+    "root distance"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N13",
+   "name": "Deepest-demand ancestor placement is safe",
+   "kind": "key_property",
+   "statement": "Let x be a currently uncovered village of maximum weighted root distance, and u its highest ancestor within R. A minimum-cardinality extension of the selected engines can include u; thus choosing u cannot increase the minimum number of additional engines needed.",
+   "routes": [
+    [
+     "N12",
+     "N4",
+     "N9"
+    ]
+   ],
+   "accept": "Nearest-engine queries identify uncovered villages. For the deepest such x, choosing its highest reachable ancestor gives dist(x,parent(u))>R when u is not the root, forcing a center inside u's subtree. The weighted-depth bound puts every remaining local village within R of u, so the replacement lemma applies. At the root, every uncovered village is within R and one center there suffices.",
+   "anchors": [
+    "deepest uncovered village",
+    "highest ancestor",
+    "fire engines",
+    "radius R"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N14",
+   "name": "Deepest-first optimal response-time algorithm",
+   "kind": "algorithm",
+   "statement": "For each trial radius R, scan villages by decreasing weighted root distance. Whenever nearest-engine queries find an uncovered village, select its highest ancestor within R. Monotonically search for the least R using at most f engines, and output it.",
+   "routes": [
+    [
+     "N2",
+     "N13"
+    ]
+   ],
+   "accept": "Each deepest-demand placement preserves an optimal extension, so the final count is minimal and its comparison with f is a valid monotone predicate. Sort villages once; use binary lifting for ancestors and centroid queries for coverage. Any valid search bracket qualifies, such as zero through the sum of road times. With upper bound U, time is O(n log n log(U+1)) and memory O(n log n).",
+   "anchors": [
+    "minimum response time",
+    "f",
+    "deepest uncovered village",
+    "road times"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 6
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   [
+    "N1",
+    "N2",
+    "N7",
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N7",
+    "N9",
+    "N12",
+    "N13",
+    "N14"
+   ]
+  ],
+  "keys": [
+   "N6",
+   "N11",
+   "N14"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Absent-state representations must never create effective finite centers or demands, and every evaluated distance or sentinel expression must remain within its numeric type's range.",
+   "check": "Allow flags, tagged states, or sentinels remaining outside valid ranges after permitted operations. Ordinary tree distances are at most 999990000; sums of two finite distances are at most 1999980000. Safe 32-bit handling can suffice; 64-bit arithmetic is an alternative. Check infinity operations as well as finite sums."
+  },
+  {
+   "id": "H2",
+   "statement": "The tree may be a chain of 100000 villages, so an unprotected recursive traversal can exhaust the call stack.",
+   "check": "Use iterative traversal, exploit the parent-before-child input numbering, or otherwise ensure the traversal supports maximum depth."
+  },
+  {
+   "id": "H3",
+   "statement": "Coverage includes equality with the response-time bound, and the optimal response time can be zero.",
+   "check": "Distances equal to R count as covered; the forced-placement test uses >R rather than >=R. The answer search includes zero, including n=1 and f=n."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Binary-search the response time and test a radius with a bottom-up greedy covering algorithm. Each subtree keeps its farthest still-uncovered village and its nearest selected engine; if an uncovered village cannot reach the parent within the radius, placing an engine at the subtree root is forced and exchange-optimal. Each feasibility test is linear, giving O(n log(sum ti + 1)) time and O(n) memory.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "key_node": "N6",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 88,
+    "n_tests": 88,
+    "max_time_s": 0.035,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "View each village's possible engine locations at radius R as a connected subtree, and solve a minimum hitting-set problem on these subtrees. Processing their highest vertices descendants-first and selecting the highest vertex of each unhit subtree is exchange-optimal; binary lifting finds these vertices and centroid decomposition tests whether a ball already contains a selected engine. Binary search then gives the optimum in O(n log n log(sum ti + 1)) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N7",
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "key_node": "N11",
+   "new_nodes": [
+    "N7",
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 88,
+    "n_tests": 88,
+    "max_time_s": 0.387,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "A different greedy decision processes villages by decreasing weighted distance from a fixed root. For the deepest uncovered village, place an engine at its highest ancestor within radius R: every remaining uncovered descendant of that ancestor also fits, and no engine outside its subtree can serve the witness. The forced-placement exchange proves optimality; binary lifting and centroid nearest-engine queries implement each decision in O(n log n), followed by binary search.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N7",
+    "N9",
+    "N12",
+    "N13",
+    "N14"
+   ],
+   "key_node": "N14",
+   "new_nodes": [
+    "N12",
+    "N13",
+    "N14"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 88,
+    "n_tests": 88,
+    "max_time_s": 0.444,
+    "time_limit_s": 3.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Three accepted paths cover the distinct efficient approaches I could establish: bottom-up forced placements with subtree summaries, greedy hitting of allowed-location subtrees, and deepest-uncovered-first placements. Other formulations I could justify either reduce to these claims or do not provide a sufficiently efficient algorithm for the full constraints.",
+  "considered": [
+   "Dynamic programming indexed by the number of engines: straightforward formulations require at least O(nf) work, which is prohibitive when both n and f approach 100000.",
+   "Continuous tree-center or diameter-midpoint formulas: stations must be villages, so a midpoint inside a long road is not an allowed placement; continuous-radius tests can incorrectly report feasibility.",
+   "Explicit construction of all radius balls or their intersection graph: these can contain quadratically many memberships or edges. The efficient implicit hitting-set version is already the second accepted path.",
+   "Repeated radius-limited traversals to mark coverage: balls can overlap heavily, so naive marking can revisit large regions for many selected engines and has no adequate worst-case bound.",
+   "Alternative signed-distance or remaining-coverage bottom-up states: these encode the same uncovered-demand and nearest-center information and forced-placement rule already represented by the first path, rather than a genuinely new approach."
+  ],
+  "submissions": 3
+ },
+ "builder_notes": "N3 now states only the common extrema invariant. Tagged-state compression and its dominance proof are explicitly optional acceptance criteria, not requirements for simultaneous-summary solutions. N9 now states the required centroid-based coverage-query capability; its maintained representation, formula, and operation bound are acceptance examples. N5 has been restricted to the forcing invariant, leaving operational placement and root completion to N6. N13 now isolates safe deepest-demand placement, leaving the complete algorithm to N14. Literal merging of N10/N11 or moving N4's dependencies would change fixed ids or routes, so those structural suggestions cannot be applied in this text-only revision; all nodes, hazards, ids, and routes have been retained.",
+ "open_issues": [],
+ "advisories": [
+  "N11 (comes with its prerequisite; merge it): N10 already supplies exactly this radius test, and N2 already supplies monotone search for the minimum feasible radius; N11 introduces no independent remaining obstacle. Merge N10 and N11 into one ball-hitting algorithm node that retains the complete output rule.",
+  "order: Merge N10 and N11, retaining the full optimization/output rule as P2's key node. Their current separation duplicates the radius algorithm and adds only the search wrapper already established by N2; the remaining cut is sound."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 4,
+  "submissions": 3,
+  "review_rounds": 3,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 91439,
+    "output_tokens": 24373,
+    "reasoning_tokens": 13494,
+    "cached_tokens": 43629
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 19848,
+    "output_tokens": 30042,
+    "reasoning_tokens": 26628
+   },
+   "total": {
+    "input_tokens": 111287,
+    "output_tokens": 54415,
+    "reasoning_tokens": 40122,
+    "cached_tokens": 43629
+   }
+  },
+  "inputs": {
+   "statement": "26fa99c24149012bfcb406a7161575db0e1d85ca8474d1a1a3eeb5e2f58dd407",
+   "editorial": "8509aa9f1d860425d2c0114c41e0978de06f0dd1c2ae7ff84ad916aa7851cb8d",
+   "reference": "6504968318baa0c79ddfcc507237d42f9faa1dc25df08310a96043f241743a8d"
+  },
+  "created": "2026-11-02 22:11:58"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

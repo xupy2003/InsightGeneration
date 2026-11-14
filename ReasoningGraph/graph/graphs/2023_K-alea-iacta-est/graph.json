@@ -1,0 +1,601 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2023/K-alea-iacta-est",
+ "title": "Alea Iacta Est",
+ "status": "accepted",
+ "version": "9bd9e636889fa301",
+ "solution_outline": "P1: Model the visible faces as a finite stochastic shortest-path problem, with every anagram of a dictionary word absorbing. P2: A label-setting algorithm avoids numerical value iteration altogether. P3: Use policy iteration rather than repeatedly minimizing at every numerical update.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Successful outcomes and reachability",
+   "kind": "modeling",
+   "statement": "A complete outcome specifies one face for each labeled die and is successful exactly when its symbol multiset equals a dictionary word's multiset. Success is reachable if and only if at least one complete outcome is successful.",
+   "routes": [
+    []
+   ],
+   "accept": "Recognize successful outcomes by comparing symbol multisets, for example by sorting both words and outcomes while preserving multiplicities. Every complete face-index outcome has positive probability on a full roll, so existence also characterizes feasibility. An explicit feasibility precheck is not required.",
+   "anchors": [
+    "dice",
+    "faces",
+    "valid words",
+    "successful outcomes"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Target-following completion-time bound",
+   "kind": "key_property",
+   "statement": "If a successful complete outcome exists, every state admits a strategy taking at most B=6d expected additional rolls: fix that outcome, retain matching dice, and reroll unmatched dice until they show their designated faces.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Each unmatched die reaches its designated face in expected six trials. The number of simultaneous rounds is bounded by the sum of these trial counts. Matching dice need no trials, and encountering any other successful outcome can only shorten the strategy.",
+   "anchors": [
+    "successful outcome",
+    "matching dice",
+    "expected number of rolls"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Optimal continuation Bellman equations",
+   "kind": "reformulation",
+   "statement": "Let V(s) be the optimal expected additional rolls from a complete outcome s. It is zero on successful states; otherwise V(s)=1+min_R E[V(s after rerolling R)], where R is a nonempty subset of labeled dice rerolled independently.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "First-step optimality minimizes over retained-face choices, with independent uniform face outcomes and one unit of cost per simultaneous reroll. Including the empty reroll subset as an artificial waiting action is equivalent: it costs one without changing the state and cannot improve the optimum.",
+   "anchors": [
+    "optimal strategy",
+    "reroll subset",
+    "continuation value",
+    "V"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Uniform completions of retained faces",
+   "kind": "modeling",
+   "statement": "A partial assignment fixes retained faces and wildcards rerolled dice. Selecting it from a compatible complete outcome is free; rolling its wildcards costs one roll and produces independent, uniform faces. With k wildcards, its 6^k face-index completions are equiprobable.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Establish the retained-face/wildcard interpretation and the uniform completion distribution. This may be represented as a complete-state action or as a partial state with zero-cost selection followed by one-roll completion. Settled-completion counts and sums establish this node without computing a full-lattice averaging transform.",
+   "anchors": [
+    "retained dice",
+    "rerolled dice",
+    "partial assignment",
+    "wildcard"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N5",
+   "name": "Lattice computation of best reroll expectations",
+   "kind": "algorithm",
+   "statement": "Given complete-state continuation values, compute each state's minimum expected continuation over retained-face restrictions by averaging uniform completions of partial assignments and taking restriction minima. These operations on at most 7^d partial assignments evaluate all reroll choices without enumerating their transition distributions.",
+   "routes": [
+    [
+     "N4"
+    ]
+   ],
+   "accept": "A wildcard expectation is the average of the six entries replacing that wildcard. After computing these averages, coordinate-wise minimum-with-wildcard updates obtain every state's restriction minimum. Dependency-ordered lattice dynamic programs are equivalent. Both stages together take O(d7^d) work and O(7^d) storage.",
+   "anchors": [
+    "continuation values",
+    "partial-assignment averages",
+    "retained faces",
+    "restriction minima"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N6",
+   "name": "Lower Bellman residual certifies accuracy",
+   "kind": "key_property",
+   "statement": "Let U be a zero-initialized Bellman iterate and δ=max_s(TU(s)−U(s))<1. Then U≤V≤6d and 0≤V(s)−U(s)≤6dδ/(1−δ) for every state. The same error bound holds for the uniform average of continuation values.",
+   "routes": [
+    [
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "Monotonicity gives 0≤U≤TU≤V. A TU-greedy policy satisfies U(s)≥1−δ+E[U(next)] until success, so its expected duration is at most U(s)/(1−δ). Comparing that duration with V proves the residual bound.",
+   "anchors": [
+    "Bellman iterate",
+    "residual",
+    "expected completion",
+    "precision"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N7",
+   "name": "Certified lattice value iteration output",
+   "kind": "algorithm",
+   "statement": "If no successful state exists, output impossible. Otherwise repeatedly apply Bellman updates from zero using partial averages and restriction minima. These iterates converge to the optimal continuation values. Stop when the residual certifies accuracy, then output one plus the all-wildcard continuation average.",
+   "routes": [
+    [
+     "N5",
+     "N6"
+    ]
+   ],
+   "accept": "Monotone updates are bounded by 6d and converge to a Bellman fixed point; a greedy policy shows that this bounded nonnegative fixed point is V. Keep terminal values zero and use O(d7^d) work per sweep. The mandatory first roll contributes one. An average from the preceding iterate is valid when its measured residual certifies it.",
+   "anchors": [
+    "impossible",
+    "expected number of rolls",
+    "all-wildcard average",
+    "Bellman updates"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N8",
+   "name": "An action bounds all its outcomes",
+   "kind": "key_property",
+   "statement": "Let Q(p)=1+E[V(s)] over complete outcomes extending retained-face assignment p. Every such outcome s satisfies V(s)≤Q(p), because it can reroll exactly p's wildcards. If p is optimal at a nonterminal state s, all its outcomes have value at most V(s).",
+   "routes": [
+    [
+     "N3",
+     "N4"
+    ]
+   ],
+   "accept": "Every completion preserves p's retained faces, so the same action remains available there. Successful outcomes have value zero and also satisfy the inequality. This property permits label setting even though a reroll can return to its starting outcome.",
+   "anchors": [
+    "retained faces",
+    "optimal strategy",
+    "complete outcomes",
+    "Q"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N9",
+   "name": "Repeat until a settled outcome",
+   "kind": "reformulation",
+   "statement": "Suppose p has n equiprobable complete outcomes, of which c>0 are settled with optimal values summing to S. Retaining p and repeatedly rerolling its wildcards until a settled outcome appears, then continuing optimally, has expected cost (n+S)/c.",
+   "routes": [
+    [
+     "N4"
+    ]
+   ],
+   "accept": "All successful complete outcomes are settled initially. The repeat strategy satisfies x=1+S/n+(n−c)x/n. Face-index completions each have probability 1/n, including when symbols repeat. An assignment with c=0 offers no finite repeat-until-settled candidate. The same formula can label the retained-face partial state itself.",
+   "anchors": [
+    "partial assignment",
+    "settled outcomes",
+    "repeated rerolls",
+    "expected cost"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N10",
+   "name": "Smallest repeat value finalizes outcomes",
+   "kind": "key_property",
+   "statement": "With successful states initially settled at zero, let each partial assignment have n completions, c settled, whose values sum to S. Choose a minimum (n+S)/c among 0<c<n. Its unsettled completions all have that optimal value and can be settled together.",
+   "routes": [
+    [
+     "N2",
+     "N8",
+     "N9"
+    ]
+   ],
+   "accept": "Let m be the smallest unsettled optimal value. An optimal action there has no outcome above m, so its unsettled outcomes equal m and its repeat candidate equals m. Every candidate is an achievable upper bound for its unsettled completions, proving the rule. Explicit complete-outcome batches or equivalent zero-cost propagation through partial states count.",
+   "anchors": [
+    "settled states",
+    "smallest value",
+    "partial assignment",
+    "optimal action"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N11",
+   "name": "Label-setting initial-roll expectation",
+   "kind": "algorithm",
+   "statement": "Use label setting on successful outcomes and retained-face assignments to determine the expected cost of the initial all-dice roll. Output impossible if that start cannot reach success; otherwise output its finalized cost, equivalently one plus the uniform mean of optimal complete-state continuation values.",
+   "routes": [
+    [
+     "N10"
+    ]
+   ],
+   "accept": "A partial-state implementation uses zero-cost selection or discarding and one-roll uniform completion, and may stop when the all-wildcard start is finalized. Alternatively, finalize complete outcomes and average their values. Settled counts, value sums, and a heap process O(12^d) completion incidences in O(12^d log(12^d)) time. Lazy stale-entry rejection or an indexed heap is valid.",
+   "anchors": [
+    "label setting",
+    "initial all-dice roll",
+    "all-wildcard start",
+    "impossible"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 7
+  },
+  {
+   "id": "N12",
+   "name": "Monotone evaluation of a reroll policy",
+   "kind": "algorithm",
+   "statement": "For a proper retained-face policy π, define TπU(s)=1+Eπ[U(next)] outside successful states and zero inside. Starting from nonnegative U≥TπU, repeated Tπ updates decrease to the policy's expected remaining rolls and preserve W≥TπW≥TW, where T minimizes over retained-face choices.",
+   "routes": [
+    [
+     "N4"
+    ]
+   ],
+   "accept": "Proper means finite expected completion time from every complete outcome. Policy equations then have a unique bounded solution, obtained by averaging uniform completions of each selected retained-face assignment. If W=TπU≤U, monotonicity gives TπW≤W; minimizing gives TW≤TπW. Thus stopping policy evaluation early still preserves the Bellman supersolution invariant.",
+   "anchors": [
+    "retained-face policy",
+    "policy evaluation",
+    "uniform completions",
+    "supersolution invariant"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N13",
+   "name": "Greedy retained-face policies finish in expectation",
+   "kind": "key_property",
+   "statement": "For the dice's retained-face Bellman operator T, a nonnegative array U with zero successful-state values and TU≤U makes every U-greedy reroll policy proper: its expected remaining rolls from state s are at most U(s), so U(s)≥V(s).",
+   "routes": [
+    [
+     "N3",
+     "N12"
+    ]
+   ],
+   "accept": "At each unsuccessful outcome, select retained faces minimizing the uniform mean of U over their completions. Then U(s)≥1+E[U(next)]. Telescoping over successive rerolls bounds the expected number before success by U(s), proving finite expected completion and the upper bound on V. Preservation during subsequent evaluation is established separately by the policy-evaluation node.",
+   "anchors": [
+    "retained faces",
+    "greedy reroll policy",
+    "expected remaining rolls",
+    "upper bound"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N14",
+   "name": "Target mismatches initialize an upper bound",
+   "kind": "construction",
+   "statement": "Fix a successful face-index assignment and let m(s) count mismatching dice. Setting U(s)=0 on successful states and U(s)=6m(s) elsewhere gives TU≤U: rerolling all mismatches leaves at most 5m(s) expected continuation, so its total is at most 1+5m(s)≤6m(s).",
+   "routes": [
+    [
+     "N1",
+     "N3"
+    ]
+   ],
+   "accept": "Every nonterminal state has at least one mismatch. Each rerolled mismatch remains mismatched with probability 5/6, so the expected assigned continuation is at most 5m. Additional successful outcomes only reduce it. Any designated successful face-index assignment works, including when different faces bear the same symbol.",
+   "anchors": [
+    "successful assignment",
+    "mismatching dice",
+    "upper bound"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N15",
+   "name": "Upper Bellman residual certifies accuracy",
+   "kind": "key_property",
+   "statement": "For a nonnegative Bellman supersolution U with terminal values zero, let δ=max_s(U(s)−TU(s)). Then 0≤U(s)−V(s)≤6dδ for every state.",
+   "routes": [
+    [
+     "N2",
+     "N3",
+     "N13"
+    ]
+   ],
+   "accept": "Along an optimal reroll policy, U(s)≤1+δ+E[U(next)]. Telescoping until success yields U≤(1+δ)V, and V≤6d. The proper greedy-policy argument supplies U≥V. The initial-roll continuation average inherits the same error bound.",
+   "anchors": [
+    "Bellman residual",
+    "supersolution",
+    "accuracy"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 7
+  },
+  {
+   "id": "N16",
+   "name": "Certified policy iteration output",
+   "kind": "algorithm",
+   "statement": "If success is unreachable, output impossible. Otherwise initialize the mismatch supersolution, alternate greedy retained-face policy improvement and fixed-policy evaluation, and stop when the upper Bellman residual certifies accuracy. Output one plus the average continuation after rolling every die.",
+   "routes": [
+    [
+     "N5",
+     "N12",
+     "N13",
+     "N14",
+     "N15"
+    ]
+   ],
+   "accept": "Recover minimizing retained-face assignments while computing restriction minima. Fixed-policy evaluation uses partial averages and the selected action per outcome; monotone inexact evaluation preserves the supersolution invariant. Arrays have at most 7^d entries, and each evaluation or improvement sweep takes O(d7^d) work. The added one counts the mandatory initial full roll.",
+   "anchors": [
+    "policy iteration",
+    "initial roll",
+    "expected number of rolls",
+    "impossible"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 8
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N12",
+    "N13",
+    "N14",
+    "N15",
+    "N16"
+   ]
+  ],
+  "keys": [
+   "N7",
+   "N11",
+   "N16"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Repeated symbols on different faces contribute their full multiplicity to roll probabilities.",
+   "check": "Use six equally weighted face indices per die, or weight merged symbols by their number of faces divided by six."
+  },
+  {
+   "id": "H2",
+   "statement": "Success depends on the multiset of symbols, not their order or merely their set.",
+   "check": "Canonicalize both dictionary words and complete outcomes while preserving repeated symbols, for example by sorting all d symbols."
+  },
+  {
+   "id": "H3",
+   "statement": "Count the mandatory initial full roll, and report impossible exactly when no valid word can ever be formed.",
+   "check": "Either precheck for successful face assignments or determine that the all-wildcard initial state is unreachable. Account for the initial roll within that state's cost, or add one to the mean continuation after the first full roll."
+  },
+  {
+   "id": "H4",
+   "statement": "Output must have absolute or relative error at most 10^-6. Numerical iteration needs a justified stopping rule; label setting still needs sufficiently accurate arithmetic.",
+   "check": "Conditional examples: zero-start Bellman iteration has error at most 6dδ/(1−δ) from its residual δ<1; a supersolution has error at most 6dδ. Label-setting implementations can stop upon finalizing the initial cost without a residual test. Use enough arithmetic and printed precision in either case."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Model the visible faces as a finite stochastic shortest-path problem, with every anagram of a dictionary word absorbing. Bellman value iteration can evaluate all reroll choices using averages and minima on the lattice of partial dice assignments, requiring only about 7^d entries rather than explicit transition matrices. A reachable word supplies a uniform 6d bound on the remaining expectation, which also turns the Bellman residual into a rigorous stopping criterion.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7"
+   ],
+   "key_node": "N7",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 27,
+    "n_tests": 27,
+    "max_time_s": 0.112,
+    "time_limit_s": 10.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "A label-setting algorithm avoids numerical value iteration altogether. After some complete outcomes have known optimal values, each retained-face assignment offers a repeat-until-known strategy with value (number of completions + sum of known continuation values)/(number of known completions). The smallest such value is exactly the smallest unsettled optimal value, so all unsettled outcomes compatible with that assignment can be finalized together; a priority queue and partial-assignment incidence updates implement this efficiently.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "key_node": "N11",
+   "new_nodes": [
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 27,
+    "n_tests": 27,
+    "max_time_s": 0.319,
+    "time_limit_s": 10.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Use policy iteration rather than repeatedly minimizing at every numerical update. A designated successful face assignment supplies a simple Bellman supersolution; each greedy policy is therefore proper, and evaluating that fixed policy monotonically improves the upper bound. Partial-assignment averages evaluate policies efficiently, lattice minima perform policy improvement, and an upper Bellman-residual certificate determines when the initial-roll expectation is accurate enough.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N12",
+    "N13",
+    "N14",
+    "N15",
+    "N16"
+   ],
+   "key_node": "N16",
+   "new_nodes": [
+    "N12",
+    "N13",
+    "N14",
+    "N15",
+    "N16"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 27,
+    "n_tests": 27,
+    "max_time_s": 0.178,
+    "time_limit_s": 10.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Three genuinely different approaches were implemented and accepted: certified Bellman value iteration, a non-iterative label-setting algorithm based on repeat-until-settled strategies, and certified policy iteration. I do not have another independent approach that is both correct and suitable for the limits.",
+  "considered": [
+   "Fix one reachable word or face assignment and optimize only its collection: this gives a useful upper bound but is not generally optimal, because the best strategy can switch target words after observing rolls.",
+   "Explicitly enumerate every action's transition distribution: the resulting transition incidence count can reach 42^d, making repeated full Bellman updates too expensive; the accepted lattice averaging approach already avoids this.",
+   "Solve the full Bellman linear program or dense policy equations directly: tens of thousands of state variables and millions of action constraints make generic dense methods unsuitable, with no additional efficient specialized solver established beyond the accepted approaches.",
+   "Use coordinate-wise Gauss–Seidel updates, remove self-loops algebraically, merge identical symbols, or compress symmetric dice: these are implementation improvements or state reductions for existing approaches, not independent solution paths.",
+   "Compute the best probability of success separately for each roll deadline and sum failure probabilities: deadline-optimal policies need not agree across deadlines, so that does not generally produce the minimum expected stopping time."
+  ],
+  "submissions": 3
+ },
+ "builder_notes": "Ids and routes were preserved. Shared partial-assignment semantics now occupy N4, while the averaging/minimum computation is confined to N5 on P1/P3. N11 accepts both complete-state averaging and partial-state all-wildcard finalization. N13 now concerns properness specifically for retained-face policies; evaluation-invariant preservation is in N12. Within the fixed node inventory, success/reachability remain in N1, the completion-time bound is isolated in N2, initial-roll accounting is in the output nodes, and convergence is in N7 rather than the residual-certificate node N6.",
+ "open_issues": [],
+ "advisories": [],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 4,
+  "submissions": 3,
+  "review_rounds": 2,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 70912,
+    "output_tokens": 20273,
+    "cached_tokens": 29425,
+    "reasoning_tokens": 10919
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 16187,
+    "output_tokens": 19591,
+    "reasoning_tokens": 17058
+   },
+   "total": {
+    "input_tokens": 87099,
+    "output_tokens": 39864,
+    "cached_tokens": 29425,
+    "reasoning_tokens": 27977
+   }
+  },
+  "inputs": {
+   "statement": "f8e008f459e64d5b64aaa8e012a843645ab69b9ae07c50ea9b9fd6a98fe5b9ac",
+   "editorial": "c64eeff4e845cf152caa7d8a4ceab114a30224bb73185341b6554dfd3c068d41",
+   "reference": "cb34a5ac0ea66d45884725cca64b335fdbfd6a5dc9b55ec47218eaed818feb1e"
+  },
+  "created": "2026-11-03 00:27:34"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

@@ -1,0 +1,646 @@
+[
+ {
+  "round": 1,
+  "version": "620faf963e869d4c",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The torch/group-cost mechanics and the reduction from walker identities to sorted ranks are separate facts: a solver can understand the former without establishing the latter. Split the trip model from the sorting reduction."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Single-person returns, regrouping overlapping excursions into batches, and choosing the fastest remaining returners are distinct structural claims. Separate these steps so that recognizing single-person returns does not count as establishing the substantially stronger batch normal form."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": false,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": "As stated, the globally defined Sk and tk need not describe the k fastest remaining walkers: N2 permits earlier permanent passengers to remove members of the original fastest-k prefix. State the cost using the current remaining set, then specialize to global prefix sums after establishing that batch boundaries preserve a sorted prefix."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Largest-first assignment to slow-only groups, filling nonempty preparatory groups, and the condition that a partial slow-only tail leaves at most c walkers are independently useful normalization claims. Separate the grouping exchange from the fullness/terminal-boundary normalization, making the remaining-prefix property explicit."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": "The accept text prescribes introducing items by prefix limit and scanning credit totals increasingly, although equivalent unbounded-knapsack recurrences can compute the same values with different iteration or evaluation orders. Make that implementation an example and explicitly accept equivalent computations of KL."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "",
+   "key_ok": true,
+   "key_note": "",
+   "hazards_ok": false,
+   "hazards_note": "The underlying large-cost and feasibility constraints are appropriate, but their checks prescribe unnecessary implementation choices. H1 should require sufficient numeric range and safe unreachable-state arithmetic, not signed 64-bit storage for individual times, which fit in 32 bits. H2 should require the answer max(t) when c>=n and exclusion of infeasible configurations, without requiring an explicit early return, infinity initialization, or the batch DP's prepaid-group bookkeeping; a signed-credit formulation can legitimately carry deficits.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "Neither END route represents the editorial/reference DP over permanently transferred walkers and a signed return-credit balance. A corresponding route needs the mixed-trip balance transition, the admissible credit band, and final settlement to balance -1; the graph instead requires the additional largest-slow-only-group normalization and its F or cardinality-partition DP. The reference's empty-package cost is S_(h+1)+t_(h+1), agreeing with N8; the prose editorial's displayed package cost omits one t_(h+1).",
+   "order": "Split N1's mechanics from sorting, N2's single-return reduction from batching and fastest-returner exchanges, and N4's grouping exchange from fullness and partial-tail normalization. Give N3 a current-set cost statement first, and introduce its global-prefix specialization only after prefix preservation has been established.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N3 (a claim or a route is wrong or cannot be judged): As stated, the globally defined Sk and tk need not describe the k fastest remaining walkers: N2 permits earlier permanent passengers to remove members of the original fastest-k prefix. State the cost using the current remaining set, then specialize to global prefix sums after establishing that batch boundaries preserve a sorted prefix.",
+   "N8 (a reader of a solver's work cannot decide whether the solver has it): The accept text prescribes introducing items by prefix limit and scanning credit totals increasingly, although equivalent unbounded-knapsack recurrences can compute the same values with different iteration or evaluation orders. Make that implementation an example and explicitly accept equivalent computations of KL.",
+   "hazards: The underlying large-cost and feasibility constraints are appropriate, but their checks prescribe unnecessary implementation choices. H1 should require sufficient numeric range and safe unreachable-state arithmetic, not signed 64-bit storage for individual times, which fit in 32 bits. H2 should require the answer max(t) when c>=n and exclusion of infeasible configurations, without requiring an explicit early return, infinity initialization, or the batch DP's prepaid-group bookkeeping; a signed-credit formulation can legitimately carry deficits."
+  ],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): The torch/group-cost mechanics and the reduction from walker identities to sorted ranks are separate facts: a solver can understand the former without establishing the latter. Split the trip model from the sorting reduction.",
+   "N2 (bundles claims a solver can have separately; split it): Single-person returns, regrouping overlapping excursions into batches, and choosing the fastest remaining returners are distinct structural claims. Separate these steps so that recognizing single-person returns does not count as establishing the substantially stronger batch normal form.",
+   "N4 (bundles claims a solver can have separately; split it): Largest-first assignment to slow-only groups, filling nonempty preparatory groups, and the condition that a partial slow-only tail leaves at most c walkers are independently useful normalization claims. Separate the grouping exchange from the fullness/terminal-boundary normalization, making the remaining-prefix property explicit.",
+   "the editorial's approach is not among the paths: Neither END route represents the editorial/reference DP over permanently transferred walkers and a signed return-credit balance. A corresponding route needs the mixed-trip balance transition, the admissible credit band, and final settlement to balance -1; the graph instead requires the additional largest-slow-only-group normalization and its F or cardinality-partition DP. The reference's empty-package cost is S_(h+1)+t_(h+1), agreeing with N8; the prose editorial's displayed package cost omits one t_(h+1).",
+   "order: Split N1's mechanics from sorting, N2's single-return reduction from batching and fastest-returner exchanges, and N4's grouping exchange from fullness and partial-tail normalization. Give N3 a current-set cost statement first, and introduce its global-prefix specialization only after prefix preservation has been established."
+  ],
+  "time": "2026-11-02 20:39:41"
+ },
+ {
+  "round": 2,
+  "version": "5a1ac020f0903ec7",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The trip-cost/torch-direction mechanics and the justification for relabeling and sorting walkers can be established independently. Split the mechanics from sorted indexing."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "A solver can establish single-person returns without establishing batch regrouping, and can understand batching without establishing the fastest-returner exchange. Separate these structural claims so that recognizing singleton returns is representable as partial progress."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "The crossing count and cost are immediate accounting consequences of N1 and N2, rather than a separate structural insight. Fold this accounting into the batch definition, retaining the distinction between current-set times and the global-prefix times justified later."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Assigning the largest walkers to maximally filled slow-only groups and making passenger-carrying preparatory crossings full are separate normalizations that a solver can establish independently. Split those claims and retain global-prefix helper availability as a consequence of the appropriate normalization."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Both routes specify sufficient recurrences, feasible state ranges, terminal cases, and output minimizations. P1 accounts for full and partial reserved slow-only groups; P2 additionally specifies the empty-batch knapsack and the mixed-batch cardinality recurrence. The stated state bounds support O(n^2) work within the limits.",
+   "key_ok": true,
+   "key_note": "N6 and N11 are the complete output minimizations for P1 and P2, respectively; neither is merely a feasibility, complexity, or proof claim.",
+   "hazards_ok": true,
+   "hazards_note": "H1 covers accumulated-cost range and safe treatment of unreachable states. H2 covers c>=n and excludes infeasible completed schedules without imposing an implementation-specific early return or incorrectly prohibiting intermediate credit deficits. No essential additional numerical or output constraint is missing.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "The empty-package knapsack overlaps with the reference, but neither END route represents its dp[done][credit] algorithm with signed net returns, residual-dependent credit bounds, and final settlement to balance -1. An editorial-following solver need not establish the stronger largest-slow-group normalization or the cardinality partition required here. N8's package cost S_k+t_k does agree with the reference code; the prose editorial's package formula omits one return cost.",
+   "order": "For finer trace placement, split N1 into mechanics and sorted indexing; split N2 into singleton returns, batch regrouping, and fastest-returner selection; and split N4's largest-group and fullness normalizations. Fold N3's immediate accounting into the batch claim. The remaining dependency order is coherent; covering the editorial would require an additional signed-credit-DP route, not relabeling P2.",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): The trip-cost/torch-direction mechanics and the justification for relabeling and sorting walkers can be established independently. Split the mechanics from sorted indexing.",
+   "N2 (bundles claims a solver can have separately; split it): A solver can establish single-person returns without establishing batch regrouping, and can understand batching without establishing the fastest-returner exchange. Separate these structural claims so that recognizing singleton returns is representable as partial progress.",
+   "N3 (comes with its prerequisite; merge it): The crossing count and cost are immediate accounting consequences of N1 and N2, rather than a separate structural insight. Fold this accounting into the batch definition, retaining the distinction between current-set times and the global-prefix times justified later.",
+   "N4 (bundles claims a solver can have separately; split it): Assigning the largest walkers to maximally filled slow-only groups and making passenger-carrying preparatory crossings full are separate normalizations that a solver can establish independently. Split those claims and retain global-prefix helper availability as a consequence of the appropriate normalization.",
+   "the editorial's approach is not among the paths: The empty-package knapsack overlaps with the reference, but neither END route represents its dp[done][credit] algorithm with signed net returns, residual-dependent credit bounds, and final settlement to balance -1. An editorial-following solver need not establish the stronger largest-slow-group normalization or the cardinality partition required here. N8's package cost S_k+t_k does agree with the reference code; the prose editorial's package formula omits one return cost.",
+   "order: For finer trace placement, split N1 into mechanics and sorted indexing; split N2 into singleton returns, batch regrouping, and fastest-returner selection; and split N4's largest-group and fullness normalizations. Fold N3's immediate accounting into the batch claim. The remaining dependency order is coherent; covering the editorial would require an additional signed-credit-DP route, not relabeling P2."
+  ],
+  "time": "2026-11-02 20:46:19"
+ },
+ {
+  "round": 3,
+  "version": "4c8de99ee27a49d1",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The trip-cost/torch model and the relabeling/sorting argument are separate claims: a solver can understand the mechanics without establishing the sorted representation. Split the model from the sorting justification."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Single-person returns, regrouping excursions into batches, and choosing the fastest remaining returners are distinct normalization claims. Split them so that recognizing singleton returns is distinguishable from establishing the substantially stronger batch theorem."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "Given N1 and the full batch definition in N2, this merely sums the specified individual returns and preparatory crossing maximum. Fold this accounting into the appropriate batch-normalization node or its acceptance criteria rather than treating it as another stopping point."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Largest-block reservation for slow-only trips and the fullness/largest-end normalization of preparatory passengers are separate exchange claims. Split those steps, attaching the original-fastest-prefix availability conclusion to the normalization that establishes it."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The necessary return-count identity is immediate from torch alternation, whereas sufficiency through reordering and replenishment is a separate, substantial realizability claim. Keep realizability as the node and move the balance definition and elementary counting into its acceptance criteria or the DP description."
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": false,
+     "note": "The same-progress dominance test is an optional optimization, as N15 itself acknowledges, and is independent of the optimality-preserving balance-range lemma. Retain the range lemma as the node and move the dominance rule to N15's acceptance criteria."
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each END route supplies the required state meanings, transitions, feasible finishing cases, output minimization, and limit-compatible bounds. In particular, N8 and N15 agree with the reference's package accounting and signed-balance recurrence.",
+   "key_ok": true,
+   "key_note": "N6, N11, and N15 are the respective complete output rules, rather than merely feasibility, complexity, or proof claims.",
+   "hazards_ok": true,
+   "hazards_note": "H1 covers accumulated-cost and unreachable-state arithmetic; H2 covers capacity at least n and exclusion of infeasible final configurations without forbidding legitimate accounting deficits. No additional essential numerical or output constraint is missing.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "P3 contains the reference algorithm, but its END route additionally requires the full batch theorem, the prepaid slow-only DP F, and its empty/mixed factorization (N2–N5 and N7). A solver following the editorial's direct prefix/credit DP would not establish those alternative-method claims, so a direct route through singleton returns, prefix normalization, credit accounting, bounds, and N15 is still absent. Also, the editorial's displayed fast-only package cost omits a return: the reference and N8 correctly charge t_k+S_k for k-1 net credits, with all k package participants returning.",
+   "order": "Split N1's mechanics from sorting; split N2's singleton-return, batching, and fastest-returner claims; fold N3 into the resulting batch accounting. Split N4's slow-group reservation from preparatory-trip normalization. Separate N13's elementary balance bookkeeping from its realizability claim, and move N14's optional dominance optimization into N15's accept. For editorial coverage, provide a direct credit-DP route rather than requiring the alternative F-based algorithm as a milestone.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N14 (it states one implementation's choice, not what every correct solution through this step gets right; bundles claims a solver can have separately; split it): The same-progress dominance test is an optional optimization, as N15 itself acknowledges, and is independent of the optimality-preserving balance-range lemma. Retain the range lemma as the node and move the dominance rule to N15's acceptance criteria."
+  ],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): The trip-cost/torch model and the relabeling/sorting argument are separate claims: a solver can understand the mechanics without establishing the sorted representation. Split the model from the sorting justification.",
+   "N2 (bundles claims a solver can have separately; split it): Single-person returns, regrouping excursions into batches, and choosing the fastest remaining returners are distinct normalization claims. Split them so that recognizing singleton returns is distinguishable from establishing the substantially stronger batch theorem.",
+   "N3 (comes with its prerequisite; merge it): Given N1 and the full batch definition in N2, this merely sums the specified individual returns and preparatory crossing maximum. Fold this accounting into the appropriate batch-normalization node or its acceptance criteria rather than treating it as another stopping point.",
+   "N4 (bundles claims a solver can have separately; split it): Largest-block reservation for slow-only trips and the fullness/largest-end normalization of preparatory passengers are separate exchange claims. Split those steps, attaching the original-fastest-prefix availability conclusion to the normalization that establishes it.",
+   "N13 (bundles claims a solver can have separately; split it): The necessary return-count identity is immediate from torch alternation, whereas sufficiency through reordering and replenishment is a separate, substantial realizability claim. Keep realizability as the node and move the balance definition and elementary counting into its acceptance criteria or the DP description.",
+   "the editorial's approach is not among the paths: P3 contains the reference algorithm, but its END route additionally requires the full batch theorem, the prepaid slow-only DP F, and its empty/mixed factorization (N2–N5 and N7). A solver following the editorial's direct prefix/credit DP would not establish those alternative-method claims, so a direct route through singleton returns, prefix normalization, credit accounting, bounds, and N15 is still absent. Also, the editorial's displayed fast-only package cost omits a return: the reference and N8 correctly charge t_k+S_k for k-1 net credits, with all k package participants returning.",
+   "order: Split N1's mechanics from sorting; split N2's singleton-return, batching, and fastest-returner claims; fold N3 into the resulting batch accounting. Split N4's slow-group reservation from preparatory-trip normalization. Separate N13's elementary balance bookkeeping from its realizability claim, and move N14's optional dominance optimization into N15's accept. For editorial coverage, provide a direct credit-DP route rather than requiring the alternative F-based algorithm as a milestone."
+  ],
+  "time": "2026-11-02 20:55:46"
+ },
+ {
+  "round": 4,
+  "version": "99253eadd1c82ba4",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The crossing/torch mechanics and the justification for sorting are independently establishable claims. Separate the trip model from invariance under relabeling and sorted indexing."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Single-person returns, regrouping excursions into batches, and choosing the fastest remaining returners are distinct normalization steps; a solver can establish the first without the others. Split these exchange lemmas so a partial normalization argument has its own location."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "The k-1 interleaved crossings are already specified in N2, and the stated charge follows immediately from N1's crossing cost and N2's individual returns. Fold this accounting into the batch-normal-form acceptance criteria or the batch-cost definitions used by the DP."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Assigning the largest walkers to capacity-sized slow-only blocks and normalizing preparatory crossings to full crossings of a residual prefix require distinct exchanges. Separate the slow-only allocation lemma from preparatory fullness/prefix normalization, placing availability of the original fastest helpers with the latter."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Putting all permanent transfers into one largest-block accounting order and obtaining the fastest-helper/fullness normal form are separately establishable transformations, particularly around a partial slow-only block. Split the ordering claim from helper allocation and charging."
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The lower bound is fullness-based accounting, whereas the upper bound requires an independent optimality-preserving surplus-return normalization. Move the elementary lower-bound accounting alongside the prefix-transfer definitions and retain the upper-bound normalization separately, or split the two bounds."
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All three routes supply their optimization recurrences, terminal output rules, feasible domains, and sufficient bounds for an implementation within the limits. P3's transitions and settlement agree with the reference solution.",
+   "key_ok": true,
+   "key_note": "N6, N11, and N15 determine the output for P1, P2, and P3 respectively; none is merely a proof or complexity claim.",
+   "hazards_ok": true,
+   "hazards_note": "H1 covers accumulated-cost range and unreachable-state arithmetic. H2 covers the c>=n boundary and final feasibility without incorrectly forbidding signed intermediate deficits or requiring a particular implementation.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "P3 matches the reference algorithm, but there is no END route a direct editorial solver would establish: P3 unnecessarily requires the alternative F recurrence in N5 and the F/M factorization in N7, as well as the segregated batch-development chain. Add a direct route through individual-return/fast-helper normalization, unified prefix accounting, replenishment knapsack, realizability, balance bounds, and N15. Separately, the supplied editorial's package formula omits one t_(h+1): N8 correctly uses t_k+S_k for k-1 credits, matching the reference's t[helpers]+fast_prefix[helpers+1].",
+   "order": "Split the independent normalization claims in N1, N2, N4, and N12; fold N3's immediate accounting into the relevant batch definitions. Separate N14's elementary lower-bound bookkeeping from its substantive upper-bound normalization. Give the reference/editorial DP a direct derivation and END route that does not require constructing the alternative F and M dynamic programs.",
+   "verdict": "revise"
+  },
+  "blocking": [],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): The crossing/torch mechanics and the justification for sorting are independently establishable claims. Separate the trip model from invariance under relabeling and sorted indexing.",
+   "N2 (bundles claims a solver can have separately; split it): Single-person returns, regrouping excursions into batches, and choosing the fastest remaining returners are distinct normalization steps; a solver can establish the first without the others. Split these exchange lemmas so a partial normalization argument has its own location.",
+   "N3 (comes with its prerequisite; merge it): The k-1 interleaved crossings are already specified in N2, and the stated charge follows immediately from N1's crossing cost and N2's individual returns. Fold this accounting into the batch-normal-form acceptance criteria or the batch-cost definitions used by the DP.",
+   "N4 (bundles claims a solver can have separately; split it): Assigning the largest walkers to capacity-sized slow-only blocks and normalizing preparatory crossings to full crossings of a residual prefix require distinct exchanges. Separate the slow-only allocation lemma from preparatory fullness/prefix normalization, placing availability of the original fastest helpers with the latter.",
+   "N12 (bundles claims a solver can have separately; split it): Putting all permanent transfers into one largest-block accounting order and obtaining the fastest-helper/fullness normal form are separately establishable transformations, particularly around a partial slow-only block. Split the ordering claim from helper allocation and charging.",
+   "N14 (bundles claims a solver can have separately; split it): The lower bound is fullness-based accounting, whereas the upper bound requires an independent optimality-preserving surplus-return normalization. Move the elementary lower-bound accounting alongside the prefix-transfer definitions and retain the upper-bound normalization separately, or split the two bounds.",
+   "the editorial's approach is not among the paths: P3 matches the reference algorithm, but there is no END route a direct editorial solver would establish: P3 unnecessarily requires the alternative F recurrence in N5 and the F/M factorization in N7, as well as the segregated batch-development chain. Add a direct route through individual-return/fast-helper normalization, unified prefix accounting, replenishment knapsack, realizability, balance bounds, and N15. Separately, the supplied editorial's package formula omits one t_(h+1): N8 correctly uses t_k+S_k for k-1 credits, matching the reference's t[helpers]+fast_prefix[helpers+1].",
+   "order: Split the independent normalization claims in N1, N2, N4, and N12; fold N3's immediate accounting into the relevant batch definitions. Separate N14's elementary lower-bound bookkeeping from its substantive upper-bound normalization. Give the reference/editorial DP a direct derivation and END route that does not require constructing the alternative F and M dynamic programs."
+  ],
+  "time": "2026-11-02 21:01:30"
+ }
+]

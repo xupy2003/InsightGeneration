@@ -1,0 +1,567 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2024/J-the-silk-road-with-robots",
+ "title": "The Silk Road . . . with Robots!",
+ "status": "accepted",
+ "version": "a94da19cf1c4c640",
+ "solution_outline": "P1: An optimal solution can be uncrossed into disjoint intervals, one per robot; visiting both sides of a robot traverses one side once and the other twice. P2: Choose for each robot which side is traversed twice. P3: Instead of assigning stores to disjoint robot intervals, select directed traversals of the elementary road gaps.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Cost of one robot's visited interval",
+   "kind": "modeling",
+   "statement": "If a robot starting at x visits extremes L≤x≤R, its minimum movement cost is (R−L)+min(x−L,R−x). Every store in [L,R] can be collected, and a robot that stays still costs zero.",
+   "routes": [
+    []
+   ],
+   "accept": "The robot visits one extreme first, then the other. Taking the cheaper order gives the formula; equivalently, one side is traversed twice and the other once. Collected store rewards are added only once, and stopping without moving is allowed.",
+   "anchors": [
+    "robot",
+    "stores",
+    "profit",
+    "meters"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Disjoint robot intervals suffice",
+   "kind": "key_property",
+   "statement": "There is an optimal solution whose robots' visited intervals are pairwise disjoint. Each interval contains its own robot's starting location and no other robot's starting location; its other endpoints can be chosen at collected stores.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Establish an uncrossing argument for line routes: overlapping coverage can be reassigned to robots in starting-position order without increasing movement. A robot inside another's covered interval can take over coverage on its own side. Truncate unused tails at the last collected store. Unused robots have singleton intervals.",
+   "anchors": [
+    "robots",
+    "starting location",
+    "stores",
+    "road"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Five states describe interval scans",
+   "kind": "reformulation",
+   "statement": "An interval scan can use O, B1, B2, A1, A2: outside coverage, before the chosen robot with multiplicity 1 or 2, or after it with multiplicity 1 or 2. Crossing distance d in these states costs 0,d,2d,d,2d.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "Before and after refer to spatial position, not time. The chosen robot realizes the interval's visit order; formulations may allow passing other robots without using them. A two-sided route pairs multiplicities (1,2) or (2,1). A one-sided route may use multiplicity one. Equivalent encodings of these phases count.",
+   "anchors": [
+    "road",
+    "robot",
+    "meters",
+    "visited intervals"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Store and robot scan actions",
+   "kind": "key_property",
+   "statement": "Store actions skip outside coverage, extend a covered interval, start its pre-robot part, or end its post-robot part, collecting c once when covered. Robot actions connect compatible pre/post phases, or begin/end a one-sided route, with zero reward. Equivalent transitions may retain skipped robots or omit dominated choices.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Store transitions may be O→O with 0 and O→Bk, Bk→Bk, Ak→Ak, Ak→O with c. Robot transitions may use B1→A2, B2→A1, Bk→O and O→Ak with 0. Accept both the no-passthrough normal form and identity transitions that skip robots, and dominance-equivalent omissions such as O→A2. Empty coordinates preserve states.",
+   "anchors": [
+    "store",
+    "tenges",
+    "robot",
+    "scan states"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N5",
+   "name": "Maintain the interval-scan max-plus composition",
+   "kind": "algorithm",
+   "statement": "Compose the interval-scan transitions and physical-distance costs in road order using max-plus multiplication. Maintain this composition under daily insertions. Its O-to-O value is the maximum profit, because the scan begins and ends outside any robot's visited interval.",
+   "routes": [
+    [
+     "N3",
+     "N4"
+    ]
+   ],
+   "accept": "Five-by-five matrices compose by maximizing over boundary states. A segment tree or equivalent ordered structure supports updates in O(5³ log n), using O(5²n) memory. Road-cost matrices may be separate, incorporated into neighboring coordinate matrices, or inserted while merging intervals. Offline compression with initially empty coordinates and online ordered insertions are both valid; distances must remain physical.",
+   "anchors": [
+    "days",
+    "maximum profit",
+    "coordinates",
+    "robots",
+    "stores"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N6",
+   "name": "Visit order separates left and right costs",
+   "kind": "reformulation",
+   "statement": "The cheaper-order choice for every robot can instead be optimized externally as one binary variable per robot. Conditional on those variables, each robot's travel cost is the sum of its left and right reaches weighted by (2,1) or (1,2).",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Maximizing over visit orders can be performed outside the endpoint optimization. For a fixed order, left and right travel contributions are additive. A missing side has distance zero. These binary variables parameterize route costs; they do not impose a common movement direction on different robots.",
+   "anchors": [
+    "robot",
+    "visited interval",
+    "movement cost",
+    "visit order"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N7",
+   "name": "Independent gaps form a binary chain",
+   "kind": "key_property",
+   "statement": "With robot orientations fixed, each gap between consecutive robots independently collects a prefix of stores from the left robot and a disjoint suffix from the right, possibly empty. Outer tails use one robot. Maximizing these contributions over orientations is a binary-state chain optimization.",
+   "routes": [
+    [
+     "N2",
+     "N6"
+    ]
+   ],
+   "accept": "Disjoint intervals enforce the prefix/suffix structure, and no choice in one gap constrains another once both incident orientations are fixed. Gap rewards define pairwise factors; outer-tail rewards define unary factors. Max-plus multiplication of 2×2 factors maximizes the chain.",
+   "anchors": [
+    "consecutive robots",
+    "stores",
+    "road",
+    "profit"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N8",
+   "name": "Merge one-sided store collection optima",
+   "kind": "algorithm",
+   "statement": "Store totals and best nonempty prefix/suffix collections, penalized by boundary travel with multiplier 1 or 2, have composable summaries. In a concatenation, the prefix endpoint lies in either part; if it lies in the second, the entire first part is collected. The suffix case is symmetric.",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "One normalization uses total C, P_a=max(prefixReward−a·lastCoordinate), and S_b=max(suffixReward+b·firstCoordinate), for a,b∈{1,2}. For U,V: C=C_U+C_V, P_a=max(P_a^U,C_U+P_a^V), S_b=max(S_b^V,C_V+S_b^U). Endpoint-relative summaries with appropriate distance shifts are equally valid. Prefixes and suffixes here are nonempty; their maxima are impossible for an empty sequence. This node concerns one-sided choices, not joint disjoint choices.",
+   "anchors": [
+    "stores",
+    "tenges",
+    "prefix endpoint",
+    "suffix start",
+    "travel distance"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N9",
+   "name": "Merge disjoint prefix-suffix collection optima",
+   "kind": "algorithm",
+   "statement": "The best disjoint nonempty prefix and suffix in a concatenation has three endpoint cases: both endpoints in the first part, both in the second, or split across them. These cases determine its optimum from the parts' two-sided optima, one-sided optima, and total rewards.",
+   "routes": [
+    [
+     "N8"
+    ]
+   ],
+   "accept": "For each multiplier pair, summarize the joint disjoint-prefix/suffix optimum. One normalization is D_ab=max(prefixReward+suffixReward−a·lastPrefixCoordinate+b·firstSuffixCoordinate). Then D_ab(UV)=max(D_ab(U)+C(V),C(U)+D_ab(V),P_a(U)+S_b(V)). Endpoint-relative equivalents count. Singletons have no feasible pair. Together with one-sided summaries, the three cases give constant-size associative aggregation supporting O(log n) store updates and interval queries.",
+   "anchors": [
+    "stores",
+    "disjoint prefix and suffix",
+    "prefix endpoint",
+    "suffix start"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N10",
+   "name": "Four collection cases determine gap profit",
+   "kind": "key_property",
+   "statement": "For fixed robot visit orders, a gap's optimum maximizes over collecting nothing, only a left-robot prefix, only a right-robot suffix, or both disjoint parts, subtracting actual travel costs. Each outer tail maximizes between collecting nothing and a one-sided collection by its neighboring robot.",
+   "routes": [
+    [
+     "N7",
+     "N8"
+    ]
+   ],
+   "accept": "Use the actual endpoint-to-robot distances with the chosen multipliers. For absolute-coordinate summaries, a gap between l<r has value max(0,P_a+al,S_b−br,D_ab+al−br), where D represents the disjoint joint optimum. Left and right tails have values max(0,S_b−br) and max(0,P_a+al), respectively. Endpoint-relative formulations that evaluate the same four cases also count.",
+   "anchors": [
+    "robots",
+    "gap",
+    "outer tails",
+    "maximum profit",
+    "travel distance"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N11",
+   "name": "Maintain store summaries and robot chain",
+   "kind": "algorithm",
+   "statement": "Maintain the store interval summaries and binary orientation-chain optimum as robots and stores are inserted. Only the gap or tail containing the new object changes or splits. Evaluate the updated chain, including its outer tails, to obtain each day's maximum profit.",
+   "routes": [
+    [
+     "N9",
+     "N10"
+    ]
+   ],
+   "accept": "One realization uses an ordered robot set and two segment trees. Put the first robot's left-tail unary factor at its leaf and each later robot's preceding-gap matrix at its leaf; other leaves are identities. Maximize the product plus the last robot's right-tail contribution. With no robots output zero. Constantly many O(log n) queries/updates suffice per day.",
+   "anchors": [
+    "days",
+    "robot insertion",
+    "store insertion",
+    "maximum profit"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N12",
+   "name": "Select directed elementary gap traversals",
+   "kind": "reformulation",
+   "statement": "Each consecutive-coordinate gap need only be traversed once in each direction. Select a subset of its two directed arcs and pay the gap length per selected arc. A store is collected exactly when at least one selected arc is incident to its coordinate.",
+   "routes": [
+    [
+     "N1",
+     "N2"
+    ]
+   ],
+   "accept": "Disjoint optimal robot intervals provide the traversal bound: an optimal interval walk uses each direction at most once. Conversely, any realizable selected-arc system incurs exactly its arc-length sum and can collect every incident store once. Coordinates with no current object may subdivide gaps without changing their costs.",
+   "anchors": [
+    "road",
+    "robots",
+    "stores",
+    "meters"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N13",
+   "name": "Degree and rootedness characterize executable traversals",
+   "kind": "key_property",
+   "statement": "Selected directed gap arcs are realizable by robot walks if and only if every nonempty weak component contains a robot and outdegree−indegree is at most one at robot coordinates and at most zero at other coordinates.",
+   "routes": [
+    [
+     "N12"
+    ]
+   ],
+   "accept": "Necessity follows from starts and endpoints of walks. For sufficiency, add a supervertex with one outgoing arc to each robot and indegree+robotIndicator−outdegree return arcs from each coordinate. All degrees balance, and rootedness connects every used component to the supervertex. An Euler tour, split at supervertex visits, gives at most one walk starting at each robot.",
+   "anchors": [
+    "robot walks",
+    "starting location",
+    "directed gap arcs"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N14",
+   "name": "Five boundary states check directed traversals",
+   "kind": "reformulation",
+   "statement": "A scan of selected arcs needs five boundary states: no arc, right-only, left-only, and both directions with or without a robot already in the current component. Right-only guarantees a past robot; left-only requires a future robot before its component can close.",
+   "routes": [
+    [
+     "N13"
+    ]
+   ],
+   "accept": "Use net rightward flows 0,1,−1,0,0. At a vertex, the right-minus-left flow is its degree surplus. Thus entering right-only requires a previously encountered robot, while leaving left-only eventually requires a robot. Only bidirectional boundaries need an explicit component-root flag; a rootless bidirectional component cannot close at a nonrobot.",
+   "anchors": [
+    "directed gap arcs",
+    "robot",
+    "component",
+    "boundary states"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N15",
+   "name": "Maintain executable directed-traversal scan",
+   "kind": "algorithm",
+   "statement": "Encode the five directed-arc boundary states as max-plus transitions: enforce degree bounds, update component-root status, reject unrooted component closures, and add visited-store rewards. Charge selected arcs across physical gaps. Maintain the ordered transition product under insertions; output its no-arc-to-no-arc entry each day.",
+   "routes": [
+    [
+     "N12",
+     "N13",
+     "N14"
+    ]
+   ],
+   "accept": "For right boundary 'both', its root flag is true iff this vertex is a robot or the left boundary is right-only/rooted-both. Rootless-both cannot transition to no-arc without a robot. Check the degree inequality for every transition. A store earns c iff either incident boundary is nonempty. A five-by-five segment tree over all coordinates gives O(5³ log n) per insertion.",
+   "anchors": [
+    "days",
+    "maximum profit",
+    "robots",
+    "stores",
+    "directed traversals"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 6
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   [
+    "N1",
+    "N2",
+    "N6",
+    "N7",
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   [
+    "N1",
+    "N2",
+    "N12",
+    "N13",
+    "N14",
+    "N15"
+   ]
+  ],
+  "keys": [
+   "N5",
+   "N11",
+   "N15"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Reward totals and intermediate finite scores can exceed 32-bit range. Arithmetic must represent all relevant values exactly; total store rewards are bounded by 2·10^13.",
+   "check": "64-bit or wider integers suffice. Binary64 also exactly represents the relevant integral finite scores when impossible values are handled suitably. Check intermediate additions and multiplications, not only the printed answers."
+  },
+  {
+   "id": "H2",
+   "statement": "Impossible transitions must not create competitive scores or trigger invalid arithmetic during matrix composition.",
+   "check": "Guarded impossible entries need not support addition. If finite sentinels participate in arithmetic, ensure all evaluated sums are representable and remain below feasible competitors even after reward accumulation. True negative infinity is also valid. Bounds on sums of sentinels are needed only when such sums are evaluated."
+  },
+  {
+   "id": "H3",
+   "statement": "Output the optimum for every prefix of insertions; future coordinates may subdivide distances but must not act as robots or reward-bearing stores.",
+   "check": "Initially all compressed locations are empty. Activate only the current day's object before printing. Preserve actual coordinate differences rather than compressed-index distances."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "An optimal solution can be uncrossed into disjoint intervals, one per robot; visiting both sides of a robot traverses one side once and the other twice. A five-state weighted automaton describes these intervals while scanning the road. Coordinate compression and a segment tree of max-plus transition matrices maintain the optimum after each insertion in O(n log n) time with a constant matrix dimension.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "key_node": "N5",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 66,
+    "n_tests": 66,
+    "max_time_s": 0.609,
+    "time_limit_s": 5.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Choose for each robot which side is traversed twice. With these binary choices fixed, every gap between consecutive robots independently chooses a collected prefix and disjoint suffix; hence the remaining optimization is a two-state chain. One segment tree maintains prefix/suffix summaries of stores, while another maintains the chain's 2×2 max-plus factors; each insertion changes only a constant number of factors, giving O(n log n) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N6",
+    "N7",
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "key_node": "N11",
+   "new_nodes": [
+    "N6",
+    "N7",
+    "N8",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 66,
+    "n_tests": 66,
+    "max_time_s": 0.544,
+    "time_limit_s": 5.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Instead of assigning stores to disjoint robot intervals, select directed traversals of the elementary road gaps. Such traversals are executable exactly when local degree surpluses can be supplied by robots and every used connected component contains a robot; sufficiency follows by adding a supervertex and taking Euler tours. A five-state scan checks these conditions, and a max-plus segment tree maintains the resulting optimum in O(n log n) time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N12",
+    "N13",
+    "N14",
+    "N15"
+   ],
+   "key_node": "N15",
+   "new_nodes": [
+    "N12",
+    "N13",
+    "N14",
+    "N15"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 66,
+    "n_tests": 66,
+    "max_time_s": 0.685,
+    "time_limit_s": 5.0
+   },
+   "notes": "Renamed the identity-matrix helper to avoid a collision with std::identity in the judge's compiler environment."
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Three genuinely different characterizations have been implemented and accepted: disjoint-interval scanning, binary robot orientations with independent gap factors, and executable directed traversals characterized by degree bounds and rooted components. I have no further distinct approach with a justified implementation fast enough for the limits.",
+  "considered": [
+   "Assigning each store independently to its nearest robot fails because one trip can collect several stores and visiting both sides introduces a shared turning cost.",
+   "Optimizing each robot's interval independently can collect the same store twice; resolving these interactions leads back to the accepted interval scan or orientation chain.",
+   "Enumerating interval endpoints or recomputing a linear scan after every insertion takes quadratic or worse total time.",
+   "Generic flow formulations need to exclude profitable rootless traversal cycles. The efficient rooted-component formulation is already represented by the directed-traversal path.",
+   "A min-cut or normalized-message reformulation of the binary orientation chain did not yield a separate established algorithm beyond maintaining the same gap factors.",
+   "Treaps, block decomposition, reverse processing, and alternative matrix layouts would primarily change the implementation of existing paths rather than establish a genuinely different approach."
+  ],
+  "submissions": 4
+ },
+ "builder_notes": "Refactored the existing N8–N10 slots without changing IDs or routes: N8 now concerns only one-sided optima and their endpoint-case merges; N9 separately concerns the disjoint two-sided optimum and its three merge cases; N10 states the normalization-independent four-case gap objective. Absolute-coordinate formulas appear only as examples in accept. The suggested additional node splits and merges would require topology changes, which this revision is instructed not to make.",
+ "open_issues": [],
+ "advisories": [
+  "N4 (bundles claims a solver can have separately; split it): Store-event transitions and robot-event transitions are independent local derivations: a solver can handle store rewards correctly but connect the robot-side multiplicities incorrectly. Split these into separate store-action and robot-action nodes.",
+  "N7 (bundles claims a solver can have separately; split it): This bundles the independent-gap factorization for fixed orientations with optimization of the orientations by a binary-state chain. A solver can establish the former yet still enumerate all orientation assignments; separate the gap-factorization claim from the chain-DP composition.",
+  "N10 (comes with its prerequisite; merge it): N7 already specifies a possibly empty prefix and disjoint possibly empty suffix, including the one-robot outer tails; the four cases merely enumerate their emptiness choices. Fold this into the gap-factor claim or N11's factor evaluation, retaining the boundary-distance formulas in accept.",
+  "N13 (bundles claims a solver can have separately; split it): This combines local degree constraints, the independent requirement excluding robot-free components, and the nontrivial sufficiency proof. A solver can have correct degree inequalities while admitting rootless bidirectional components, or know both necessary conditions without proving realizability; separate these landmarks.",
+  "order: Split N4 into store and robot transitions. Split N7 into fixed-orientation gap factorization and binary-chain optimization. Split N13 into degree feasibility, component rootedness, and their joint sufficiency via walk decomposition. Fold N10 into gap-factor evaluation, preferably within N11's accept. The explorer's topology restriction explains why these changes were deferred, but does not remove the trace-localization issues."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 5,
+  "submissions": 4,
+  "review_rounds": 3,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 147125,
+    "output_tokens": 30044,
+    "cached_tokens": 85014,
+    "reasoning_tokens": 16463
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 23282,
+    "output_tokens": 28133,
+    "reasoning_tokens": 24432
+   },
+   "total": {
+    "input_tokens": 170407,
+    "output_tokens": 58177,
+    "cached_tokens": 85014,
+    "reasoning_tokens": 40895
+   }
+  },
+  "inputs": {
+   "statement": "0d94c0ccabc3237a86ff758b5ef58783d8230fa5f9a45340ea816b7845b5aef6",
+   "editorial": "34cc7bc994d62b1a6a23bd28cc29ab8a326bc1ac660a3f2f088a0b5e140f544b",
+   "reference": "404c6292ea68e62bb8a0f0b98cd5c29fe6c764114d5a44986f22d7d760f42336"
+  },
+  "created": "2026-11-02 21:34:01"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

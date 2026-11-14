@@ -1,0 +1,404 @@
+[
+ {
+  "round": 1,
+  "version": "7f3592be060b3561",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": false,
+     "note": "The particular binomial-basis rows are a construction choice, whereas candidate decoding needs the legal full-rank design invariant. Separate the quadratic-response representation from the full-rank query construction, and put this concrete parameterization in the acceptance examples; a solver can recognize the polynomial representation without establishing the independence guarantee."
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The fixed query rows, enumeration of all ten triples, and exact subsystem arithmetic unnecessarily narrow the four-agreement decoder. Accept any suitable full-rank query design and a candidate generator guaranteed to include the truth, including the editorial's omit-one construction and numerically justified solving followed by reliable integer validation."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The weighted check (1,2,3) and displayed syndrome coordinates are particular choices within the checksum method. State the invariant that a parity-check syndrome cancels truthful responses and turns a single error into its magnitude times the corresponding column; retain these legal queries and formulas as a concrete example."
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The slope tests and addition of u encode one coordinate convention for the syndrome and one choice of checksum weights. State the output rule as identifying the erroneous response and its magnitude from the syndrome, correcting a singleton response when necessary, and outputting the singleton values; keep these tests as an example."
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The locator algorithm and coefficient recovery are correct, but accept mandates exact solving rather than accepting any numerically justified implementation that recovers the required integer coefficients. Make reliable recovery the requirement and fixed-size rational elimination an implementation example, preserving the essential handling of free variables."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The candidate characterization requires only four legal rows with every three independent, not specifically q(0),...,q(3). State it for that invariant and leave the quadratic rows as an example so the same adaptive reduction is recognized with other valid initial questions."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The adaptive output rule is valid, but prescribing the particular first four quadratic rows is unnecessary. Refer to four questions satisfying the candidate-generation invariant, with these rows as an example; retain the singleton case, guaranteed-truthful separating question, and exactly-five-round requirement."
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "All displayed certificates check out, but the weight tuple is one numerical witness, not the weighted-decoding invariant. State that positive weights can be chosen to give every syndrome column a strict supporting functional, and keep these weights and certificates as an acceptance example."
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The uniqueness proof is correct for the supplied weights, but it applies to any positive weights satisfying N15's strict supporting-functional property. State the result under that property rather than requiring this particular tuple."
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The finite-candidate minimization is correct, but the fixed weights and mandatory exact rational comparisons are implementation choices. Accept weights satisfying the strict-recovery condition and any sufficiently reliable objective comparison and integer recovery, retaining rational enumeration as a concrete implementation."
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each of the five listed routes contains a complete output algorithm and the essential guarantees it needs. The candidate searches, fixed-size systems, and 1331-question separating search are comfortably small; no additional mathematical step is needed to implement these particular approaches.",
+   "key_ok": true,
+   "key_note": "N4, N7, N10, N14, and N17 each states its path's actual output-producing algorithm, rather than merely a feasibility or correctness property.",
+   "hazards_ok": false,
+   "hazards_note": "H2 incorrectly makes exact subsystem arithmetic and divisibility checks mandatory for every implementation. The universal constraint is reliable integer recovery and validation without overflow or harmful numerical error; exact arithmetic is one sufficient implementation, while appropriately justified floating-point solving with rounding and validation can also work. Keep 64-bit sufficiency scoped to the bounded calculations being certified rather than treating it as a blanket guarantee for arbitrary rational-elimination intermediates. H1 is appropriate, and H3 correctly captures the optional-lie case with a locator-specific check.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "The reference asks the singleton-and-checksum rows, then omits each possible lie, solves three remaining equations, and verifies all four. P1 requires different concrete rows and all ten triples; P2 requires syndrome decoding; P5 requires weighted minimization. Thus no current END route describes the editorial solver. Include the any-three independence of the reference's rows and allow its omit-one candidate generator in a generalized four-agreement decoding path.",
+   "order": "Split N2's quadratic-response representation from the shared legal full-rank query-design construction. Generalize N4 so all-triples enumeration and omit-one reconstruction are acceptance variants of the same four-agreement decoder; this also permits an editorial END route without duplicating the uniqueness proof.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N2 (it states one implementation's choice, not what every correct solution through this step gets right; bundles claims a solver can have separately; split it): The particular binomial-basis rows are a construction choice, whereas candidate decoding needs the legal full-rank design invariant. Separate the quadratic-response representation from the full-rank query construction, and put this concrete parameterization in the acceptance examples; a solver can recognize the polynomial representation without establishing the independence guarantee.",
+   "N4 (a reader of a solver's work cannot decide whether the solver has it; it states one implementation's choice, not what every correct solution through this step gets right): The fixed query rows, enumeration of all ten triples, and exact subsystem arithmetic unnecessarily narrow the four-agreement decoder. Accept any suitable full-rank query design and a candidate generator guaranteed to include the truth, including the editorial's omit-one construction and numerically justified solving followed by reliable integer validation.",
+   "N5 (it states one implementation's choice, not what every correct solution through this step gets right): The weighted check (1,2,3) and displayed syndrome coordinates are particular choices within the checksum method. State the invariant that a parity-check syndrome cancels truthful responses and turns a single error into its magnitude times the corresponding column; retain these legal queries and formulas as a concrete example.",
+   "N7 (it states one implementation's choice, not what every correct solution through this step gets right): The slope tests and addition of u encode one coordinate convention for the syndrome and one choice of checksum weights. State the output rule as identifying the erroneous response and its magnitude from the syndrome, correcting a singleton response when necessary, and outputting the singleton values; keep these tests as an example.",
+   "N10 (a reader of a solver's work cannot decide whether the solver has it; it states one implementation's choice, not what every correct solution through this step gets right): The locator algorithm and coefficient recovery are correct, but accept mandates exact solving rather than accepting any numerically justified implementation that recovers the required integer coefficients. Make reliable recovery the requirement and fixed-size rational elimination an implementation example, preserving the essential handling of free variables.",
+   "N11 (it states one implementation's choice, not what every correct solution through this step gets right): The candidate characterization requires only four legal rows with every three independent, not specifically q(0),...,q(3). State it for that invariant and leave the quadratic rows as an example so the same adaptive reduction is recognized with other valid initial questions.",
+   "N14 (it states one implementation's choice, not what every correct solution through this step gets right): The adaptive output rule is valid, but prescribing the particular first four quadratic rows is unnecessary. Refer to four questions satisfying the candidate-generation invariant, with these rows as an example; retain the singleton case, guaranteed-truthful separating question, and exactly-five-round requirement.",
+   "N15 (it states one implementation's choice, not what every correct solution through this step gets right): All displayed certificates check out, but the weight tuple is one numerical witness, not the weighted-decoding invariant. State that positive weights can be chosen to give every syndrome column a strict supporting functional, and keep these weights and certificates as an acceptance example.",
+   "N16 (it states one implementation's choice, not what every correct solution through this step gets right): The uniqueness proof is correct for the supplied weights, but it applies to any positive weights satisfying N15's strict supporting-functional property. State the result under that property rather than requiring this particular tuple.",
+   "N17 (a reader of a solver's work cannot decide whether the solver has it; it states one implementation's choice, not what every correct solution through this step gets right): The finite-candidate minimization is correct, but the fixed weights and mandatory exact rational comparisons are implementation choices. Accept weights satisfying the strict-recovery condition and any sufficiently reliable objective comparison and integer recovery, retaining rational enumeration as a concrete implementation.",
+   "hazards: H2 incorrectly makes exact subsystem arithmetic and divisibility checks mandatory for every implementation. The universal constraint is reliable integer recovery and validation without overflow or harmful numerical error; exact arithmetic is one sufficient implementation, while appropriately justified floating-point solving with rounding and validation can also work. Keep 64-bit sufficiency scoped to the bounded calculations being certified rather than treating it as a blanket guarantee for arbitrary rational-elimination intermediates. H1 is appropriate, and H3 correctly captures the optional-lie case with a locator-specific check."
+  ],
+  "advisory": [
+   "the editorial's approach is not among the paths: The reference asks the singleton-and-checksum rows, then omits each possible lie, solves three remaining equations, and verifies all four. P1 requires different concrete rows and all ten triples; P2 requires syndrome decoding; P5 requires weighted minimization. Thus no current END route describes the editorial solver. Include the any-three independence of the reference's rows and allow its omit-one candidate generator in a generalized four-agreement decoding path.",
+   "order: Split N2's quadratic-response representation from the shared legal full-rank query-design construction. Generalize N4 so all-triples enumeration and omit-one reconstruction are acceptance variants of the same four-agreement decoder; this also permits an editorial END route without duplicating the uniqueness proof."
+  ],
+  "time": "2026-11-03 01:07:58"
+ },
+ {
+  "round": 2,
+  "version": "2f15ef871a401492",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "A solver can construct a locator vanishing at the corrupted point and derive a consistent system using N=EP, yet still be stuck proving that every solution of that system recovers P. Separate locator formulation/existence from the converse recovery claim proved by the four truthful roots."
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each END route contains a complete decoder and enough information for a fast implementation. In particular, the adaptive route supplies both a bounded candidate set and a constructible separating question, and the weighted-regression route supplies verified weights and finite candidate enumeration.",
+   "key_ok": true,
+   "key_note": "N4, N7, N10, N14, and N17 each specify the corresponding path's questions and output-determining decoding algorithm.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover legal questions, exactly five request/reply rounds, flushing and output format, nonnegative integer recovery, arithmetic reliability, and the optional-lie case, including its effect on locator-system rank. The stated 64-bit guarantee is appropriately limited to the displayed determinant and dot-product calculations.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "The editorial and reference solution establish N1–N4: their singleton-plus-checksum rows satisfy N2, and omitting each possible lie, solving three remaining equations with Cramer's rule, and checking all four is explicitly accepted by N4.",
+   "order": "Split N9 into locator-equation formulation/existence and universal recovery by the four-root argument. Place the recovery node after the formulation node, and make N10 depend on both; this distinguishes discovering the linearization from proving that arbitrary solutions, including no-error free-variable solutions, decode correctly.",
+   "verdict": "revise"
+  },
+  "blocking": [],
+  "advisory": [
+   "N9 (bundles claims a solver can have separately; split it): A solver can construct a locator vanishing at the corrupted point and derive a consistent system using N=EP, yet still be stuck proving that every solution of that system recovers P. Separate locator formulation/existence from the converse recovery claim proved by the four truthful roots.",
+   "order: Split N9 into locator-equation formulation/existence and universal recovery by the four-root argument. Place the recovery node after the formulation node, and make N10 depend on both; this distinguishes discovering the linearization from proving that arbitrary solutions, including no-error free-variable solutions, decode correctly."
+  ],
+  "time": "2026-11-03 01:14:33"
+ }
+]

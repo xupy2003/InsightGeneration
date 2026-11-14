@@ -1,0 +1,986 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2025/B-blackboard-game",
+ "title": "Blackboard Game",
+ "status": "accepted",
+ "version": "29b348c251b23c0f",
+ "solution_outline": "P1: For large n, three primes in (n/4,n/3] give a constant-size pairing strategy: starting at twice one prime, every opponent move can be answered inside six semiprimes. P2: Use the same constant-size prime pairing strategy whenever three suitable primes exist, but solve the small exceptional boards with a different optimization problem. P3: Keep the large-board prime pairing construction, but characterize the small-board answer through minimum vertex covers instead of matching reachability. P4: Use a different large-board construction based on all semiprimes in the upper half of the board. P5: Use the prime pairing construction for large boards, and encode the choice of an even first move by adding one auxiliary vertex adjacent to all even integers on a small board. P6: Store exact outcomes and winning even starts for boards through 83, and answer larger boards by choosing twice the largest prime not exceeding n/3.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Prime-ratio vertex geography",
+   "kind": "modeling",
+   "statement": "Form an undirected graph on 1 through n, joining two integers when the larger divided by the smaller is prime. After the initial even vertex is circled, play follows a path without revisiting vertices; the player unable to extend it loses.",
+   "routes": [
+    []
+   ],
+   "accept": "Identifies multiplication and exact division by a prime as graph edges. Erasing the previous circled integer makes every previously visited vertex unavailable. The initial selection is itself the first player's turn.",
+   "anchors": [
+    "circled number",
+    "prime",
+    "erases",
+    "even number"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Three-prime neighborhood gadget",
+   "kind": "key_property",
+   "statement": "Let p,q,r be distinct primes exceeding 3 with n/4 < p,q,r <= n/3. For S={2p,3p,2q,3q,2r,3r}, the neighborhood is exactly {p,q,r,2,3}; each 2s has neighbors s,2 and each 3s has neighbors s,3.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Every product is at most n and exceeds n/2, so multiplication is impossible. Division yields exactly its displayed prime factors. Distinct primes exceeding 3 make the six products and five neighbors distinct and the sets disjoint. An integer implementation selects primes greater than floor(n/4) and at most floor(n/3), excluding 2 and 3.",
+   "anchors": [
+    "prime",
+    "multiplied",
+    "divided",
+    "n",
+    "even number"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Closed pairing wins from twice prime",
+   "kind": "construction",
+   "statement": "For distinct primes p,q,r>3 in (n/4,n/3], let S={2p,3p,2q,3q,2r,3r}. For any start x in {2p,2q,2r}, the neighborhood of S can be matched into S excluding x. Replying along that matching makes x a winning first move.",
+   "routes": [
+    [
+     "N2"
+    ]
+   ],
+   "accept": "For x=2p, one matching is p–3p, q–3q, r–2r, 2–2q, 3–3r. Any matching saturating the neighborhood and avoiding x counts. Each reply returns to S; whenever an opponent selects an unused neighbor, its paired semiprime is unused too. Relabeling p,q,r permits any of the three even starts.",
+   "anchors": [
+    "first move",
+    "winning strategy",
+    "three primes",
+    "neighborhood matching"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N4",
+   "name": "Prime-factor parity bipartition",
+   "kind": "key_property",
+   "statement": "The prime-ratio graph is bipartite: color an integer by the parity of its total number of prime factors, counted with multiplicity. Every legal move changes that parity.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Uses Omega(1)=0 and Omega(xp)=Omega(x)+1, including repeated prime factors. Computing Omega(x) from Omega(x/spf[x])+1 is one realization; counting only distinct prime divisors is not. Any equivalent two-coloring of the graph counts.",
+   "anchors": [
+    "prime factorization",
+    "prime",
+    "integers from 1 to n"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N5",
+   "name": "Exposable starting vertices win",
+   "kind": "key_property",
+   "statement": "An even starting vertex v wins for the first player exactly when some maximum matching of the prime-ratio graph leaves v unmatched.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "If a maximum matching exposes v, the first player answers along matching edges; failure would create an augmenting path. If every maximum matching covers v, the second player moves to v's mate. The remaining matching is maximum after deleting v and exposes that mate, so the second player has the pairing strategy.",
+   "anchors": [
+    "winning first move",
+    "maximum matching",
+    "even number"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N6",
+   "name": "Alternating paths identify winning even starts",
+   "kind": "algorithm",
+   "statement": "In the prime-ratio graph, fix a maximum matching and search from unmatched vertices using successive nonmatching-edge/matching-edge pairs. The reached even-labelled vertices, including even roots, are exactly the winning initial selections.",
+   "routes": [
+    [
+     "N4",
+     "N5"
+    ]
+   ],
+   "accept": "Flipping an even-length alternating path preserves matching size and exposes its endpoint. Conversely, symmetric difference with a maximum matching exposing a vertex supplies such a path. Thus the search finds all exposable board vertices, and its even-labelled vertices are precisely legal winning starts. Search may be separate for the two colors or combined in two-edge steps.",
+   "anchors": [
+    "prime-ratio graph",
+    "maximum matching",
+    "alternating paths",
+    "winning even starts"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N7",
+   "name": "Small bound on prime-gadget exceptions",
+   "kind": "key_property",
+   "statement": "Every integer n with 177 <= n <= 10^7 has at least three primes exceeding 3 in the interval (n/4,n/3]. Thus any board in the allowed range lacking the three-prime gadget has n <= 176.",
+   "routes": [
+    []
+   ],
+   "accept": "This finite arithmetic claim can be verified by an Eratosthenes sieve and prefix prime counts over the stated range. Equivalently, check 177 through 187 directly, then verify 3*p[i+3] <= 4*p[i] for consecutive primes with 47 <= p[i] <= 2500000.",
+   "anchors": [
+    "n",
+    "prime",
+    "10^7"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N8",
+   "name": "Prime gadget with exact small fallback",
+   "kind": "algorithm",
+   "statement": "Sieve primes. If (n/4,n/3] contains three primes exceeding 3, output first and twice any of them. Otherwise compute a maximum matching, mark vertices exposable by alternating paths, and output first with any marked even vertex, or second if none exists.",
+   "routes": [
+    [
+     "N3",
+     "N6",
+     "N7"
+    ]
+   ],
+   "accept": "The sieve need only reach the largest n divided by 3. Interval searches find three suitable primes. Exceptional boards have at most 176 vertices, so explicit edges, ordinary bipartite augmenting paths, and alternating reachability easily fit the limits. The pairing construction justifies large answers; exposure characterizes all small answers.",
+   "anchors": [
+    "first",
+    "second",
+    "winning first move",
+    "test cases"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N9",
+   "name": "Minimize covered even vertices",
+   "kind": "reformulation",
+   "statement": "Among maximum-cardinality matchings, choose one minimizing the number of covered even integers. The first player wins exactly when this matching leaves an even integer uncovered; any such integer is a winning first move.",
+   "routes": [
+    [
+     "N5"
+    ]
+   ],
+   "accept": "A winning even vertex is uncovered in some maximum matching, whose covered-even count is below floor(n/2). Minimization therefore also leaves an even vertex uncovered. Conversely, any uncovered even vertex in the chosen maximum matching satisfies the winning characterization. Cardinality must take priority over the secondary objective.",
+   "anchors": [
+    "even integer",
+    "winning first move",
+    "maximum matching"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N10",
+   "name": "Flow optimizes matching size and even coverage",
+   "kind": "algorithm",
+   "statement": "A unit-capacity flow network representing the prime-ratio bipartition can realize matching cardinality as flow value and covered even integers as total cost. A minimum-cost maximum flow therefore yields a maximum matching minimizing even coverage.",
+   "routes": [
+    [
+     "N4",
+     "N9"
+    ]
+   ],
+   "accept": "Use source-to-left, legal left-to-right, and right-to-sink arcs, all unit-capacity. Charge one per even matched endpoint, either on its terminal arc or by summing endpoint charges on each cross-arc. Integral flows correspond to matchings; value and cost equal their size and covered-even count. Any correct min-cost maximum-flow algorithm on these small networks counts.",
+   "anchors": [
+    "prime-factor parity",
+    "legal move",
+    "even endpoints",
+    "maximum matching"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N11",
+   "name": "Prime gadget with weighted matching fallback",
+   "kind": "algorithm",
+   "statement": "Find three primes exceeding 3 in (n/4,n/3] and output first with twice any one if they exist. Otherwise obtain a maximum matching minimizing covered even vertices by min-cost flow; output first with an uncovered even vertex, or second if every even vertex is covered.",
+   "routes": [
+    [
+     "N3",
+     "N7",
+     "N10"
+    ]
+   ],
+   "accept": "Sieve primes through max(n)/3 and test the interval. For an exceptional board, build all prime-ratio edges and the unit-capacity network, augment to maximum flow at minimum cost, and inspect the matching's covered vertices. The sieve dominates memory and large-input work; flow networks have at most 178 nodes.",
+   "anchors": [
+    "first",
+    "second",
+    "even integer",
+    "test cases"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N12",
+   "name": "Minimum covers characterize compulsory vertices",
+   "kind": "reformulation",
+   "statement": "In the prime-ratio graph, a vertex is covered by every maximum matching exactly when it belongs to at least one minimum-cardinality vertex cover. Thus an even integer is a winning first move exactly when no minimum vertex cover contains it.",
+   "routes": [
+    [
+     "N4",
+     "N5"
+    ]
+   ],
+   "accept": "By bipartite matching-cover duality, deleting v reduces maximum matching size exactly when it reduces minimum cover size. A minimum cover containing v loses one vertex upon deletion; conversely, adding v to a cover of G-v of size tau(G)-1 yields a minimum cover containing v.",
+   "anchors": [
+    "even integer",
+    "maximum matching",
+    "minimum vertex cover"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N13",
+   "name": "Two extremal covers capture their union",
+   "kind": "key_property",
+   "statement": "Let L,R be the prime-factor-parity classes. Choose minimum-cardinality covers C_L,C_R maximizing their numbers of vertices in L,R respectively. The union C_L union C_R contains exactly the vertices appearing in at least one minimum-cardinality vertex cover.",
+   "routes": [
+    [
+     "N4"
+    ]
+   ],
+   "accept": "For minimum covers C,D, combining their union on L with their intersection on R gives another minimum cover; the opposite combination does too. Consequently all possible L-members can occur simultaneously, and likewise all possible R-members. Maximizing the corresponding count therefore includes every possible member of that class.",
+   "anchors": [
+    "prime-factor parity",
+    "minimum vertex cover",
+    "L",
+    "R"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N14",
+   "name": "Weighted board covers reduce to cuts",
+   "kind": "algorithm",
+   "statement": "A minimum-weight vertex cover of the prime-ratio graph corresponds to a minimum source–left–right–sink cut: vertex weights are terminal-arc capacities, and legal-move arcs prohibit leaving an edge uncovered.",
+   "routes": [
+    [
+     "N13"
+    ]
+   ],
+   "accept": "Use the prime-factor-parity bipartition. Source-to-left and right-to-sink capacities are nonnegative vertex weights; left-to-right legal-move arcs exceed the total vertex weight. A minimum cut cannot cross a legal-move arc. It selects left vertices on the sink side and right vertices on the source side. Its capacity equals their cover weight, so minimum cuts recover minimum-weight covers.",
+   "anchors": [
+    "legal move",
+    "prime-factor parity",
+    "weighted vertex cover",
+    "minimum cut"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N15",
+   "name": "Prime gadget with extremal-cover fallback",
+   "kind": "algorithm",
+   "statement": "If three primes exceeding 3 lie in (n/4,n/3], output first with twice one. Otherwise, use weighted cuts prioritizing minimum cover cardinality then maximum membership in each parity class. Output first with an even vertex outside both covers, or second if none exists.",
+   "routes": [
+    [
+     "N3",
+     "N7",
+     "N12",
+     "N14"
+    ]
+   ],
+   "accept": "One lexicographic encoding gives the favored class weight B-1 and the other class B, with B>n. Cover weight is B times cardinality minus favored membership; minimizing it therefore produces the required extremal cover. Repeat for both classes and inspect their union. Equivalent encodings count. Sieve queries handle large boards; exceptional cut networks have at most 178 nodes.",
+   "anchors": [
+    "first",
+    "second",
+    "winning first move",
+    "extremal minimum covers"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N16",
+   "name": "Upper-half semiprime incidence graph",
+   "kind": "reformulation",
+   "statement": "For each semiprime pq with n/2 < pq <= n, create an edge between primes p and q, allowing a loop when p=q. Its blackboard neighbors are exactly its prime factors. Thus these semiprimes and their legal neighbors form the incidence graph of this prime-product graph.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "A number above n/2 cannot be multiplied by a prime while remaining on the board. A semiprime can only be divided to its prime factors. A square has one distinct game neighbor, represented by a loop in the auxiliary prime-product graph; repeated adjacency entries in a game-graph implementation need not be removed if harmless.",
+   "anchors": [
+    "prime",
+    "multiplied",
+    "divided",
+    "semiprime",
+    "n"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N17",
+   "name": "Cyclic components match their prime vertices",
+   "kind": "key_property",
+   "statement": "A connected component of the prime-product graph admits a matching of every prime vertex to a distinct incident semiprime exactly when it contains a cycle, with a loop counting as a cycle.",
+   "routes": [
+    [
+     "N16"
+    ]
+   ],
+   "accept": "A tree has fewer edges than vertices, making such an assignment impossible. In a cyclic component, retain a spanning unicyclic subgraph, assign cycle vertices distinct cycle edges, and assign each remaining vertex its edge toward the cycle. This also handles a loop as the unique cycle.",
+   "anchors": [
+    "prime-product graph",
+    "prime vertices",
+    "semiprimes",
+    "cycle"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N18",
+   "name": "Bicyclic cores survive any edge deletion",
+   "kind": "key_property",
+   "statement": "In a connected component of the prime-product graph's 2-core with more edges than vertices, deleting any one edge leaves every resulting component cyclic. Loops contribute two to degree and one to the edge count.",
+   "routes": [
+    [
+     "N16"
+    ]
+   ],
+   "accept": "Deleting a nonbridge leaves a connected graph with at least as many edges as vertices. Deleting a bridge leaves each side with minimum degree at least two except possibly one vertex; a finite tree cannot have only one possible leaf. Thus both sides retain cycles. Implementations must count a prime-square loop as two incidences but one edge.",
+   "anchors": [
+    "prime-product graph",
+    "2-core",
+    "edge deletion",
+    "cycle"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N19",
+   "name": "Even semiprime in bicyclic core wins",
+   "kind": "construction",
+   "statement": "An even semiprime whose edge lies in a prime-product 2-core component with more edges than vertices is a winning first move. Delete that edge and match every core prime to a distinct remaining incident semiprime; answer opponent moves using these pairs.",
+   "routes": [
+    [
+     "N16",
+     "N17",
+     "N18"
+    ]
+   ],
+   "accept": "Every component after deletion is cyclic, so the matching exists. Every legal move from a selected core semiprime reaches a core prime, whose paired semiprime is available whenever the prime is. Returning to semiprimes after every response prevents the opponent from escaping the paired set.",
+   "anchors": [
+    "even semiprime",
+    "winning first move",
+    "2-core",
+    "pairing strategy"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N20",
+   "name": "Prime triples force a bicyclic core",
+   "kind": "key_property",
+   "statement": "For every 177 <= n <= 10^7, the prime-product 2-core has a component with more edges than vertices containing an even semiprime. Three primes in (n/4,n/3] produce a K(2,3) subgraph between {2,3} and those primes.",
+   "routes": [
+    [
+     "N2",
+     "N7",
+     "N16"
+    ]
+   ],
+   "accept": "The six products are upper-half semiprimes. Their K(2,3) subgraph has six edges and five vertices and survives degree-below-two peeling. Its containing core component has cycle rank at least two and includes edges incident to prime 2, hence even semiprimes.",
+   "anchors": [
+    "three primes",
+    "n",
+    "2-core",
+    "even semiprime"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N21",
+   "name": "Semiprime-core search with exact fallback",
+   "kind": "algorithm",
+   "statement": "Build the upper-half semiprime prime-product graph and peel degree-below-two vertices. If the remaining component containing 2 has more edges than vertices, output first with any semiprime incident to 2 there. Otherwise use maximum matching and alternating exposure to output a winning even start, or second.",
+   "routes": [
+    [
+     "N19",
+     "N20",
+     "N6"
+    ]
+   ],
+   "accept": "Sieve primes through max(n)/2; enumerate each product once by ordering its prime factors. Degree peeling and component traversal are linear in graph size, bounded by O(n). Only n<=176 can reach the exact matching fallback. Count loops twice in degrees and once as edges.",
+   "anchors": [
+    "first",
+    "second",
+    "prime 2",
+    "semiprime",
+    "test cases"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N22",
+   "name": "Auxiliary vertex encodes the first move",
+   "kind": "reformulation",
+   "statement": "Add an auxiliary vertex adjacent to every even integer. The first player wins exactly when the enlarged graph's maximum matching is larger than the original graph's. In that case, the auxiliary vertex's mate in any enlarged maximum matching is a winning first move.",
+   "routes": [
+    [
+     "N5"
+    ]
+   ],
+   "accept": "A maximum original matching exposing an even vertex extends by its auxiliary edge. Conversely, removing the auxiliary vertex and its edge from a larger matching leaves a maximum original matching exposing that even mate. Adding one vertex can increase matching size by at most one.",
+   "anchors": [
+    "even integer",
+    "first move",
+    "maximum matching",
+    "auxiliary vertex"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N23",
+   "name": "One general augmentation tests the start",
+   "kind": "algorithm",
+   "statement": "Start with a maximum matching of the original prime-ratio graph and add the unmatched auxiliary vertex. A general-graph augmenting-path search rooted there succeeds exactly when the first player wins; after augmenting, its mate is a winning even first move.",
+   "routes": [
+    [
+     "N22"
+    ]
+   ],
+   "accept": "No augmenting path exists entirely in the original graph, so any new one must have the auxiliary vertex as an endpoint. Edmonds blossom contraction handles odd cycles caused by connecting the auxiliary vertex to both prime-factor-parity classes. For n<=176, ordinary cubic-time general matching is ample.",
+   "anchors": [
+    "auxiliary vertex",
+    "augmenting path",
+    "even first move"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N24",
+   "name": "Prime gadget with auxiliary-blossom fallback",
+   "kind": "algorithm",
+   "statement": "If three primes exceeding 3 occur in (n/4,n/3], output first with twice one. Otherwise maximum-match the board graph, add an auxiliary vertex adjacent to every even integer, and search for an augmentation from it. Output first with its resulting mate if successful, or second otherwise.",
+   "routes": [
+    [
+     "N3",
+     "N7",
+     "N23"
+    ]
+   ],
+   "accept": "Prime sieving and interval search handle all large inputs. For exceptional boards, construct exact prime-ratio edges, use general matching, then perform the single auxiliary-rooted augmentation. The original graph has at most 176 vertices, and the auxiliary graph at most 177.",
+   "anchors": [
+    "first",
+    "second",
+    "winning first move",
+    "test cases"
+   ],
+   "source": "exploration",
+   "path": "P5",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N25",
+   "name": "Largest lower-third prime wins",
+   "kind": "construction",
+   "statement": "For every 84 <= n <= 10^7, let p be the largest prime not exceeding n/3. Circling 2p is a winning first move.",
+   "routes": [
+    [
+     "N3",
+     "N6",
+     "N7"
+    ]
+   ],
+   "accept": "For 84 through 176, exact maximum matching and alternating exposure certify that 2p is exposable. For n >= 177, N7 supplies three primes in the required interval; the largest prime at most n/3 belongs to that interval and can be included in a triple, so N3 applies. No perfect matching of the entire graph after deleting 2p is required.",
+   "anchors": [
+    "n",
+    "prime",
+    "even number",
+    "winning first move"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N26",
+   "name": "Exact small boards and largest prime",
+   "kind": "algorithm",
+   "statement": "For n <= 83, output first with any even vertex exposable by a maximum matching, or second if none exists. For n >= 84, output first with twice the largest prime not exceeding n/3.",
+   "routes": [
+    [
+     "N6",
+     "N25"
+    ]
+   ],
+   "accept": "Small-board outcomes and witnesses may be computed on demand using N6 or stored in an exactly certified table; zero may denote second and a positive entry a winning even start. For large boards, sieve through floor(max(n)/3) and retain predecessor-prime values, or search the sorted primes. With M=max(n), O(M log log M) sieve work plus bounded small-board computations fits the limits.",
+   "anchors": [
+    "first",
+    "second",
+    "winning first move",
+    "test cases"
+   ],
+   "source": "exploration",
+   "path": "P6",
+   "traps": [],
+   "depth": 5
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N8"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N12",
+    "N13",
+    "N14",
+    "N15"
+   ],
+   [
+    "N1",
+    "N2",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N16",
+    "N17",
+    "N18",
+    "N19",
+    "N20",
+    "N21"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N7",
+    "N22",
+    "N23",
+    "N24"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N25",
+    "N26"
+   ]
+  ],
+  "keys": [
+   "N8",
+   "N11",
+   "N15",
+   "N21",
+   "N24",
+   "N26"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "The first move must be an even integer between 1 and n; circling it consumes the first player's initial turn.",
+   "check": "Return first only with an even starting vertex, not a move for the player subsequently facing the circled vertex. In the matching solution, exposed vertices favor the initial selector."
+  },
+  {
+   "id": "H2",
+   "statement": "Division by a prime is legal only when it produces an integer. A multiplication result exceeding n is not on the board.",
+   "check": "Generate division moves only for prime divisors and multiplication moves only within the initial range. A graph-based solution must represent exactly these prime-ratio adjacencies."
+  },
+  {
+   "id": "H3",
+   "statement": "An erased number cannot be selected again, even when its ratio with the current circled number is prime.",
+   "check": "Direct game simulations must exclude all previously visited vertices. Graph-based reasoning must model vertex deletion, not unrestricted walks or merely forbidding reuse of an edge."
+  },
+  {
+   "id": "H4",
+   "statement": "Output one line per test case: either second or first followed by a valid winning even integer.",
+   "check": "Do not print the strategy, matching, or diagnostic information; handle all t boards independently."
+  },
+  {
+   "id": "H5",
+   "statement": "Unchecked products in prime testing, sieving, or move generation can exceed 32-bit range although n<=10^7; comparisons must not rely on overflowing arithmetic.",
+   "check": "Use sufficiently wide arithmetic for unchecked products, or compare against n divided by a factor before multiplying. Products already proved at most n need not use a wider type."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "For large n, three primes in (n/4,n/3] give a constant-size pairing strategy: starting at twice one prime, every opponent move can be answered inside six semiprimes. A sieve verifies that this condition holds for every 177 <= n <= 10^7. For the remaining small boards, solve undirected vertex geography using maximum bipartite matching and alternating-path reachability; the sieve dominates the running time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N8"
+   ],
+   "key_node": "N8",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N8"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 1,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 118,
+    "n_tests": 118,
+    "max_time_s": 0.033,
+    "time_limit_s": 1.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Use the same constant-size prime pairing strategy whenever three suitable primes exist, but solve the small exceptional boards with a different optimization problem. Among maximum-cardinality matchings, minimize the number of covered even vertices using min-cost maximum flow; its unmatched even vertices give precisely the existence and a witness needed for the first move. The exceptional boards have at most 176 vertices, so this weighted optimization is inexpensive.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "key_node": "N11",
+   "new_nodes": [
+    "N9",
+    "N10",
+    "N11"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 118,
+    "n_tests": 118,
+    "max_time_s": 0.026,
+    "time_limit_s": 1.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Keep the large-board prime pairing construction, but characterize the small-board answer through minimum vertex covers instead of matching reachability. A vertex is compulsory in every maximum matching exactly when it belongs to some minimum vertex cover; two extremal minimum covers together contain every such vertex. Compute those covers by two weighted minimum cuts, then choose an even integer outside their union, if one exists.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N7",
+    "N12",
+    "N13",
+    "N14",
+    "N15"
+   ],
+   "key_node": "N15",
+   "new_nodes": [
+    "N12",
+    "N13",
+    "N14",
+    "N15"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 118,
+    "n_tests": 118,
+    "max_time_s": 0.024,
+    "time_limit_s": 1.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Use a different large-board construction based on all semiprimes in the upper half of the board. Regard each such semiprime as an edge between its prime factors, peel the resulting graph to its 2-core, and find a component with more edges than vertices containing an even semiprime; a cyclic-component matching supplies a closed winning pairing. The three-prime bound guarantees this succeeds for n >= 177, and maximum matching handles the remaining small boards; enumeration and peeling are linear in the number of primes and semiprimes.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N16",
+    "N17",
+    "N18",
+    "N19",
+    "N20",
+    "N21"
+   ],
+   "key_node": "N21",
+   "new_nodes": [
+    "N16",
+    "N17",
+    "N18",
+    "N19",
+    "N20",
+    "N21"
+   ],
+   "new_hazards": [
+    "H5"
+   ],
+   "program": "paths/P4.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 118,
+    "n_tests": 118,
+    "max_time_s": 0.058,
+    "time_limit_s": 1.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P5",
+   "approach": "Use the prime pairing construction for large boards, and encode the choice of an even first move by adding one auxiliary vertex adjacent to all even integers on a small board. The first player wins exactly when this addition increases the maximum matching size; the auxiliary vertex's mate then gives a winning first move. Starting with a maximum matching of the original board, one Edmonds augmenting-path search from the auxiliary vertex decides this, including the odd cycles created by its new edges.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N5",
+    "N7",
+    "N22",
+    "N23",
+    "N24"
+   ],
+   "key_node": "N24",
+   "new_nodes": [
+    "N22",
+    "N23",
+    "N24"
+   ],
+   "new_hazards": [],
+   "program": "paths/P5.cpp",
+   "submission": 5,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 118,
+    "n_tests": 118,
+    "max_time_s": 0.031,
+    "time_limit_s": 1.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P6",
+   "source": "editorial",
+   "approach": "Store exact outcomes and winning even starts for boards through 83, and answer larger boards by choosing twice the largest prime not exceeding n/3. The large-board rule follows from maximum-matching exposure: certify the bounded intermediate range exactly and use the existing three-prime pairing construction thereafter. A prime sieve and predecessor-prime table make preprocessing fast enough and each test-case lookup constant time.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N25",
+    "N26"
+   ],
+   "key_node": "N26",
+   "new_nodes": [
+    "N25",
+    "N26"
+   ],
+   "new_hazards": [],
+   "program": "paths/P6.cpp",
+   "submission": null,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 118,
+    "n_tests": 118,
+    "max_time_s": 0.021,
+    "time_limit_s": 1.0
+   },
+   "notes": "The editorial's perfect-matching characterization is false: the correct criterion is exposure by some maximum matching, already stated in N5. Its claimed perfect matching after deleting 2p is impossible for even n because the remaining graph has odd order. The added path preserves the reference solution's table and largest-prime output rule, repairing its justification with exact verification on 84..176 and the existing pairing construction above that range."
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Five correct, fast approaches have been accepted: prime-gadget construction with alternating-exposure matching, weighted matching, extremal minimum covers, a semiprime bicyclic-core construction, and auxiliary-vertex blossom augmentation. I do not have another genuinely different approach with both a correctness argument and suitable running time.",
+  "considered": [
+   "Full minimax over erased-number subsets: exponential state space, even on the boards below the prime-gadget threshold.",
+   "Descending greedy prime-divisor pairing: not necessarily maximum; for n=18 it can leave an even vertex exposed despite that vertex being compulsory in every maximum matching.",
+   "Generic maximum matching on all n vertices: correct in principle, but unnecessary and lacks a convincing one-second bound at n=10^7.",
+   "Leaf stripping alone: useful reduction but can leave cyclic cores requiring additional reasoning; the accepted semiprime-core approach supplies that reasoning for a suitable restricted graph.",
+   "Repeated matching after deleting each candidate, alternative bipartite matching implementations, and direct flow-residual reachability: these reuse the existing exposability characterization rather than introduce a substantially new reasoning path.",
+   "Algebraic matching via randomized matrix rank: introduces probabilistic errors without a practical deterministic guarantee, while the accepted approaches are exact."
+  ],
+  "submissions": 5
+ },
+ "builder_notes": "N26 now states the exact-small-board/largest-prime output rule without requiring caching; its accept explicitly permits on-demand computation and certified lookup. N14's accept also clarifies that minimum cuts avoid the high-capacity legal-move arcs, rather than calling such cuts merely finite. I agree that P6 reproduces the reference solution's output rule with a repaired justification, not the supplied editorial's false perfect-matching argument. That false theorem remains excluded. All ids, routes, END routes, nodes, and hazards are preserved.",
+ "open_issues": [],
+ "advisories": [
+  "the editorial's approach is not among the paths: P6 reproduces the reference solution's small-table/largest-prime output algorithm, but not the supplied editorial's reasoning: that editorial does not establish the maximum-matching exposure and prime-gadget prerequisites of the END route. Its claimed perfect-matching characterization and large-board perfect matching after deleting 2p are false; for even n, that deletion leaves an odd number of vertices. Those claims should remain excluded rather than be added to the graph; P6 supplies a corrected justification."
+ ],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 6,
+  "submissions": 5,
+  "review_rounds": 4,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 210929,
+    "output_tokens": 42824,
+    "cached_tokens": 118405,
+    "reasoning_tokens": 27722
+   },
+   "integrator": {
+    "input_tokens": 25336,
+    "output_tokens": 7533,
+    "reasoning_tokens": 2471,
+    "cached_tokens": 1592
+   },
+   "reviewer": {
+    "input_tokens": 34976,
+    "output_tokens": 45045,
+    "reasoning_tokens": 39684
+   },
+   "total": {
+    "input_tokens": 271241,
+    "output_tokens": 95402,
+    "cached_tokens": 119997,
+    "reasoning_tokens": 69877
+   }
+  },
+  "inputs": {
+   "statement": "e111cc860047b0f0baf9e2f2a6d0a3ea09e6478c3030cfd7cb68f650cca419ca",
+   "editorial": "6c1fb60f92903ef68cdb6b7d33fee9c6fe05864c5a4b27c69ed8a1d67a2d2794",
+   "reference": "4aeda44a64292655a841f1a7fa1413c95d397ec99bfbf33eb9f7b5d4dc669169"
+  },
+  "created": "2026-11-02 21:45:47"
+ },
+ "editorial": {
+  "covered": false,
+  "path": "P6",
+  "new_nodes": [
+   "N25",
+   "N26"
+  ]
+ }
+}

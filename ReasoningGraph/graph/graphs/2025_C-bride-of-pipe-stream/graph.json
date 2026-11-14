@@ -1,0 +1,562 @@
+{
+ "schema": "reasoning-graph-v2",
+ "mode": "exploration",
+ "problem": "2025/C-bride-of-pipe-stream",
+ "title": "Bride of Pipe Stream",
+ "status": "accepted",
+ "version": "480d0f98b0c98a0a",
+ "solution_outline": "P1: Normalize the factory inflow to one and dualize the max-min objective into minimizing a weighted-sum optimum over the reservoir-weight simplex. P2: Use the same weighted-sum dual, but obtain a supporting reservoir-flow vector from each optimal deterministic drainage policy. P3: Maintain a restricted collection of deterministic drainage policies and solve the max-min mixture problem for just those policies. P4: Apply the ellipsoid method to the low-dimensional reservoir-weight dual, using optimal policy vectors as separating subgradients.",
+ "nodes": [
+  {
+   "id": "N1",
+   "name": "Convex reservoir outcomes from duct flows",
+   "kind": "modeling",
+   "statement": "Normalize factory inflow to one. Duct flows are nonnegative; each station's total outgoing flow equals its incoming contributions, plus one only at station 1. Reservoir flows are their incoming contributions. These constraints give the compact convex set C of attainable reservoir vectors; maximize the smallest coordinate over C.",
+   "routes": [
+    []
+   ],
+   "accept": "Use duct flows as linear variables, with each output receiving p/100 of its duct's flow. Conversely, dividing outgoing duct flows by total station inflow realizes any feasible flow; zero-inflow stations may use arbitrary proportions. Altitude ordering and losses bound every flow. The reported percentage is 100 times the normalized optimum.",
+   "anchors": [
+    "station drainage",
+    "ducts",
+    "reservoirs",
+    "factory"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 1
+  },
+  {
+   "id": "N2",
+   "name": "Reservoir-weight minimax dual",
+   "kind": "reformulation",
+   "statement": "For reservoir weights w_j>=0 summing to one, let F(w)=max over u in C of w·u. The optimal minimum reservoir flow equals min over such w of F(w).",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "Apply finite-dimensional minimax to the compact convex outcome set and weight simplex, or derive the same equality by linear-programming duality. The identity min_j u_j=min over simplex weights of w·u establishes the primal max-min form.",
+   "anchors": [
+    "reservoirs",
+    "minimum amount",
+    "station drainage"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N3",
+   "name": "Weighted drainage backward dynamic program",
+   "kind": "algorithm",
+   "statement": "For fixed reservoir weights, set V_(s+j)=w_j. In decreasing station order, set V_i=max over ducts from i of the sum of (p/100)V_o over that duct's outputs. Then V_1=F(w), computable by examining each duct output once.",
+   "routes": [
+    [
+     "N1"
+    ]
+   ],
+   "accept": "A unit entering a station earns a linear weighted reservoir reward. Splitting among ducts cannot exceed their best reward, and optimal downstream choices are independent of incoming volume, even when routes merge. Implement a decreasing-index pass with the original, possibly lossy, percentages.",
+   "anchors": [
+    "stations",
+    "duct outputs",
+    "percentages",
+    "reservoir weights"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 2
+  },
+  {
+   "id": "N4",
+   "name": "Partial minimization preserves drainage convexity",
+   "kind": "key_property",
+   "statement": "For three reservoirs, G(x)=min_{0<=y<=1-x} F(x,y,1-x-y) is convex on [0,1]. This reduces minimization of the weighted drainage optimum over the simplex to nested one-dimensional convex minimizations; with two reservoirs only F(x,1-x) needs minimization.",
+   "routes": [
+    [
+     "N2",
+     "N3"
+    ]
+   ],
+   "accept": "F is the maximum of finitely many linear reservoir-outcome rewards, hence convex. Its restriction to a line is convex. Partial minimization over the convex triangle {(x,y):x>=0,y>=0,x+y<=1} preserves convexity in x. Equivalently, combine inner minimizers at two x values to obtain a feasible interpolated y and the convexity inequality.",
+   "anchors": [
+    "reservoir weights",
+    "two reservoirs",
+    "three reservoirs",
+    "partially minimized objective"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N5",
+   "name": "Nested convex minimization produces percentage",
+   "kind": "algorithm",
+   "statement": "For one reservoir evaluate F(1). For two minimize F(x,1-x) on [0,1]. For three minimize G(x), evaluating G by minimizing F(x,y,1-x-y) on [0,1-x]. Use sufficiently accurate convex interval searches and output 100 times the resulting minimum.",
+   "routes": [
+    [
+     "N4"
+    ]
+   ],
+   "accept": "Golden-section or ternary searches using N3 suffice. The scalar objectives, including G, are 1-Lipschitz because reservoir shares lie in [0,1] and changing a coordinate redistributes that amount of weight. Budget inner-search error as well as outer interval width. For example, 55 golden-section iterations per level give widths below 4e-12 and sufficient overall accuracy. Three-reservoir runtime is O((s+sum n) log²(1/epsilon)).",
+   "anchors": [
+    "highest possible percentage",
+    "reservoirs",
+    "convex minimization"
+   ],
+   "source": "exploration",
+   "path": "P1",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N6",
+   "name": "Optimal policy supplies a supporting vector",
+   "kind": "key_property",
+   "statement": "Fix reservoir weights w and select a maximizing duct at each station in the backward dynamic program. The resulting deterministic policy has an attainable reservoir-flow vector q with w·q=F(w). For every weight vector v, F(v)>=v·q, so q is a subgradient at w.",
+   "routes": [
+    [
+     "N3"
+    ]
+   ],
+   "accept": "Recover q either by propagating unit flow forward through the selected ducts or by propagating reservoir-outcome vectors backward while maximizing their weighted scores. Shared downstream stations use the same selected duct. Any maximizing choice at ties gives a valid supporting vector.",
+   "anchors": [
+    "reservoir-flow vector",
+    "station drainage",
+    "maximizing duct",
+    "reservoir weights"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 3
+  },
+  {
+   "id": "N7",
+   "name": "Policy cuts retain the optimal sublevel",
+   "kind": "key_property",
+   "statement": "For queries w^t with optimal policy vectors q^t, let b=min_t F(w^t). The region P={v in the weight simplex: q^t·v<=q^t·w^t for every t} contains the entire sublevel set {v:F(v)<=b}, hence every optimal reservoir weighting.",
+   "routes": [
+    [
+     "N2",
+     "N6"
+    ]
+   ],
+   "accept": "For each query, use q^t·v<=F(v)<=b<=F(w^t)=q^t·w^t. This establishes the cumulative retained-region invariant. In coordinates omitting the last weight, each cut's normal is (q_1-q_r,...,q_(r-1)-q_r). If this normal vanishes, the queried value is globally optimal.",
+   "anchors": [
+    "reservoir weights",
+    "optimal policy",
+    "weight simplex",
+    "retained sublevel set"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N8",
+   "name": "Retained volume bounds objective error",
+   "kind": "key_property",
+   "statement": "Let k=r-1>0 and b be the best queried value. Any measurable region P containing all simplex weights with F(w)<=b satisfies b-min F<=rho^(1/k), where rho is its k-dimensional volume divided by that of the weight simplex.",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "Write delta=b-min F. Since F<=1, convexity implies that scaling the simplex by delta about a minimizer places it inside F<=b. Its relative volume is delta^k. In coordinates omitting the last weight, rho is interval length for two reservoirs and twice the region's area for three reservoirs; the region may be a clipped polygon or an enclosing ellipse.",
+   "anchors": [
+    "reservoir weights",
+    "retained region",
+    "best queried value",
+    "volume error bound"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N9",
+   "name": "Centroid cutting computes the optimum",
+   "kind": "algorithm",
+   "statement": "For r>1, repeatedly query the centroid of the retained simplex region, update the best value, and clip by the policy halfspace. Stop when the retained-volume bound gives sufficient accuracy, then output 100 times the best value. For r=1, output 100F(1).",
+   "routes": [
+    [
+     "N8"
+    ]
+   ],
+   "accept": "Maintain an interval for r=2 or a convex polygon for r=3. A nonzero centroid cut leaves at most half the length or 5/9 of the area, yielding logarithmically many oracle calls. Long-double clipping with translated-coordinate area and centroid calculations is one accepted realization. A constant policy supporting plane certifies the global optimum and permits immediate termination.",
+   "anchors": [
+    "highest possible percentage",
+    "centroid",
+    "reservoir weights",
+    "policy halfspace"
+   ],
+   "source": "exploration",
+   "path": "P2",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N10",
+   "name": "Restricted policy mixtures give lower bounds",
+   "kind": "reformulation",
+   "statement": "For collected deterministic-policy reservoir vectors q^k, maximize t subject to λ_k>=0, sum λ_k=1, and sum λ_k q^k_j>=t for every reservoir. Convexly mixing their duct flows realizes these mixtures, so the restricted optimum is a lower bound on the full answer.",
+   "routes": [
+    [
+     "N1",
+     "N6"
+    ]
+   ],
+   "accept": "Use one mixture variable per collected policy and one minimum-flow variable, with r reservoir inequalities and a mixture-mass equality. An equivalent implementation allows sum λ_k<=1 instead: complete any missing mass using an arbitrary collected policy. Since reservoir flows are nonnegative, this completion cannot decrease the minimum flow. Thus the subnormalized formulation has the same optimum.",
+   "anchors": [
+    "deterministic policies",
+    "duct flows",
+    "minimum reservoir flow"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 4
+  },
+  {
+   "id": "N11",
+   "name": "Restricted dual provides an optimality certificate",
+   "kind": "key_property",
+   "statement": "The restricted policy LP's dual minimizes z subject to w>=0, sum w=1, and z>=q^k·w for every collected policy. At an optimum (w,z), z is a lower bound and F(w) an upper bound. If F(w)>z, an oracle policy supplies a violated constraint.",
+   "routes": [
+    [
+     "N2",
+     "N10"
+    ]
+   ],
+   "accept": "Apply LP duality to the restricted mixture problem. Recover reservoir weights from the reservoir-constraint dual multipliers, normalizing their sum when using the at-most-one mass formulation. Evaluate F(w) with N6; any maximizing policy whose score exceeds z cannot already be among the collected constraints.",
+   "anchors": [
+    "reservoir weights",
+    "policy mixtures",
+    "lower bound",
+    "upper bound"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N12",
+   "name": "Policy generation closes the duality gap",
+   "kind": "algorithm",
+   "statement": "Start with an oracle policy. Repeatedly solve the restricted mixture LP, query its dual reservoir weights, and add the resulting maximizing policy. Stop when the best upper bound and restricted lower bound differ within the required accuracy, and output 100 times a value between these bounds.",
+   "routes": [
+    [
+     "N11"
+    ]
+   ],
+   "accept": "Use simplex on the restricted primal LP, which has at most four constraints, and recover its dual weights. Each added policy removes the current infeasible restricted-dual solution; finitely many deterministic policies exist, and a zero oracle gap certifies optimality. Each policy evaluation scans the duct outputs once, while master LP tableaux have only r+2 rows.",
+   "anchors": [
+    "highest possible percentage",
+    "restricted mixture LP",
+    "oracle policy",
+    "duality gap"
+   ],
+   "source": "exploration",
+   "path": "P3",
+   "traps": [],
+   "depth": 6
+  },
+  {
+   "id": "N13",
+   "name": "Safe ellipse localization of reservoir weights",
+   "kind": "key_property",
+   "statement": "For three reservoirs, maintain an ellipse containing all simplex weights with F(w)<=b, where b is the best queried value. A central cut from an optimal policy at a feasible center, or a violated simplex constraint at an infeasible center, preserves this invariant.",
+   "routes": [
+    [
+     "N7"
+    ]
+   ],
+   "accept": "Initially enclose the entire weight simplex. At a feasible center, update b and use the policy cut. At an infeasible center, a violated weight nonnegativity or weight-sum constraint separates the center from every simplex weight; weakening it to pass through the center is safe. Any ellipse enclosing the retained intersection preserves the sublevel set. Represent an ellipse by (x-c)^T Q^(-1)(x-c)<=1 with positive-definite Q.",
+   "anchors": [
+    "reservoir weights",
+    "weight simplex",
+    "enclosing ellipse",
+    "feasible center",
+    "retained sublevel set"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 5
+  },
+  {
+   "id": "N14",
+   "name": "Ellipsoid separation computes the percentage",
+   "kind": "algorithm",
+   "statement": "For two or three reservoirs, enclose the weight simplex in an interval or ellipse. At each center, cut with a violated simplex constraint or an oracle policy subgradient. Apply enclosing-region updates until the volume error bound suffices; output the best percentage. For one reservoir, output 100F(1).",
+   "routes": [
+    [
+     "N8",
+     "N13"
+    ]
+   ],
+   "accept": "For r=3, start at c=(1/3,1/3), Q=I. For nonzero cut normal g, let v=Qg/sqrt(g^TQg), then use c'=c-v/3 and Q'=(4/3)(Q-(2/3)vv^T). These updates enclose the retained half-ellipse and multiply area by 4/(3sqrt(3)); 220 cuts suffice. Use adequate precision for eccentric ellipses. Interval bisection handles r=2. Zero normals certify optimality. Evaluate only feasible centers, tracking and outputting 100 times the best F value.",
+   "anchors": [
+    "highest possible percentage",
+    "reservoir weights",
+    "ellipsoid separation"
+   ],
+   "source": "exploration",
+   "path": "P4",
+   "traps": [],
+   "depth": 6
+  }
+ ],
+ "end": {
+  "statement": "A solver holding every node of one END route can write a correct, fast enough program by routine coding; each route is an approach whose program the judge accepted.",
+  "routes": [
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N6",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N6",
+    "N10",
+    "N11",
+    "N12"
+   ],
+   [
+    "N1",
+    "N2",
+    "N3",
+    "N6",
+    "N7",
+    "N8",
+    "N13",
+    "N14"
+   ]
+  ],
+  "keys": [
+   "N5",
+   "N9",
+   "N12",
+   "N14"
+  ]
+ },
+ "hazards": [
+  {
+   "id": "H1",
+   "statement": "Duct output percentages may sum below 100, representing loss; never renormalize them to sum to 100. The requested result is a percentage of factory production, so all input coefficients, internal quantities, and output must use consistent units.",
+   "check": "Verify that each duct contributes exactly its specified fraction of incoming flow and missing mass contributes nothing. Either normalized-flow computations with a final percentage conversion or equivalent percentage-scaled computations are valid. Conversion need not occur at input or output specifically."
+  },
+  {
+   "id": "H2",
+   "statement": "Percentage error must be at most 1e-6. Constant or zero objectives and boundary optima are valid; geometric searches must handle zero cut normals without division by zero or nonshrinking loops.",
+   "check": "Use sufficient precision and output digits; normalized-flow accuracy must be 1e-8. Include approximate inner-search error in the budget. Do not assume strict convexity or interior optima. Detect zero cut normals and terminate with the certified value rather than normalize them; use numerically justified thresholds for near-zero normals."
+  }
+ ],
+ "paths": [
+  {
+   "id": "P1",
+   "approach": "Normalize the factory inflow to one and dualize the max-min objective into minimizing a weighted-sum optimum over the reservoir-weight simplex. For fixed weights, a reverse-altitude dynamic program computes that optimum because each station sends all its inflow into a best duct. With at most three reservoirs, the dual is minimized by one or two nested one-dimensional convex searches; 55 golden-section iterations per level give ample accuracy while requiring only a few thousand linear-time DAG evaluations.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "key_node": "N5",
+   "new_nodes": [
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5"
+   ],
+   "new_hazards": [
+    "H1",
+    "H2"
+   ],
+   "program": "paths/P1.cpp",
+   "submission": 2,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 82,
+    "n_tests": 82,
+    "max_time_s": 0.898,
+    "time_limit_s": 12.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P2",
+   "approach": "Use the same weighted-sum dual, but obtain a supporting reservoir-flow vector from each optimal deterministic drainage policy. Its subgradient cuts away part of the reservoir-weight simplex while retaining every minimizer. Querying the centroid shrinks the retained interval or polygon geometrically, and the region's length or area gives an explicit bound on the remaining objective error, so only about a hundred DAG evaluations are needed.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N6",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   "key_node": "N9",
+   "new_nodes": [
+    "N6",
+    "N7",
+    "N8",
+    "N9"
+   ],
+   "new_hazards": [],
+   "program": "paths/P2.cpp",
+   "submission": 3,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 82,
+    "n_tests": 82,
+    "max_time_s": 0.224,
+    "time_limit_s": 12.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P3",
+   "approach": "Maintain a restricted collection of deterministic drainage policies and solve the max-min mixture problem for just those policies. Its tiny linear program supplies reservoir dual weights; the DAG oracle either produces a missing policy or proves that the current lower and upper bounds agree. Each master LP has at most four constraints, and policy generation requires only a linear DAG pass, avoiding geometric search over the entire simplex.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N6",
+    "N10",
+    "N11",
+    "N12"
+   ],
+   "key_node": "N12",
+   "new_nodes": [
+    "N10",
+    "N11",
+    "N12"
+   ],
+   "new_hazards": [],
+   "program": "paths/P3.cpp",
+   "submission": 4,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 82,
+    "n_tests": 82,
+    "max_time_s": 0.07,
+    "time_limit_s": 12.0
+   },
+   "notes": ""
+  },
+  {
+   "id": "P4",
+   "approach": "Apply the ellipsoid method to the low-dimensional reservoir-weight dual, using optimal policy vectors as separating subgradients. An infeasible center is separated by a simplex constraint, while a feasible center supplies an upper bound and a policy cut. The enclosing ellipse loses a constant fraction of its area at every step, and the retained-volume certificate bounds the final objective error; high-precision geometry prevents extremely thin ellipses from becoming numerically singular.",
+   "end_route": [
+    "N1",
+    "N2",
+    "N3",
+    "N6",
+    "N7",
+    "N8",
+    "N13",
+    "N14"
+   ],
+   "key_node": "N14",
+   "new_nodes": [
+    "N13",
+    "N14"
+   ],
+   "new_hazards": [],
+   "program": "paths/P4.cpp",
+   "submission": 5,
+   "judge": {
+    "verdict": "AC",
+    "tests_run": 82,
+    "n_tests": 82,
+    "max_time_s": 0.518,
+    "time_limit_s": 12.0
+   },
+   "notes": ""
+  }
+ ],
+ "rejected": [],
+ "exploration": {
+  "finished": true,
+  "reason": "Four genuinely different approaches were implemented and accepted: nested convex interval minimization, centroid halfspace localization, restricted-policy LP generation, and ellipsoid separation. I do not have another distinct approach with a sufficiently reliable implementation and running-time argument for these limits.",
+  "considered": [
+   "Explicitly propagate convex hulls of attainable reservoir vectors through the DAG. Ducts require Minkowski sums and stations require convex hulls; the number of intermediate vertices can grow too large, even with three reservoirs.",
+   "Solve the complete duct-flow LP directly with a dense simplex tableau. Up to 20,000 duct variables and 10,000 station conservation equations make its memory and pivot costs unsuitable; a robust sparse LP implementation would require substantially different machinery.",
+   "Replace the routing network with ordinary or generalized maximum flow. A duct simultaneously distributes to several outputs in fixed proportions, which ordinary independently adjustable flow edges do not enforce.",
+   "Use projected subgradient descent or a discretized weight grid. Their generic accuracy dependence is too costly for the required 1e-8 normalized error, compared with the accepted localization methods.",
+   "Use derivative-guided nested searches, alternative polygon query points, or binary-search feasibility cuts. These largely reuse the convex-search and supporting-halfspace claims already represented, rather than establishing a sufficiently different reasoning path."
+  ],
+  "submissions": 5
+ },
+ "builder_notes": "N10 now states the restricted convex-mixture optimization with mixture mass exactly one and its lower-bound property. The optional at-most-one formulation and completion argument appear only in its acceptance examples. All other texts, ids, and routes are preserved.",
+ "open_issues": [],
+ "advisories": [],
+ "provenance": {
+  "model": "gpt-6-astra",
+  "mode": "exploration",
+  "explore_effort": "high",
+  "audit_effort": "high",
+  "max_paths": 12,
+  "explorer_calls": 6,
+  "submissions": 5,
+  "review_rounds": 3,
+  "edited_by_hand": false,
+  "usage": {
+   "explorer": {
+    "input_tokens": 153049,
+    "output_tokens": 28020,
+    "reasoning_tokens": 12200,
+    "cached_tokens": 88519
+   },
+   "integrator": {},
+   "reviewer": {
+    "input_tokens": 23411,
+    "output_tokens": 30020,
+    "reasoning_tokens": 27048,
+    "cached_tokens": 7742
+   },
+   "total": {
+    "input_tokens": 176460,
+    "output_tokens": 58040,
+    "reasoning_tokens": 39248,
+    "cached_tokens": 96261
+   }
+  },
+  "inputs": {
+   "statement": "2b0e6f2c2aa93dff10bf0403210e4c36a9b734a1441867d8668995e360c3622e",
+   "editorial": "2b228c3d476ce4f16e88100df86bd463bb2c327b23fb4f22dab7c2c1c2b08717",
+   "reference": "f2a1e48bad3b05e571824294f54edde4f8ae304644d800dd8ffb78e9768736a9"
+  },
+  "created": "2026-11-02 23:47:57"
+ },
+ "editorial": {
+  "covered": true,
+  "route": null,
+  "note": "found among the paths by the reviewer"
+ }
+}

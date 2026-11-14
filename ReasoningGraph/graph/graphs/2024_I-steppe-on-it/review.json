@@ -1,0 +1,516 @@
+[
+ {
+  "round": 1,
+  "version": "a21926fe29da5ff0",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": "The acceptance language requires the nearest descendant-center summary even for unresolved subtrees, excluding the reference's equivalent tagged state, which supplies either a nearest-center distance or a farthest-uncovered distance. Allow that formulation and explain why centers in an unresolved child can be omitted from the upward summary."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The forced-region conclusion and the exchange-optimality conclusion are distinct: a solver can know that some center is required inside the subtree without knowing that it can be moved to u. Separate the witness excluding outside centers from the replacement argument."
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": false,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": "The requirement to 'propagate both summaries' rejects the reference solution's mutually exclusive covered/uncovered return states. Accept either simultaneous summaries or the equivalent compressed state, with the appropriate dominance invariant."
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": false,
+     "atomic": true,
+     "note": "Using the sum of road times as the search endpoint is an optional choice; the claim should allow any established feasible upper bound. Given N2 and N5, this is only their routine composition, so merge the full-answer output rule into the algorithm node and leave concrete bounds as acceptance examples."
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Grouping villages by their ball tops is an optional implementation of N8, not an essential part of the radius decision; processing individual balls in a suitable order works too. State the greedy decision using nearest-engine coverage queries, and move grouping, buckets, and skipped group queries into acceptance examples."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": false,
+     "atomic": true,
+     "note": "The particular sum-of-road-times endpoint is not required, and the search follows immediately from N2 and N10. Merge this full-output rule into the ball-hitting algorithm node and allow any valid search bracket."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "The weighted-depth argument covering every remaining descendant and the highest-ancestor argument excluding outside centers are independently knowable claims. Keep the deepest-demand coverage bound here and share a separate forced-region claim with N4."
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": false,
+     "atomic": true,
+     "note": "The specified upper endpoint is an implementation choice, while the first-feasible search is already supplied by N2 once N13 is available. Merge the complete output rule into the deepest-first algorithm node and leave concrete search bounds as examples."
+    }
+   ],
+   "end_ok": true,
+   "end_note": "Each END route supplies a mathematically correct radius decision and sufficient information to implement its stated approach within the accepted complexity. In particular, P1's two-summary implementation is complete even though its acceptance criteria do not currently accommodate the reference's compressed implementation.",
+   "key_ok": true,
+   "key_note": "N6, N11, and N14 each state the full output rule: return the smallest radius whose corresponding exact decision uses at most f engines. Preserve that full-answer rule if these wrapper nodes are merged.",
+   "hazards_ok": false,
+   "hazards_note": "H1 is too representation-specific: correct implementations need not use distinct absence sentinels, and adding an edge weight to an absent-demand sentinel can be harmless if it remains outside the valid-demand range. Require instead that absent states never become effective finite centers or demands and that all actually evaluated arithmetic is safe; allow flags, tagged states, or safely chosen sentinels. H2 and H3 are sound. Ordinary path distances are at most 999990000 and sums of two finite tree distances at most 1999980000, so 64-bit arithmetic is a safe option, not universally mandatory.",
+   "missing": [
+    "The dominance argument supporting the editorial/reference's compressed subtree state: while a subtree has a pending farthest demand, its internal centers cannot resolve that maximum demand at an ancestor; when another center resolves it, that center also makes the discarded outward center information unnecessary. Thus an unresolved subtree may return only its farthest-uncovered distance, whereas a fully covered subtree returns only its nearest-center distance."
+   ],
+   "editorial_found": false,
+   "editorial_note": "P1 has the reference's greedy placement rule, but N3/N5 as written require simultaneous summaries rather than accepting the reference's covered-or-uncovered state; the missing discard/dominance argument and broader acceptance are needed for that implementation to satisfy the route. The graph correctly uses A+w(u,parent)>R: the editorial prose's A>R condition is an error and should not replace the graph's condition.",
+   "order": "Merge the routine search wrappers N6/N11/N14 into their respective decision-algorithm nodes while retaining complete output rules as keys. Separate the shared outside-subtree exclusion from N4's exchange argument and N12's weighted-depth coverage argument. Move grouping and concrete search endpoints into optional acceptance examples, and broaden N3/N5 to cover both simultaneous and tagged subtree summaries.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N3 (a reader of a solver's work cannot decide whether the solver has it): The acceptance language requires the nearest descendant-center summary even for unresolved subtrees, excluding the reference's equivalent tagged state, which supplies either a nearest-center distance or a farthest-uncovered distance. Allow that formulation and explain why centers in an unresolved child can be omitted from the upward summary.",
+   "N5 (a reader of a solver's work cannot decide whether the solver has it): The requirement to 'propagate both summaries' rejects the reference solution's mutually exclusive covered/uncovered return states. Accept either simultaneous summaries or the equivalent compressed state, with the appropriate dominance invariant.",
+   "N6 (it states one implementation's choice, not what every correct solution through this step gets right; comes with its prerequisite; merge it): Using the sum of road times as the search endpoint is an optional choice; the claim should allow any established feasible upper bound. Given N2 and N5, this is only their routine composition, so merge the full-answer output rule into the algorithm node and leave concrete bounds as acceptance examples.",
+   "N10 (it states one implementation's choice, not what every correct solution through this step gets right): Grouping villages by their ball tops is an optional implementation of N8, not an essential part of the radius decision; processing individual balls in a suitable order works too. State the greedy decision using nearest-engine coverage queries, and move grouping, buckets, and skipped group queries into acceptance examples.",
+   "N11 (it states one implementation's choice, not what every correct solution through this step gets right; comes with its prerequisite; merge it): The particular sum-of-road-times endpoint is not required, and the search follows immediately from N2 and N10. Merge this full-output rule into the ball-hitting algorithm node and allow any valid search bracket.",
+   "N14 (it states one implementation's choice, not what every correct solution through this step gets right; comes with its prerequisite; merge it): The specified upper endpoint is an implementation choice, while the first-feasible search is already supplied by N2 once N13 is available. Merge the complete output rule into the deepest-first algorithm node and leave concrete search bounds as examples.",
+   "hazards: H1 is too representation-specific: correct implementations need not use distinct absence sentinels, and adding an edge weight to an absent-demand sentinel can be harmless if it remains outside the valid-demand range. Require instead that absent states never become effective finite centers or demands and that all actually evaluated arithmetic is safe; allow flags, tagged states, or safely chosen sentinels. H2 and H3 are sound. Ordinary path distances are at most 999990000 and sums of two finite tree distances at most 1999980000, so 64-bit arithmetic is a safe option, not universally mandatory."
+  ],
+  "advisory": [
+   "N4 (bundles claims a solver can have separately; split it): The forced-region conclusion and the exchange-optimality conclusion are distinct: a solver can know that some center is required inside the subtree without knowing that it can be moved to u. Separate the witness excluding outside centers from the replacement argument.",
+   "N12 (bundles claims a solver can have separately; split it): The weighted-depth argument covering every remaining descendant and the highest-ancestor argument excluding outside centers are independently knowable claims. Keep the deepest-demand coverage bound here and share a separate forced-region claim with N4.",
+   "missing (a claim the paths rest on that no node states): The dominance argument supporting the editorial/reference's compressed subtree state: while a subtree has a pending farthest demand, its internal centers cannot resolve that maximum demand at an ancestor; when another center resolves it, that center also makes the discarded outward center information unnecessary. Thus an unresolved subtree may return only its farthest-uncovered distance, whereas a fully covered subtree returns only its nearest-center distance.",
+   "the editorial's approach is not among the paths: P1 has the reference's greedy placement rule, but N3/N5 as written require simultaneous summaries rather than accepting the reference's covered-or-uncovered state; the missing discard/dominance argument and broader acceptance are needed for that implementation to satisfy the route. The graph correctly uses A+w(u,parent)>R: the editorial prose's A>R condition is an error and should not replace the graph's condition.",
+   "order: Merge the routine search wrappers N6/N11/N14 into their respective decision-algorithm nodes while retaining complete output rules as keys. Separate the shared outside-subtree exclusion from N4's exchange argument and N12's weighted-depth coverage argument. Move grouping and concrete search endpoints into optional acceptance examples, and broaden N3/N5 to cover both simultaneous and tagged subtree summaries."
+  ],
+  "time": "2026-11-02 22:17:28"
+ },
+ {
+  "round": 2,
+  "version": "84b43e760d50ff6d",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": false,
+     "note": "Sufficiency of the two-distance summary and dominance permitting an unresolved state to discard its center information are distinct claims; a simultaneous-summary solver need not establish the latter. Keep the common summary invariant in the statement and move tagged-state compression and its dominance justification into an optional acceptance example or a separate optional node."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "N2 already supplies the radius search, and N5 supplies the bottom-up decision including forced placements and root completion, so this is routine composition rather than another reasoning bottleneck. Retain N6 as the output-rule anchor, but remove duplicated operational content from the preceding proof node."
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The centroid nearest-center invariant is valid, but the statement additionally mandates a particular maintained-summary convention and an exact O(log n) operation bound. State the centroid-based coverage-query capability needed during greedy engine insertions, and keep the best[a] representation, query formula, and implementation complexity in accept."
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "Given N7's ball definition, N8's greedy, and N9's queries, an unhit ball being equivalent to nearest-engine distance greater than R is immediate. Fold this implementation composition into N11 rather than making it a separate stopping point."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "This only wraps N10's complete decision algorithm in the search already established by N2. Merge N10 and N11 while retaining N11's complete output rule as the path key."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "Once N13's exact decision algorithm and N2's search are established, this adds only routine composition. Merge N13 and N14, keeping the complete output algorithm as the key and the deepest-first exchange justification in its acceptance criteria."
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All three END routes contain enough to implement a correct algorithm with the stated accepted running time. P3 includes unnecessary bottom-up summary material through N3, but it lacks no essential claim.",
+   "key_ok": true,
+   "key_note": "N6, N11, and N14 each specify the complete algorithm determining the reported minimum response time, rather than merely a complexity bound or a proof lemma.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover safe finite and sentinel arithmetic, maximum traversal depth, inclusive radius comparisons, and radius zero without mandating a particular representation. The finite-distance bounds are valid; 64-bit arithmetic is not intrinsically required despite the editorial's implementation note.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the editorial's intended bottom-up approach and the reference solution's tagged states. The graph correctly uses A + edge_to_parent > R, as the reference does; the editorial's numbered step 5 and Lemma 2 incorrectly omit the parent-edge term.",
+   "order": "Separate the common summary claim in N3 from optional tagged-state dominance. N4's exchange lemma does not require bottom-up summaries: place it after the coverage formulation so P3 need not pass through N3. Remove routine-composition duplication by merging N10/N11 and N13/N14, and distinguish N5's forcing invariant from N6's operational algorithm. Move N9's representation and tight operation bound into accept.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N3 (it states one implementation's choice, not what every correct solution through this step gets right; bundles claims a solver can have separately; split it): Sufficiency of the two-distance summary and dominance permitting an unresolved state to discard its center information are distinct claims; a simultaneous-summary solver need not establish the latter. Keep the common summary invariant in the statement and move tagged-state compression and its dominance justification into an optional acceptance example or a separate optional node.",
+   "N9 (it states one implementation's choice, not what every correct solution through this step gets right): The centroid nearest-center invariant is valid, but the statement additionally mandates a particular maintained-summary convention and an exact O(log n) operation bound. State the centroid-based coverage-query capability needed during greedy engine insertions, and keep the best[a] representation, query formula, and implementation complexity in accept."
+  ],
+  "advisory": [
+   "N6 (comes with its prerequisite; merge it): N2 already supplies the radius search, and N5 supplies the bottom-up decision including forced placements and root completion, so this is routine composition rather than another reasoning bottleneck. Retain N6 as the output-rule anchor, but remove duplicated operational content from the preceding proof node.",
+   "N10 (comes with its prerequisite; merge it): Given N7's ball definition, N8's greedy, and N9's queries, an unhit ball being equivalent to nearest-engine distance greater than R is immediate. Fold this implementation composition into N11 rather than making it a separate stopping point.",
+   "N11 (comes with its prerequisite; merge it): This only wraps N10's complete decision algorithm in the search already established by N2. Merge N10 and N11 while retaining N11's complete output rule as the path key.",
+   "N14 (comes with its prerequisite; merge it): Once N13's exact decision algorithm and N2's search are established, this adds only routine composition. Merge N13 and N14, keeping the complete output algorithm as the key and the deepest-first exchange justification in its acceptance criteria.",
+   "order: Separate the common summary claim in N3 from optional tagged-state dominance. N4's exchange lemma does not require bottom-up summaries: place it after the coverage formulation so P3 need not pass through N3. Remove routine-composition duplication by merging N10/N11 and N13/N14, and distinguish N5's forcing invariant from N6's operational algorithm. Move N9's representation and tight operation bound into accept."
+  ],
+  "time": "2026-11-02 22:23:59"
+ },
+ {
+  "round": 3,
+  "version": "990ea691437b9791",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": false,
+     "atomic": true,
+     "note": "N10 already supplies exactly this radius test, and N2 already supplies monotone search for the minimum feasible radius; N11 introduces no independent remaining obstacle. Merge N10 and N11 into one ball-hitting algorithm node that retains the complete output rule."
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All three routes supply a correct minimum-center feasibility test, monotone optimization, and sufficient implementation details and bounds. No essential algorithmic claim is missing.",
+   "key_ok": true,
+   "key_note": "N6, N11, and N14 each state the complete algorithm determining the reported minimum response time, rather than merely a proof or complexity claim.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards provide usable checks for sentinel and distance arithmetic, maximum traversal depth, inclusive coverage, and radius zero. The finite-distance bounds are correct; unlike the editorial's blanket recommendation, 64-bit arithmetic is not inherently required if 32-bit sentinel operations are handled safely.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P1 matches the reference solution and the editorial's intended bottom-up greedy approach, including tagged-state compression. The editorial prose has an error in its placement test: it must use farthest_uncovered + edge_to_parent > R, as the reference code and N5 do, not farthest_uncovered > R.",
+   "order": "Merge N10 and N11, retaining the full optimization/output rule as P2's key node. Their current separation duplicates the radius algorithm and adds only the search wrapper already established by N2; the remaining cut is sound.",
+   "verdict": "revise"
+  },
+  "blocking": [],
+  "advisory": [
+   "N11 (comes with its prerequisite; merge it): N10 already supplies exactly this radius test, and N2 already supplies monotone search for the minimum feasible radius; N11 introduces no independent remaining obstacle. Merge N10 and N11 into one ball-hitting algorithm node that retains the complete output rule.",
+   "order: Merge N10 and N11, retaining the full optimization/output rule as P2's key node. Their current separation duplicates the radius algorithm and adds only the search wrapper already established by N2; the remaining cut is sound."
+  ],
+  "time": "2026-11-02 22:28:19"
+ }
+]

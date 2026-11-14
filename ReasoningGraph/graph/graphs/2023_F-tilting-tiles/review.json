@@ -1,0 +1,424 @@
+[
+ {
+  "round": 1,
+  "version": "d2385a30cc93cccb",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Stable line compression and allowing the unchanged board are independently recognizable claims: a solver can understand every tilt but overlook the zero-tilt case. Keep compression and its same-axis consequence here, and move zero-tilt handling to the complete decision rule or a separate claim."
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The particular four-seed family is an optional reduction of the eight perpendicular two-tilt prefixes, not an invariant requirement of this step. State coverage by perpendicular prefixes or an equivalent representative family, and put the four-seed reduction and its chosen directions in accept."
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The substantive claim is the single-permutation orbit after aligning corner phases; choosing up-then-left normalization and the particular RDLU orientation is a convention. Move those choices to accept and allow another reference corner, the inverse permutation, or equivalent explicit phase handling."
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": false,
+     "note": "Recognizing rotations on permutation cycles does not imply recognizing that repeated colors reduce the exponent modulus to the least cyclic period. Split the cycle-rotation reduction from the characterization of all matching exponents; confusing the period with the cycle length is a distinct plausible stopping point."
+    },
+    {
+     "id": "N7",
+     "specific": false,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "As written, this is a generic prime-power CRT lemma; explicitly connect its exponent and moduli to the board's permutation powers and tile-color periods. Keeping only the strongest stored constraint is an implementation choice and should be an example in accept, not part of the required claim."
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The fixed RDLU convention and mandatory linear string matching over-specify the orbit tester: inverse conventions and other sufficiently efficient rotation/period algorithms establish the same step. State the semantic tester and leave these implementation and complexity choices in accept."
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "This complete output rule unnecessarily requires the particular four canonical seeds. State acceptance over a covering family of perpendicular prefixes with equivalent corner-phase alignment, and retain the four normalized seeds as an implementation example."
+    },
+    {
+     "id": "N10",
+     "specific": false,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": "The statement is the general pairwise generalized-CRT criterion without an explicit connection to this board's motions. Identify k as the common number of four-tilt revolutions and the moduli as the least tile-color periods, so the node states this problem's compatibility step."
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Pairwise period compatibility is the substantive algorithm, but the statement additionally mandates canonical seeds and linear matching. Allow equivalent prefix/anchor coverage and sufficiently efficient rotation extraction; put the particular four-seed normalization and KMP implementation in accept."
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "The even-exponent reversal-product test is a valid algorithmic claim, but the chosen canonical seed family and mandatory linear matcher are incidental choices. Generalize candidate coverage and rotation extraction while retaining the parity constraint and prime-power compatibility."
+    },
+    {
+     "id": "N16",
+     "specific": false,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "This is a generic incremental CRT recipe rather than an explicitly tile-reachability claim. State that the accumulated class is the exact intersection of the board's cycle-exponent constraints, with rejection precisely on incompatibility, and move this particular modular-inverse update formula to accept."
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": false,
+     "atomic": true,
+     "note": "This is the storage/feasibility justification for explicit CRT, and its bound follows directly from N11 and the elementary product bound on an lcm. Fold it into N18's accept rather than making it a separate reasoning milestone."
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": false,
+     "separable": true,
+     "atomic": true,
+     "note": "Exact incremental intersection of exponent classes defines this approach, but the particular normalized seed family, linear matcher, and explicit duplicate-merging stage are implementation choices. Keep the exact-CRT output criterion in the statement and place those choices and their sufficient resource bounds in accept."
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All four routes contain enough mathematics and algorithmic detail for a correct, sufficiently fast implementation. They cover short paths, both-axis prefixes, shape and corner alignment, permutation powers, repeated-color periods, and an adequate compatibility procedure; the reversal-square identity and even-exponent condition are also correct.",
+   "key_ok": true,
+   "key_note": "N9, N12, N15, and N18 each state their path's complete yes/no decision rule and are appropriate key nodes.",
+   "hazards_ok": false,
+   "hazards_note": "Several checks prescribe implementations rather than universal constraints. H1 should require inclusion of zero-tilt and one-axis outcomes without mandating a global check order. H2 should require preserving all valid color-matching shifts, allowing equivalent representations besides least-period congruences. H3 incorrectly forbids storing the lcm even though P4 deliberately stores it exactly; prohibit fixed-width overflow and infeasible power enumeration, while allowing arbitrary precision. H5's destination-first in-place procedure excludes the reference solution's fresh-grid compaction and should instead require stable, lossless movement. H6 must be conditional on explicit CRT arithmetic and require exact overflow-safe products and accumulated values, rather than requiring every approach to use 64-bit products and arbitrary-precision accumulators.",
+   "missing": [],
+   "editorial_found": false,
+   "editorial_note": "P2 shares the editorial's core mathematics, but no current END route matches its actual candidate handling. The editorial/reference tries eight perpendicular seeds and all four partial-turn anchors, pulling target colors back through the corresponding label positions; it does not establish N3's four-seed redundancy or require the up-then-left normalization in N5/N12. Generalize those nodes to cover equivalent prefix and phase handling, or add the direct eight-seed/four-anchor algorithm as a path.",
+   "order": "Separate N1's zero-tilt case from tilt mechanics, and split N6 into per-cycle rotation and repeated-color period claims. Fold N17 into N18.accept. Generalize the shared prefix-coverage and corner-phase nodes before the algorithm nodes so the editorial's eight-seed formulation and the four-normalized-seed formulation can share the same conceptual milestones. Move fixed directions, mandatory linear matching, CRT storage choices, and the particular CRT update formula into accept examples.",
+   "verdict": "revise"
+  },
+  "blocking": [
+   "N3 (it states one implementation's choice, not what every correct solution through this step gets right): The particular four-seed family is an optional reduction of the eight perpendicular two-tilt prefixes, not an invariant requirement of this step. State coverage by perpendicular prefixes or an equivalent representative family, and put the four-seed reduction and its chosen directions in accept.",
+   "N5 (it states one implementation's choice, not what every correct solution through this step gets right): The substantive claim is the single-permutation orbit after aligning corner phases; choosing up-then-left normalization and the particular RDLU orientation is a convention. Move those choices to accept and allow another reference corner, the inverse permutation, or equivalent explicit phase handling.",
+   "N7 (not specific to this problem; it states one implementation's choice, not what every correct solution through this step gets right): As written, this is a generic prime-power CRT lemma; explicitly connect its exponent and moduli to the board's permutation powers and tile-color periods. Keeping only the strongest stored constraint is an implementation choice and should be an example in accept, not part of the required claim.",
+   "N8 (it states one implementation's choice, not what every correct solution through this step gets right): The fixed RDLU convention and mandatory linear string matching over-specify the orbit tester: inverse conventions and other sufficiently efficient rotation/period algorithms establish the same step. State the semantic tester and leave these implementation and complexity choices in accept.",
+   "N9 (it states one implementation's choice, not what every correct solution through this step gets right): This complete output rule unnecessarily requires the particular four canonical seeds. State acceptance over a covering family of perpendicular prefixes with equivalent corner-phase alignment, and retain the four normalized seeds as an implementation example.",
+   "N10 (not specific to this problem): The statement is the general pairwise generalized-CRT criterion without an explicit connection to this board's motions. Identify k as the common number of four-tilt revolutions and the moduli as the least tile-color periods, so the node states this problem's compatibility step.",
+   "N12 (it states one implementation's choice, not what every correct solution through this step gets right): Pairwise period compatibility is the substantive algorithm, but the statement additionally mandates canonical seeds and linear matching. Allow equivalent prefix/anchor coverage and sufficiently efficient rotation extraction; put the particular four-seed normalization and KMP implementation in accept.",
+   "N15 (it states one implementation's choice, not what every correct solution through this step gets right): The even-exponent reversal-product test is a valid algorithmic claim, but the chosen canonical seed family and mandatory linear matcher are incidental choices. Generalize candidate coverage and rotation extraction while retaining the parity constraint and prime-power compatibility.",
+   "N16 (not specific to this problem; it states one implementation's choice, not what every correct solution through this step gets right): This is a generic incremental CRT recipe rather than an explicitly tile-reachability claim. State that the accumulated class is the exact intersection of the board's cycle-exponent constraints, with rejection precisely on incompatibility, and move this particular modular-inverse update formula to accept.",
+   "N17 (it states one implementation's choice, not what every correct solution through this step gets right; comes with its prerequisite; merge it): This is the storage/feasibility justification for explicit CRT, and its bound follows directly from N11 and the elementary product bound on an lcm. Fold it into N18's accept rather than making it a separate reasoning milestone.",
+   "N18 (it states one implementation's choice, not what every correct solution through this step gets right): Exact incremental intersection of exponent classes defines this approach, but the particular normalized seed family, linear matcher, and explicit duplicate-merging stage are implementation choices. Keep the exact-CRT output criterion in the statement and place those choices and their sufficient resource bounds in accept.",
+   "hazards: Several checks prescribe implementations rather than universal constraints. H1 should require inclusion of zero-tilt and one-axis outcomes without mandating a global check order. H2 should require preserving all valid color-matching shifts, allowing equivalent representations besides least-period congruences. H3 incorrectly forbids storing the lcm even though P4 deliberately stores it exactly; prohibit fixed-width overflow and infeasible power enumeration, while allowing arbitrary precision. H5's destination-first in-place procedure excludes the reference solution's fresh-grid compaction and should instead require stable, lossless movement. H6 must be conditional on explicit CRT arithmetic and require exact overflow-safe products and accumulated values, rather than requiring every approach to use 64-bit products and arbitrary-precision accumulators."
+  ],
+  "advisory": [
+   "N1 (bundles claims a solver can have separately; split it): Stable line compression and allowing the unchanged board are independently recognizable claims: a solver can understand every tilt but overlook the zero-tilt case. Keep compression and its same-axis consequence here, and move zero-tilt handling to the complete decision rule or a separate claim.",
+   "N6 (bundles claims a solver can have separately; split it): Recognizing rotations on permutation cycles does not imply recognizing that repeated colors reduce the exponent modulus to the least cyclic period. Split the cycle-rotation reduction from the characterization of all matching exponents; confusing the period with the cycle length is a distinct plausible stopping point.",
+   "the editorial's approach is not among the paths: P2 shares the editorial's core mathematics, but no current END route matches its actual candidate handling. The editorial/reference tries eight perpendicular seeds and all four partial-turn anchors, pulling target colors back through the corresponding label positions; it does not establish N3's four-seed redundancy or require the up-then-left normalization in N5/N12. Generalize those nodes to cover equivalent prefix and phase handling, or add the direct eight-seed/four-anchor algorithm as a path.",
+   "order: Separate N1's zero-tilt case from tilt mechanics, and split N6 into per-cycle rotation and repeated-color period claims. Fold N17 into N18.accept. Generalize the shared prefix-coverage and corner-phase nodes before the algorithm nodes so the editorial's eight-seed formulation and the four-normalized-seed formulation can share the same conceptual milestones. Move fixed directions, mandatory linear matching, CRT storage choices, and the particular CRT update formula into accept examples."
+  ],
+  "time": "2026-11-02 21:18:06"
+ },
+ {
+  "round": 2,
+  "version": "be7c696185544a59",
+  "review": {
+   "nodes": [
+    {
+     "id": "N1",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N2",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N3",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N4",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N5",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N6",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N7",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N8",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N9",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N10",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N11",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N12",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N13",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N14",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N15",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N16",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N17",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    },
+    {
+     "id": "N18",
+     "specific": true,
+     "correct": true,
+     "judgeable": true,
+     "route_independent": true,
+     "separable": true,
+     "atomic": true,
+     "note": ""
+    }
+   ],
+   "end_ok": true,
+   "end_note": "All four routes cover zero-tilt and one-axis outcomes, both-axis seed coverage, shape and corner-phase handling, and efficient colored-permutation orbit testing. P3 correctly replaces revolution powers with even powers of the reversal product; P4 supplies exact CRT intersection and a sufficient bound on its arithmetic size.",
+   "key_ok": true,
+   "key_note": "N9, N12, N15, and N18 each state the complete reachability decision rule for their respective paths, rather than only a proof or feasibility claim.",
+   "hazards_ok": true,
+   "hazards_note": "The hazards cover stable lossless tilts, indistinguishable colors, trivial outcomes outside the corner-packed regime, degenerate and empty boards, and potentially enormous permutation orders and CRT moduli. H6 is appropriately conditional on explicit CRT arithmetic; no essential additional implementation constraint is missing.",
+   "missing": [],
+   "editorial_found": true,
+   "editorial_note": "P2 includes the editorial and reference approach: eight perpendicular seeds, four partial-turn anchors, a labeled four-tilt permutation, cycle rotation matching with least color periods, equal-period grouping, and pairwise gcd compatibility. The reference's preliminary color-multiset rejection and explicit one-dimensional shortcut are optional filters, not missing essential claims.",
+   "order": "",
+   "verdict": "accept"
+  },
+  "blocking": [],
+  "advisory": [],
+  "time": "2026-11-02 21:23:58"
+ }
+]
